@@ -1,0 +1,27 @@
+{
+	"name": "morris/lessql",
+	"description": "LessQL is a thin but powerful data access layer for SQL databases using PDO.",
+	"keywords": [ "sql", "pdo", "database", "orm", "notorm", "dal" ],
+	"license": "MIT",
+	"homepage": "http://github.com/morris/lessql",
+	"authors": [
+		{
+			"name": "Morris Brodersen",
+			"homepage": "http://morrisbrodersen.de"
+		}
+	],
+
+	"autoload": {
+		"psr-0": {
+			"": "src"
+		}
+	},
+
+	"require": {
+		"php": ">=5.3.0"
+	},
+
+	"require-dev": {
+		"phpunit/phpunit": "3.7.*"
+	}
+}
