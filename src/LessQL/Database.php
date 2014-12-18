@@ -132,18 +132,6 @@ class Database {
 
 	}
 
-	// SQL style
-
-	/**
-	 * Sets delimiter used when quoting identifiers. Should be backtick
-	 * or double quote. Set to null to disable quoting.
-	 */
-	function setIdentifierDelimiter( $d ) {
-
-		$this->identifierDelimiter = $d;
-
-	}
-
 	// Schema hints
 
 	/**
@@ -198,7 +186,7 @@ class Database {
 
 		if ( isset( $this->references[ $table ][ $name ] ) ) {
 
-			$this->references[ $table ][ $name ];
+			return $this->references[ $table ][ $name ];
 
 		}
 
@@ -211,7 +199,7 @@ class Database {
 	 */
 	function setReference( $table, $name, $key ) {
 
-		$this->references[ $name ][ $table ] = $key;
+		$this->references[ $table ][ $name ] = $key;
 
 		return $this;
 
@@ -295,6 +283,18 @@ class Database {
 		$this->required[ $table ][ $column ] = true;
 
 		return $this;
+
+	}
+
+	// SQL style
+
+	/**
+	 * Sets delimiter used when quoting identifiers. Should be backtick
+	 * or double quote. Set to null to disable quoting.
+	 */
+	function setIdentifierDelimiter( $d ) {
+
+		$this->identifierDelimiter = $d;
 
 	}
 
@@ -428,12 +428,6 @@ class Database {
 
 		}
 
-		if ( is_array( $value ) ) {
-
-			return "(" . implode( ", ", array_map( array( $this, 'quote' ), $value ) ) . ")";
-
-		}
-
 		if ( $value instanceof Literal ) {
 
 			return $value->value;
@@ -449,7 +443,7 @@ class Database {
 	 */
 	function format( $value ) {
 
-		if ( $value instanceof DateTime ) {
+		if ( $value instanceof \DateTime ) {
 
 			return $value->format( "Y-m-d H:i:s" );
 
@@ -479,26 +473,38 @@ class Database {
 
 	}
 
-	// Logging
+	/**
+	 * Create a SQL Literal
+	 */
+	function literal( $value ) {
+
+		return new Literal( $value );
+
+	}
+
+	//
 
 	/**
-	 * Calls the $db->onQuery callback, if any
+	 * Calls the query callback, if any
 	 */
 	function onQuery( $query, $params = array() ) {
 
-		if ( is_callable( $this->onQuery ) ) {
+		if ( is_callable( $this->queryCallback ) ) {
 
-			call_user_func( $this->onQuery, $query, $params );
+			call_user_func( $this->queryCallback, $query, $params );
 
 		}
 
 	}
 
 	/**
-	 * Set this to be a function accepting $query and $params to handle
-	 * any query executed by this database
+	 * Set the query callback
 	 */
-	public $onQuery;
+	function setQueryCallback( $callback ) {
+
+		$this->queryCallback = $callback;
+
+	}
 
 	//
 
@@ -515,5 +521,9 @@ class Database {
 	protected $aliases = array();
 
 	protected $required = array();
+
+	//
+
+	protected $queryCallback;
 
 }
