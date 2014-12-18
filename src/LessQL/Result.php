@@ -371,7 +371,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		// query head
 
 		$quotedColumns = array_map( array( $this->db, 'quoteIdentifier' ), $columns );
-		$query = "INSERT INTO " . $this->db->quoteIdentifier( $this->table );
+		$table = $this->db->rewriteTable( $this->table );
+		$query = "INSERT INTO " . $this->db->quoteIdentifier( $table );
 		$query .= " ( " . implode( ", ", $quotedColumns ) . " ) VALUES ";
 
 		if ( $method === 'prepared' ) {
@@ -468,7 +469,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
-		$query = "UPDATE " . $this->db->quoteIdentifier( $this->table );
+		$table = $this->db->rewriteTable( $this->table );
+		$query = "UPDATE " . $this->db->quoteIdentifier( $table );
 		$query .= " SET " . implode( ", ", $set );
 
 		if ( !empty( $this->where ) ) {
@@ -493,7 +495,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function delete() {
 
-		$query = "DELETE FROM " . $this->db->quoteIdentifier( $this->table );
+		$table = $this->db->rewriteTable( $this->table );
+		$query = "DELETE FROM " . $this->db->quoteIdentifier( $table );
 
 		if ( !empty( $this->where ) ) {
 
@@ -668,7 +671,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
-		$query .= " FROM " . $this->db->quoteIdentifier( $this->table );
+		$table = $this->db->rewriteTable( $this->table );
+		$query .= " FROM " . $this->db->quoteIdentifier( $table );
 
 		if ( !empty( $this->joins ) ) {
 

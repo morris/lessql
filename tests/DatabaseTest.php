@@ -84,6 +84,36 @@ class DatabaseTest extends BaseTest {
 
 	}
 
+	function testRewrite() {
+
+		$db = self::$db;
+
+		$db->setRewrite( function( $table ) {
+
+			return 'dummy';
+
+		} );
+
+		$db->begin();
+		$db->post()->fetchAll();
+		$db->user()->insert( array( 'test' => 42 ) );
+		$db->category()->update( array( 'test' => 42 ) );
+		$db->post()->delete();
+		$db->user()->sum( 'test' );
+		$db->commit();
+
+		$db->setRewrite( null );
+
+		$this->assertEquals( array(
+			"SELECT * FROM `dummy`",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( 42 )",
+			"UPDATE `dummy` SET `test` = 42",
+			"DELETE FROM `dummy`",
+			"SELECT SUM(test) FROM `dummy`",
+		), $this->queries );
+
+	}
+
 	function testIs() {
 
 		$db = self::$db;

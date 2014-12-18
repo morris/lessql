@@ -267,6 +267,9 @@ class ResultTest extends BaseTest {
 			$author = $post->author()->fetch();
 			$editor = $post->editor()->fetch();
 
+			if ( $author ) $this->assertTrue( $author->exists() );
+			if ( $editor ) $this->assertTrue( $editor->exists() );
+
 			$t = array();
 
 			$t[ 'title' ] = $post->title;

@@ -286,6 +286,31 @@ class Database {
 
 	}
 
+	/**
+	 * Get rewritten table name
+	 */
+	function rewriteTable( $table ) {
+
+		if ( is_callable( $this->rewrite ) ) {
+
+			return call_user_func( $this->rewrite, $table );
+
+		}
+
+		return $table;
+
+	}
+
+	/**
+	 * Set table rewrite function
+	 * For example, it could add a prefix
+	 */
+	function setRewrite( $rewrite ) {
+
+		$this->rewrite = $rewrite;
+
+	}
+
 	// SQL style
 
 	/**
@@ -521,6 +546,8 @@ class Database {
 	protected $aliases = array();
 
 	protected $required = array();
+
+	protected $rewrite;
 
 	//
 
