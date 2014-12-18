@@ -3,8 +3,7 @@
 LessQL is a thin but powerful data access layer for SQL databases using PDO (PHP Data Objects).
 It provides an intuitive API for efficient traversal of related database tables.
 
-Inspired mainly by NotORM, it was written from scratch to provide a
-clean API and simplified concepts.
+Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
 
 http://lessql.morrisbrodersen.de
 
@@ -16,7 +15,7 @@ http://lessql.morrisbrodersen.de
 - Convention over configuration
 - Work closely to your database: LessQL is not an ORM
 - Does not attempt to analyze the database, instead relies on conventions and minimal user hints
-- Focus on readable source code so forks and extensions are easier to develop
+- Clean, readable source code so forks and extensions are easy to develop
 - Fully tested with MySQL and SQLite3
 - MIT license
 
@@ -67,10 +66,10 @@ $row->save(); // creates a user, an address and connects them via user.address_i
 ## Status
 
 LessQL has not been used in production yet, but is fully tested.
-It is therefore released as a beta.
+It is therefore currently released as a beta.
 Any feedback or contribution is greatly appreciated.
 
-Please send feedback to mb@morrisbrodersen.de or create an issue here at Github.
+Please send feedback to mb@morrisbrodersen.de or create an issue at Github.
 
 
 ## Installation
