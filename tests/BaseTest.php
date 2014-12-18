@@ -39,7 +39,7 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 		$q( "CREATE TABLE post (
 			id INTEGER,
-			user_id INTEGER DEFAULT NULL,
+			author_id INTEGER DEFAULT NULL,
 			editor_id INTEGER DEFAULT NULL,
 			published datetime DEFAULT NULL,
 			title VARCHAR(30) NOT NULL,
@@ -61,6 +61,14 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 			post_id INTEGER NOT NULL
 		)" );
 
+		$q( "DROP TABLE IF EXISTS dummy" );
+
+		$q( "CREATE TABLE dummy (
+			id INTEGER NOT NULL,
+			test INTEGER NOT NULL,
+			PRIMARY KEY (id)
+		)" );
+
 		// data
 
 		// users
@@ -75,9 +83,9 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 		$q( "DELETE FROM post" );
 
-		$q( "INSERT INTO post (id, title, published, user_id, editor_id) VALUES (11, 'Championship won', '2014-09-18', 1, NULL)" );
-		$q( "INSERT INTO post (id, title, published, user_id, editor_id) VALUES (12, 'Foo released', '2014-09-15', 1, 2)" );
-		$q( "INSERT INTO post (id, title, published, user_id, editor_id) VALUES (13, 'Bar released', '2014-09-21', 2, 3)" );
+		$q( "INSERT INTO post (id, title, published, author_id, editor_id) VALUES (11, 'Championship won', '2014-09-18', 1, NULL)" );
+		$q( "INSERT INTO post (id, title, published, author_id, editor_id) VALUES (12, 'Foo released', '2014-09-15', 1, 2)" );
+		$q( "INSERT INTO post (id, title, published, author_id, editor_id) VALUES (13, 'Bar released', '2014-09-21', 2, 3)" );
 
 		// categories
 
@@ -96,6 +104,10 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 		$q( "INSERT INTO categorization (category_id, post_id) VALUES (21, 12)" );
 		$q( "INSERT INTO categorization (category_id, post_id) VALUES (21, 13)" );
 
+		// dummy
+
+		$q( "DELETE FROM dummy" );
+
 		self::$pdo->commit();
 
 		// db
@@ -104,6 +116,7 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 		// hints
 
+		self::$db->setAlias( 'author', 'user' );
 		self::$db->setAlias( 'editor', 'user' );
 		self::$db->setPrimary( 'categorization', array( 'category_id', 'post_id' ) );
 
@@ -116,12 +129,14 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 		self::$db->setQueryCallback( array( $this, 'log' ) );
 		$this->queries = array();
+		$this->params = array();
 
 	}
 
-	function log( $query ) {
+	function log( $query, $params ) {
 
 		$this->queries[] = $query;
+		$this->params[] = $params;
 
 	}
 

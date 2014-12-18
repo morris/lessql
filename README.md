@@ -72,10 +72,18 @@ associations with NOT NULL keys that cannot be resolved.
 
 ## Installation
 
-The composer package name is `morris/lessql`. You can also download or
-fork the repository.
+The composer package name is `morris/lessql`.
+You can also download or fork the repository.
 
 
 ## License
 
 LessQL is licensed under the MIT License. See `LICENSE.md` for details.
+
+
+## Tests
+
+Run `composer update` in the `lessql` directory.
+This will install development dependencies like PHPUnit.
+Run the tests with `vendor/bin/phpunit tests`.
+

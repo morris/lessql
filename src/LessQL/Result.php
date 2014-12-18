@@ -327,9 +327,20 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	// Manipulation
 
 	/**
-	 * Insert rows into the table of this result
+	 * Insert one ore more rows into the table of this result
+	 *
+	 * The $method parameter selects one of the following insert methods:
+	 *
+	 * "prepared": Prepare a query and execute it once per row using bound params
+	 *             Does not support Literals in row data (PDO limitation)
+	 *
+	 * "batch":    Create a single query mit multiple value lists
+	 *             Supports Literals, but not supported everywhere
+	 *
+	 * default:    Execute one INSERT per row
+	 *             Supports Literals, supported everywhere, slow for many rows
 	 */
-	function insert( $rows ) {
+	function insert( $rows, $method = null ) {
 
 		if ( empty( $rows ) ) return;
 
@@ -339,40 +350,104 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
+		// get ALL columns
+
 		$columns = array();
-
-		foreach ( $rows[ 0 ] as $column => $value ) {
-
-			$columns[] = $column;
-
-		}
-
-		$lists = array();
 
 		foreach ( $rows as $row ) {
 
-			$values = array();
+			foreach ( $row as $column => $value ) {
 
-			foreach ( $columns as $column ) {
-
-				$values[] = $this->db->quote( $row[ $column ] );
+				$columns[ $column ] = true;
 
 			}
 
-			$lists[] = "( " . implode( ", ", $values ) . " )";
-
 		}
 
-		$columns = array_map( array( $this->db, 'quoteIdentifier' ), $columns );
+		$columns = array_keys( $columns );
 
+		if ( empty( $columns ) ) return;
+
+		// query head
+
+		$quotedColumns = array_map( array( $this->db, 'quoteIdentifier' ), $columns );
 		$query = "INSERT INTO " . $this->db->quoteIdentifier( $this->table );
-		$query .= " ( " . implode( ", ", $columns ) . " )";
-		$query .= " VALUES " . implode( ", ", $lists );
+		$query .= " ( " . implode( ", ", $quotedColumns ) . " ) VALUES ";
 
-		$this->db->onQuery( $query );
+		if ( $method === 'prepared' ) {
 
-		$statement = $this->db->prepare( $query );
-		$statement->execute();
+			// prepare query and execute once per row
+
+			$query .= "( ?" . str_repeat( ", ?", count( $columns ) - 1 ) . " )";
+
+			$statement = $this->db->prepare( $query );
+
+			foreach ( $rows as $row ) {
+
+				$values = array();
+
+				foreach ( $columns as $column ) {
+
+					$value = (string) $this->db->format( @$row[ $column ] );
+					$values[] = $value;
+
+				}
+
+				$this->db->onQuery( $query, $values );
+
+				$statement->execute( $values );
+
+			}
+
+		} else {
+
+			// build value lists without params
+
+			$lists = array();
+
+			foreach ( $rows as $row ) {
+
+				$values = array();
+
+				foreach ( $columns as $column ) {
+
+					$values[] = $this->db->quote( @$row[ $column ] );
+
+				}
+
+				$lists[] = "( " . implode( ", ", $values ) . " )";
+
+			}
+
+			if ( $method === 'batch' ) {
+
+				// batch all rows into one query
+
+				$query .= implode( ", ", $lists );
+
+				$this->db->onQuery( $query );
+
+				$statement = $this->db->prepare( $query );
+				$statement->execute();
+
+			} else {
+
+				// execute one insert per row
+
+				foreach ( $lists as $list ) {
+
+					$q = $query . $list;
+
+					$this->db->onQuery( $q );
+
+					$statement = $this->db->prepare( $q );
+					$statement->execute();
+
+				}
+
+			}
+
+		}
 
 		return $statement;
 

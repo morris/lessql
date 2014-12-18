@@ -17,6 +17,106 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testVia() {
+
+		$db = self::$db;
+
+		$post = $db->post( 12 );
+
+		$author = $post->user()->via( 'author_id' )->fetch();
+		$editor = $post->user()->via( 'editor_id' )->fetch();
+		$posts = $author->postList()->via( 'author_id' );
+
+		$this->assertEquals( 1, $author->id );
+		$this->assertEquals( 2, $editor->id );
+		$this->assertEquals( array( '11', '12' ), $posts->getLocalKeys( 'id' ) );
+
+		$this->assertEquals( array(
+			"SELECT * FROM `post` WHERE `id` = 12",
+			"SELECT * FROM `user` WHERE `id` = '1'",
+			"SELECT * FROM `user` WHERE `id` = '2'",
+			"SELECT * FROM `post` WHERE `author_id` = '1'"
+		), $this->queries );
+
+	}
+
+	function testInsert() {
+
+		$db = self::$db;
+
+		$db->begin();
+		$db->dummy()->insert( array() ); // does nothing
+		$db->dummy()->insert( array( 'test' => 42 ) );
+		$db->dummy()->insert( array(
+			array( 'test' => 1 ),
+			array( 'test' => 2 ),
+			array( 'test' => 3 )
+		) );
+		$db->commit();
+
+		$this->assertEquals( array(
+			"INSERT INTO `dummy` ( `test` ) VALUES ( 42 )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( 1 )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( 2 )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( 3 )"
+		), $this->queries );
+
+	}
+
+	function testInsertPrepared() {
+
+		$db = self::$db;
+
+		$db->begin();
+		$db->dummy()->insert( array(
+			array( 'test' => 1 ),
+			array( 'test' => 2 ),
+			array( 'test' => 3 )
+		), 'prepared' );
+		$db->commit();
+
+		$this->assertEquals( array(
+			"INSERT INTO `dummy` ( `test` ) VALUES ( ? )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( ? )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( ? )"
+		), $this->queries );
+
+		$this->assertEquals( array(
+			array( 1 ),
+			array( 2 ),
+			array( 3 ),
+		), $this->params );
+
+	}
+
+	function testInsertBatch() {
+
+		$db = self::$db;
+
+		// not supported by sqlite < 3.7, need try/catch
+
+		try {
+
+			$db->begin();
+			$db->dummy()->insert( array(
+				array( 'test' => 1 ),
+				array( 'test' => 2 ),
+				array( 'test' => 3 )
+			), 'batch' );
+			$db->commit();
+
+		} catch ( \Exception $ex ) {
+
+			$db->rollback();
+
+		}
+
+		$this->assertEquals( array(
+			"INSERT INTO `dummy` ( `test` ) VALUES ( 1 ), ( 2 ), ( 3 )",
+		), $this->queries );
+
+	}
+
 	function testKeys() {
 
 		$db = self::$db;
@@ -27,12 +127,12 @@ class ResultTest extends BaseTest {
 
 			$this->assertEquals( array( $post[ 'id' ] ), $post->getLocalKeys( 'id' ) );
 			$this->assertEquals( array( 11, 12, 13 ), $post->getGlobalKeys( 'id' ) );
-			$this->assertEquals( array( $post[ 'user_id' ] ), $post->getLocalKeys( 'user_id' ) );
-			$this->assertEquals( array( '1', '2' ), $post->getGlobalKeys( 'user_id' ) );
+			$this->assertEquals( array( $post[ 'author_id' ] ), $post->getLocalKeys( 'author_id' ) );
+			$this->assertEquals( array( '1', '2' ), $post->getGlobalKeys( 'author_id' ) );
 
-			$userResult = $post->user();
+			$userResult = $post->author();
 
-			$this->assertEquals( array( $post[ 'user_id' ] ), $userResult->getLocalKeys( 'id' ) );
+			$this->assertEquals( array( $post[ 'author_id' ] ), $userResult->getLocalKeys( 'id' ) );
 			$this->assertEquals( array( '1', '2' ), $userResult->getGlobalKeys( 'id' ) );
 
 			foreach ( $post->categorizationList() as $categorization ) {
@@ -71,13 +171,13 @@ class ResultTest extends BaseTest {
 
 		foreach ( $db->post()->orderBy( 'published', 'DESC' ) as $post ) {
 
-			$user = $post->user()->fetch();
+			$author = $post->author()->fetch();
 			$editor = $post->editor()->fetch();
 
 			$t = array();
 
 			$t[ 'title' ] = $post->title;
-			$t[ 'author' ] = $user->name;
+			$t[ 'author' ] = $author->name;
 			$t[ 'editor' ] = $editor ? $editor->name : null;
 			$t[ 'categories' ] = array();
 
