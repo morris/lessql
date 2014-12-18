@@ -5,7 +5,7 @@ It provides an intuitive API for efficient traversal of related database tables.
 
 Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
 
-http://lessql.morrisbrodersen.de
+http://lessql.net
 
 
 ## Features
@@ -19,7 +19,7 @@ http://lessql.morrisbrodersen.de
 - Fully tested with MySQL and SQLite3
 - MIT license
 
-For full documentation and examples, see the [homepage](http://lessql.morrisbrodersen.de).
+For full documentation and examples, see the [homepage](http://lessql.net).
 
 
 ## Quick Tour
@@ -65,11 +65,10 @@ $row->save(); // creates a user, an address and connects them via user.address_i
 
 ## Status
 
-LessQL has not been used in production yet, but is fully tested.
-It is therefore currently released as a beta.
-Any feedback or contribution is greatly appreciated.
+LessQL has not been used in production yet, but it's fully tested.
+It is therefore currently in beta status.
 
-Please send feedback to mb@morrisbrodersen.de or create an issue at Github.
+If you want to contribute, please do! Feedback is welcome, too.
 
 
 ## Installation
