@@ -6,6 +6,8 @@ PDO (PHP Data Objects).
 Inspired mainly by NotORM, it was written from scratch to provide a
 clean API and simplified concepts.
 
+http://lessql.morrisbrodersen.de
+
 ## Features
 
 - Traverse associated structures with a minimal amount of queries
