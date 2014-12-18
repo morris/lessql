@@ -117,6 +117,97 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testUpdate() {
+
+		$db = self::$db;
+
+		$db->begin();
+		$db->dummy()->update( array() );
+		$db->dummy()->update( array( 'test' => 42 ) );
+		$db->dummy()->where( 'test', 31 )->update( array( 'test' => 42 ) );
+		$db->commit();
+
+		$this->assertEquals( array(
+			"UPDATE `dummy` SET `test` = 42",
+			"UPDATE `dummy` SET `test` = 42 WHERE `test` = 31",
+		), $this->queries );
+
+	}
+
+	function testDelete() {
+
+		$db = self::$db;
+
+		$db->begin();
+		$db->dummy()->delete();
+		$db->dummy()->where( 'test', 31 )->delete();
+		$db->commit();
+
+		$this->assertEquals( array(
+			"DELETE FROM `dummy`",
+			"DELETE FROM `dummy` WHERE `test` = 31",
+		), $this->queries );
+
+	}
+
+	function testWhere() {
+
+		$db = self::$db;
+
+		$db->dummy()->where( 'test', null )->fetch();
+		$db->dummy()->where( 'test', 31 )->fetch();
+		$db->dummy()->whereNot( 'test', null )->fetch();
+		$db->dummy()->whereNot( 'test', 31 )->fetch();
+		$db->dummy()->where( 'test', array( 1, 2, 3 ) )->fetch();
+		$db->dummy()->where( 'test = 31' )->fetch();
+		$db->dummy()->where( 'test = ?', 31 )->fetch();
+		$db->dummy()->where( 'test = ?', array( 31 ) )->fetch();
+		$db->dummy()->where( 'test = :param', array( 'param' => 31 ) )->fetch();
+		$db->dummy()
+			->where( 'test < :a', array( 'a' => 31 ) )
+			->where( 'test > ?', 0 )
+			->fetch();
+
+		$this->assertEquals( array(
+			"SELECT * FROM `dummy` WHERE `test` IS NULL",
+			"SELECT * FROM `dummy` WHERE `test` = 31",
+			"SELECT * FROM `dummy` WHERE `test` IS NOT NULL",
+			"SELECT * FROM `dummy` WHERE `test` != 31",
+			"SELECT * FROM `dummy` WHERE `test` IN ( 1, 2, 3 )",
+			"SELECT * FROM `dummy` WHERE test = 31",
+			"SELECT * FROM `dummy` WHERE test = ?",
+			"SELECT * FROM `dummy` WHERE test = ?",
+			"SELECT * FROM `dummy` WHERE test = :param",
+			"SELECT * FROM `dummy` WHERE test < :a AND test > ?",
+		), $this->queries );
+
+		$this->assertEquals( array(
+			array(),
+			array(),
+			array(),
+			array(),
+			array(),
+			array(),
+			array( 31 ),
+			array( 31 ),
+			array( 'param' => 31 ),
+			array( 'a' => 31, 0 => 0 ),
+		), $this->params );
+
+	}
+
+	function testOrderBy() {
+
+		$db = self::$db;
+
+		$db->dummy()->orderBy( 'id', 'DESC' )->orderBy( 'test' )->fetch();
+
+		$this->assertEquals( array(
+			"SELECT * FROM `dummy` ORDER BY `id` DESC, `test` ASC",
+		), $this->queries );
+
+	}
+
 	function testKeys() {
 
 		$db = self::$db;

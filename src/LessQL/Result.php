@@ -600,6 +600,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$this->where[] = $this->db->isNot( $column, $value );
 
+		return $this;
+
 	}
 
 	/**
