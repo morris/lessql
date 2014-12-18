@@ -3,7 +3,7 @@
 require_once 'vendor/autoload.php';
 require_once 'BaseTest.php';
 
-class IntegrationTest extends BaseTest {
+class ResultTest extends BaseTest {
 
 	function testPrimary() {
 
@@ -138,85 +138,5 @@ class IntegrationTest extends BaseTest {
 		), $this->queries );
 
 	}
-
-	function testSave() {
-
-		$db = self::$db;
-
-		$row = $db->createRow( 'post', array(
-			'title' => 'Smaugs Desolation Review',
-			'user' => array(
-				'name' => 'Fantasy Guy'
-			),
-			'editor' => array(
-				'name' => 'Big Boss',
-				'post' => array(
-					'title' => 'Favorite Post'
-				)
-			),
-			'categorizationList' => array(
-
-				array(
-					'category' => array( 'title' => 'Movies' )
-				),
-				array(
-					'category' => array( 'title' => 'Fantasy' )
-				)
-
-			)
-		) );
-
-		$db->begin();
-		$row->save();
-		$db->commit();
-
-		$this->assertEquals( array(
-			"INSERT INTO `post` ( `title`, `user_id`, `editor_id` ) VALUES ( 'Smaugs Desolation Review', NULL, NULL )",
-			"INSERT INTO `user` ( `name` ) VALUES ( 'Fantasy Guy' )",
-			"INSERT INTO `user` ( `name`, `post_id` ) VALUES ( 'Big Boss', NULL )",
-			"INSERT INTO `post` ( `title` ) VALUES ( 'Favorite Post' )",
-			"INSERT INTO `category` ( `title` ) VALUES ( 'Movies' )",
-			"INSERT INTO `category` ( `title` ) VALUES ( 'Fantasy' )",
-			"UPDATE `post` SET `user_id` = '4', `editor_id` = '5' WHERE `id` = '14'",
-			"UPDATE `user` SET `post_id` = '15' WHERE `id` = '5'",
-			"INSERT INTO `categorization` ( `post_id`, `category_id` ) VALUES ( '14', '24' )",
-			"INSERT INTO `categorization` ( `post_id`, `category_id` ) VALUES ( '14', '25' )"
-		), $this->queries );
-
-	}
-
-	function testJson() {
-
-		$db = self::$db;
-
-		$posts = json_encode( $db->post()->orderBy( 'published' ) );
-		$post = json_encode( $db->post()->where( 'published > ?', '2015-01-01' )->fetch() );
-
-		$nested = json_encode( $db->createRow( 'post', array(
-			'title' => 'Smaugs Desolation Review',
-			'user' => array(
-				'name' => 'Fantasy Guy'
-			),
-			'editor' => array(
-				'name' => 'Big Boss',
-				'post' => array(
-					'title' => 'Favorite Post'
-				)
-			),
-			'categorizationList' => array(
-
-				array(
-					'category' => array( 'title' => 'Movies' )
-				),
-				array(
-					'category' => array( 'title' => 'Fantasy' )
-				)
-
-			)
-		) ) );
-
-	}
-
-	// TODO add more tests
 
 }

@@ -30,7 +30,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 			$this->db = $parent;
 			$this->table = $this->db->getAlias( $name );
 
-		} else { // row or result
+		} else { // Row or Result
 
 			// result referenced to parent
 

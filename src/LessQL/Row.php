@@ -435,7 +435,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 		$result = $this->getDatabase()->table( $this->getTable() );
 
-		$idCondition = $this->originalId;
+		$idCondition = $this->getOriginalId();
+
+		if ( $idCondition === null ) return $this;
 
 		if ( !is_array( $idCondition ) ) {
 
@@ -455,7 +457,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	 */
 	function exists() {
 
-		return $this->_clean || $this->_originalId !== null;
+		return $this->_originalId !== null;
 
 	}
 
@@ -473,12 +475,15 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	 */
 	function setClean() {
 
-		if ( $this->_table ) {
+		$id = $this->getId();
 
-			$this->_originalId = $this->getId();
+		if ( $id === null ) {
+
+			throw new \LogicException( 'Cannot set Row "clean" without id' );
 
 		}
 
+		$this->_originalId = $id;
 		$this->_modified = array();
 
 		return $this;
@@ -490,7 +495,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	 */
 	function setDirty() {
 
-		$this->_modified = array_keys( $this->_properties );
+		$this->_modified = $this->_properties; // copy...
 
 		return $this;
 
@@ -632,6 +637,16 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 				$array[ $key ] = $value->format( 'Y-m-d H:i:s' );
 
+			} else if ( is_array( $value ) ) { // list of Rows
+
+				foreach ( $value as $i => $row ) {
+
+					$value[ $i ] = $row->jsonSerialize();
+
+				}
+
+				$array[ $key ] = $value;
+
 			} else {
 
 				$array[ $key ] = $value;
@@ -653,8 +668,6 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	protected $_properties;
 
 	protected $_modified;
-
-	protected $_clean;
 
 	protected $_originalId;
 
