@@ -146,7 +146,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 			foreach ( $rows as $row ) {
 
 				$row = $this->db->createRow( $this->table, $row, $this );
-				$row->clean();
+				$row->setClean();
 
 				$cached[] = $row;
 

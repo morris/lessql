@@ -12,6 +12,8 @@ class ResultTest extends BaseTest {
 		$a = $db->user( 2 );
 		$b = $db->user( 3 );
 
+		$this->assertTrue( $a->exists() );
+		$this->assertTrue( $b->exists() );
 		$this->assertEquals( 'Editor', $a->name );
 		$this->assertEquals( 'Chief Editor', $b[ 'name' ] );
 
