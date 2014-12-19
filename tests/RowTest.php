@@ -174,7 +174,9 @@ class RowTest extends BaseTest {
 		$row->setClean();
 		$row->delete();
 
-		$this->assertEquals( array( "DELETE FROM `user` WHERE `id` = 42" ), $this->queries );
+		$this->assertFalse( $row->isClean() );
+		$this->assertFalse( $row->exists() );
+		$this->assertEquals( array( "DELETE FROM `user` WHERE `id` = '42'" ), $this->queries );
 
 	}
 
@@ -269,7 +271,7 @@ class RowTest extends BaseTest {
 		$this->assertEquals( 2, count( $categorizations ) );
 
 		$this->assertEquals( array(
-			"SELECT * FROM `post` WHERE `id` = 11",
+			"SELECT * FROM `post` WHERE `id` = '11'",
 			"SELECT * FROM `user` WHERE `id` = '1'",
 			"SELECT * FROM `categorization` WHERE `post_id` = '11'",
 		), $this->queries );

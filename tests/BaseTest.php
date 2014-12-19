@@ -14,44 +14,88 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 		// pdo
 
+		// sqlite
 		self::$pdo = new \PDO( 'sqlite:tests/shop.sqlite3' );
+
+		// mysql
+		//self::$pdo = new \PDO( 'mysql:host=localhost;dbname=test', 'root', 'pw' );
+
+		// postgres
+		//self::$pdo = new \PDO( 'pgsql:host=localhost;port=5432;dbname=test;user=postgres;password=pw' );
+
+		//
+
 		self::$pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 
-		$q = array( self::$pdo, 'query' );
+		$driver = self::$pdo->getAttribute( \PDO::ATTR_DRIVER_NAME );
 
-		self::$pdo->beginTransaction();
+		// db
+
+		self::$db = new \LessQL\Database( self::$pdo );
+
+		// hints
+
+		self::$db->setAlias( 'author', 'user' );
+		self::$db->setAlias( 'editor', 'user' );
+		self::$db->setPrimary( 'categorization', array( 'category_id', 'post_id' ) );
+
+		self::$db->setAlias( 'edit_post', 'post' );
+		self::$db->setBackReference( 'user', 'edit_post', 'editor_id' );
 
 		// schema
 
-		$q( "DROP TABLE IF EXISTS user" );
+		self::$pdo->beginTransaction();
 
-		$q( "CREATE TABLE user (
-			id INTEGER,
+		$q = array( self::$pdo, 'query' );
+		$e = array( self::$db, 'quoteIdentifier' );
+
+		//
+
+		if ( $driver === 'sqlite' ) {
+
+			$p = "INTEGER PRIMARY KEY AUTOINCREMENT";
+
+		}
+
+		if ( $driver === 'mysql' ) {
+
+			$p = "INTEGER PRIMARY KEY AUTO_INCREMENT";
+
+		}
+
+		if ( $driver === 'pgsql' ) {
+
+			self::$db->setIdentifierDelimiter( '"' );
+			$p = "SERIAL PRIMARY KEY";
+
+		}
+
+		$q( "DROP TABLE IF EXISTS " . $e( "user" ) );
+
+		$q( "CREATE TABLE " . $e( "user" ) . " (
+			id $p,
 			type varchar(30) DEFAULT 'user',
 			name varchar(30) NOT NULL,
 			address_id INTEGER DEFAULT NULL,
 			billing_address_id INTEGER DEFAULT NULL,
-			post_id INTEGER DEFAULT NULL,
-			PRIMARY KEY (id)
+			post_id INTEGER DEFAULT NULL
 		)" );
 
 		$q( "DROP TABLE IF EXISTS post" );
 
 		$q( "CREATE TABLE post (
-			id INTEGER,
+			id $p,
 			author_id INTEGER DEFAULT NULL,
 			editor_id INTEGER DEFAULT NULL,
-			published datetime DEFAULT NULL,
-			title VARCHAR(30) NOT NULL,
-			PRIMARY KEY (id)
+			published VARCHAR(30) DEFAULT NULL,
+			title VARCHAR(30) NOT NULL
 		)" );
 
 		$q( "DROP TABLE IF EXISTS category" );
 
 		$q( "CREATE TABLE category (
-			id INTEGER,
-			title varchar(30) NOT NULL,
-			PRIMARY KEY (id)
+			id $p,
+			title varchar(30) NOT NULL
 		)" );
 
 		$q( "DROP TABLE IF EXISTS categorization" );
@@ -64,20 +108,19 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 		$q( "DROP TABLE IF EXISTS dummy" );
 
 		$q( "CREATE TABLE dummy (
-			id INTEGER NOT NULL,
-			test INTEGER NOT NULL,
-			PRIMARY KEY (id)
+			id $p,
+			test INTEGER
 		)" );
 
 		// data
 
 		// users
 
-		$q( "DELETE FROM user" );
+		$q( "DELETE FROM " . $e( "user" ) . "" );
 
-		$q( "INSERT INTO user (id, name) VALUES (1, 'Writer')" );
-		$q( "INSERT INTO user (id, name) VALUES (2, 'Editor')" );
-		$q( "INSERT INTO user (id, name) VALUES (3, 'Chief Editor')" );
+		$q( "INSERT INTO " . $e( "user" ) . " (id, name) VALUES (1, 'Writer')" );
+		$q( "INSERT INTO " . $e( "user" ) . " (id, name) VALUES (2, 'Editor')" );
+		$q( "INSERT INTO " . $e( "user" ) . " (id, name) VALUES (3, 'Chief Editor')" );
 
 		// posts
 
@@ -108,20 +151,17 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 		$q( "DELETE FROM dummy" );
 
+		// postgres sequences
+		if ( $driver === 'pgsql' ) {
+
+			$q( "SELECT setval('user_id_seq', 3)" );
+			$q( "SELECT setval('post_id_seq', 13)" );
+			$q( "SELECT setval('category_id_seq', 23)" );
+			$q( "SELECT setval('dummy_id_seq', 1, false)" );
+
+		}
+
 		self::$pdo->commit();
-
-		// db
-
-		self::$db = new \LessQL\Database( self::$pdo );
-
-		// hints
-
-		self::$db->setAlias( 'author', 'user' );
-		self::$db->setAlias( 'editor', 'user' );
-		self::$db->setPrimary( 'categorization', array( 'category_id', 'post_id' ) );
-
-		self::$db->setAlias( 'edit_post', 'post' );
-		self::$db->setBackReference( 'user', 'edit_post', 'editor_id' );
 
 	}
 
@@ -135,7 +175,7 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 	function log( $query, $params ) {
 
-		$this->queries[] = $query;
+		$this->queries[] = str_replace( '"', '`', $query );
 		$this->params[] = $params;
 
 	}

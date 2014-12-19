@@ -16,7 +16,7 @@ http://lessql.net
 - Work closely to your database: LessQL is not an ORM
 - Does not attempt to analyze the database, instead relies on conventions and minimal user hints
 - Clean, readable source code so forks and extensions are easy to develop
-- Fully tested with MySQL and SQLite3
+- Fully tested with SQLite3, MySQL and PostgreSQL
 - MIT license
 
 For full documentation and examples, see the [homepage](http://lessql.net).
@@ -67,6 +67,8 @@ $row->save(); // creates a user, an address and connects them via user.address_i
 
 LessQL has not been used in production yet, but it's fully tested.
 It is therefore currently in beta status.
+
+See `CHANGELOG.md` for details about the releases.
 
 If you want to contribute, please do! Feedback is welcome, too.
 

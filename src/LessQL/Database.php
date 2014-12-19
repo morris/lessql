@@ -99,9 +99,9 @@ class Database {
 	/**
 	 * Return last inserted id
 	 */
-	function lastInsertId() {
+	function lastInsertId( $sequence = null ) {
 
-		return $this->pdo->lastInsertId();
+		return $this->pdo->lastInsertId( $sequence );
 
 	}
 
@@ -287,6 +287,37 @@ class Database {
 	}
 
 	/**
+	 * Get primary sequence name of table (used in INSERT by Postgres)
+	 *
+	 * Conventions is "$tableRewritten_$primary_seq"
+	 */
+	function getSequence( $table ) {
+
+		if ( isset( $this->sequences[ $table ] ) ) {
+
+			return $this->sequences[ $table ];
+
+		}
+
+		$primary = $this->getPrimary( $table );
+		$table = $this->rewriteTable( $table );
+
+		if ( is_array( $primary ) ) return null;
+
+		return $table . '_' . $primary . '_seq';
+
+	}
+
+	/**
+	 * Set primary sequence name of table
+	 */
+	function setSequence( $table, $sequence ) {
+
+		$this->sequences[ $table ] = $sequence;
+
+	}
+
+	/**
 	 * Get rewritten table name
 	 */
 	function rewriteTable( $table ) {
@@ -312,6 +343,15 @@ class Database {
 	}
 
 	// SQL style
+
+	/**
+	 * Get identifier delimiter
+	 */
+	function getIdentifierDelimiter() {
+
+		return $this->identifierDelimiter;
+
+	}
 
 	/**
 	 * Sets delimiter used when quoting identifiers. Should be backtick
@@ -431,25 +471,25 @@ class Database {
 
 		if ( $value === false ) {
 
-			return "0";
+			return "'0'";
 
 		}
 
 		if ( $value === true ) {
 
-			return "1";
+			return "'1'";
 
 		}
 
 		if ( is_int( $value ) ) {
 
-			return (string) $value;
+			return "'" . ( (string) $value ) . "'";
 
 		}
 
 		if ( is_float( $value ) ) {
 
-			return sprintf( "%F", $value );
+			return "'" . sprintf( "%F", $value ) . "'";
 
 		}
 
@@ -546,6 +586,8 @@ class Database {
 	protected $aliases = array();
 
 	protected $required = array();
+
+	protected $sequences = array();
 
 	protected $rewrite;
 

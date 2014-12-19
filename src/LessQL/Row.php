@@ -225,13 +225,16 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	 */
 	function save( $recursive = true ) {
 
+		$db = $this->getDatabase();
+		$table = $this->getTable();
+
 		if ( !$recursive ) { // just save the row
 
 			$this->updateReferences();
 
 			if ( !$this->isClean() ) {
 
-				$primary = $this->getDatabase()->getPrimary( $this->getTable() );
+				$primary = $db->getPrimary( $table );
 
 				if ( $this->exists() ) {
 
@@ -243,8 +246,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 					}
 
-					$this->getDatabase()
-						->table( $this->getTable() )
+					$db
+						->table( $table )
 						->where( $idCondition )
 						->update( $this->getModified() );
 
@@ -253,13 +256,15 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 				} else {
 
-					$this->getDatabase()
-						->table( $this->getTable() )
+					$db
+						->table( $table )
 						->insert( $this->getData() );
 
 					if ( !is_array( $primary ) && !isset( $this[ $primary ] ) ) {
 
-						$this[ $primary ] = $this->getDatabase()->lastInsertId();
+						$id = $db->lastInsertId( $db->getSequence( $table ) );
+
+						if ( isset( $id ) ) $this[ $primary ] = $id;
 
 					}
 
@@ -307,7 +312,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 			if ( !$solvable ) {
 
 				throw new \LogicException(
-					"Cannot recursively save structure (" . $this->getTable() . ") - add required values or allow NULL"
+					"Cannot recursively save structure (" . $table . ") - add required values or allow NULL"
 				);
 
 			}
@@ -447,6 +452,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 		}
 
 		$result->where( $idCondition )->delete();
+
+		$this->_originalId = null;
 
 		return $this->setDirty();
 

@@ -34,7 +34,7 @@ class ResultTest extends BaseTest {
 		$this->assertEquals( array( '11', '12' ), $posts->getLocalKeys( 'id' ) );
 
 		$this->assertEquals( array(
-			"SELECT * FROM `post` WHERE `id` = 12",
+			"SELECT * FROM `post` WHERE `id` = '12'",
 			"SELECT * FROM `user` WHERE `id` = '1'",
 			"SELECT * FROM `user` WHERE `id` = '2'",
 			"SELECT * FROM `post` WHERE `author_id` = '1'"
@@ -57,10 +57,10 @@ class ResultTest extends BaseTest {
 		$db->commit();
 
 		$this->assertEquals( array(
-			"INSERT INTO `dummy` ( `test` ) VALUES ( 42 )",
-			"INSERT INTO `dummy` ( `test` ) VALUES ( 1 )",
-			"INSERT INTO `dummy` ( `test` ) VALUES ( 2 )",
-			"INSERT INTO `dummy` ( `test` ) VALUES ( 3 )"
+			"INSERT INTO `dummy` ( `test` ) VALUES ( '42' )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( '1' )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( '2' )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( '3' )"
 		), $this->queries );
 
 	}
@@ -114,7 +114,7 @@ class ResultTest extends BaseTest {
 		}
 
 		$this->assertEquals( array(
-			"INSERT INTO `dummy` ( `test` ) VALUES ( 1 ), ( 2 ), ( 3 )",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( '1' ), ( '2' ), ( '3' )",
 		), $this->queries );
 
 	}
@@ -130,8 +130,8 @@ class ResultTest extends BaseTest {
 		$db->commit();
 
 		$this->assertEquals( array(
-			"UPDATE `dummy` SET `test` = 42",
-			"UPDATE `dummy` SET `test` = 42 WHERE `test` = 31",
+			"UPDATE `dummy` SET `test` = '42'",
+			"UPDATE `dummy` SET `test` = '42' WHERE `test` = '31'",
 		), $this->queries );
 
 	}
@@ -147,7 +147,7 @@ class ResultTest extends BaseTest {
 
 		$this->assertEquals( array(
 			"DELETE FROM `dummy`",
-			"DELETE FROM `dummy` WHERE `test` = 31",
+			"DELETE FROM `dummy` WHERE `test` = '31'",
 		), $this->queries );
 
 	}
@@ -167,20 +167,20 @@ class ResultTest extends BaseTest {
 		$db->dummy()->where( 'test = :param', array( 'param' => 31 ) )->fetch();
 		$db->dummy()
 			->where( 'test < :a', array( 'a' => 31 ) )
-			->where( 'test > ?', 0 )
+			->where( 'test > :b', array( 'b' => 0 ) )
 			->fetch();
 
 		$this->assertEquals( array(
 			"SELECT * FROM `dummy` WHERE `test` IS NULL",
-			"SELECT * FROM `dummy` WHERE `test` = 31",
+			"SELECT * FROM `dummy` WHERE `test` = '31'",
 			"SELECT * FROM `dummy` WHERE `test` IS NOT NULL",
-			"SELECT * FROM `dummy` WHERE `test` != 31",
-			"SELECT * FROM `dummy` WHERE `test` IN ( 1, 2, 3 )",
+			"SELECT * FROM `dummy` WHERE `test` != '31'",
+			"SELECT * FROM `dummy` WHERE `test` IN ( '1', '2', '3' )",
 			"SELECT * FROM `dummy` WHERE test = 31",
 			"SELECT * FROM `dummy` WHERE test = ?",
 			"SELECT * FROM `dummy` WHERE test = ?",
 			"SELECT * FROM `dummy` WHERE test = :param",
-			"SELECT * FROM `dummy` WHERE test < :a AND test > ?",
+			"SELECT * FROM `dummy` WHERE test < :a AND test > :b",
 		), $this->queries );
 
 		$this->assertEquals( array(
@@ -193,7 +193,7 @@ class ResultTest extends BaseTest {
 			array( 31 ),
 			array( 31 ),
 			array( 'param' => 31 ),
-			array( 'a' => 31, 0 => 0 ),
+			array( 'a' => 31, 'b' => 0 ),
 		), $this->params );
 
 	}

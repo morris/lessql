@@ -57,6 +57,7 @@ class DatabaseTest extends BaseTest {
 		$db->setBackReference( 'foo', 'bar', 'fid' );
 		$db->setRequired( 'foo', 9 );
 		$db->setRequired( 'foo', 10 );
+		$db->setSequence( 'foo', 'fooseq' );
 
 		$a = array(
 			$db->getAlias( 'alias' ),
@@ -67,6 +68,8 @@ class DatabaseTest extends BaseTest {
 			$db->isRequired( 'foo', 9 ),
 			$db->isRequired( 'foo', 10 ),
 			$db->getRequired( 'foo' ),
+			$db->getSequence( 'foo' ),
+			$db->getSequence( 'baz' )
 		);
 
 		$ex = array(
@@ -77,7 +80,9 @@ class DatabaseTest extends BaseTest {
 			'fid',
 			true,
 			true,
-			array( 9 => true, 10 => true )
+			array( 9 => true, 10 => true ),
+			'fooseq',
+			'baz_id_seq'
 		);
 
 		$this->assertEquals( $ex, $a );
@@ -94,20 +99,28 @@ class DatabaseTest extends BaseTest {
 
 		} );
 
-		$db->begin();
-		$db->post()->fetchAll();
-		$db->user()->insert( array( 'test' => 42 ) );
-		$db->category()->update( array( 'test' => 42 ) );
-		$db->post()->delete();
-		$db->user()->sum( 'test' );
-		$db->commit();
+		try {
+
+			$db->begin();
+			$db->post()->fetchAll();
+			$db->user()->insert( array( 'test' => 42 ) );
+			$db->category()->update( array( 'test' => 42 ) );
+			$db->post()->delete();
+			$db->user()->sum( 'test' );
+			$db->commit();
+
+		} catch ( \PDOException $ex ) {
+
+			$db->rollback();
+
+		}
 
 		$db->setRewrite( null );
 
 		$this->assertEquals( array(
 			"SELECT * FROM `dummy`",
-			"INSERT INTO `dummy` ( `test` ) VALUES ( 42 )",
-			"UPDATE `dummy` SET `test` = 42",
+			"INSERT INTO `dummy` ( `test` ) VALUES ( '42' )",
+			"UPDATE `dummy` SET `test` = '42'",
 			"DELETE FROM `dummy`",
 			"SELECT SUM(test) FROM `dummy`",
 		), $this->queries );
@@ -117,6 +130,9 @@ class DatabaseTest extends BaseTest {
 	function testIs() {
 
 		$db = self::$db;
+
+		$d = $db->getIdentifierDelimiter();
+		$db->setIdentifierDelimiter( '`' );
 
 		$a = array(
 			$db->is( 'foo', null ),
@@ -131,9 +147,11 @@ class DatabaseTest extends BaseTest {
 			$db->is( 'foo', array( null ) ),
 		);
 
+		$db->setIdentifierDelimiter( $d );
+
 		$ex = array(
 			"`foo` IS NULL",
-			"`foo` = 0",
+			"`foo` = '0'",
 			"`foo` = 'bar'",
 			"`foo` = '2015-01-01 01:00:00'",
 			"`foo` = BAR",
@@ -152,6 +170,9 @@ class DatabaseTest extends BaseTest {
 
 		$db = self::$db;
 
+		$d = $db->getIdentifierDelimiter();
+		$db->setIdentifierDelimiter( '`' );
+
 		$a = array(
 			$db->isNot( 'foo', null ),
 			$db->isNot( 'foo', 0 ),
@@ -165,9 +186,11 @@ class DatabaseTest extends BaseTest {
 			$db->isNot( 'foo', array( null ) ),
 		);
 
+		$db->setIdentifierDelimiter( $d );
+
 		$ex = array(
 			"`foo` IS NOT NULL",
-			"`foo` != 0",
+			"`foo` != '0'",
 			"`foo` != 'bar'",
 			"`foo` != '2015-01-01 01:00:00'",
 			"`foo` != BAR",
@@ -186,6 +209,9 @@ class DatabaseTest extends BaseTest {
 
 		$db = self::$db;
 
+		$d = $db->getIdentifierDelimiter();
+		$db->setIdentifierDelimiter( '`' );
+
 		$a = array(
 			$db->quote( null ),
 			$db->quote( false ),
@@ -200,14 +226,16 @@ class DatabaseTest extends BaseTest {
 			$db->quote( $db->literal( 'BAR' ) ),
 		);
 
+		$db->setIdentifierDelimiter( $d );
+
 		$ex = array(
 			"NULL",
-			0,
-			1,
-			0,
-			1,
-			0.0,
-			3.1,
+			"'0'",
+			"'1'",
+			"'0'",
+			"'1'",
+			"'0.000000'",
+			"'3.100000'",
 			"'1'",
 			"'foo'",
 			"''",
@@ -222,6 +250,9 @@ class DatabaseTest extends BaseTest {
 
 		$db = self::$db;
 
+		$d = $db->getIdentifierDelimiter();
+		$db->setIdentifierDelimiter( '`' );
+
 		$a = array(
 			$db->quoteIdentifier( 'foo' ),
 			$db->quoteIdentifier( 'foo.bar' ),
@@ -229,8 +260,10 @@ class DatabaseTest extends BaseTest {
 		);
 
 		$db->setIdentifierDelimiter( '"' );
+
 		$a[] = $db->quoteIdentifier( 'foo.bar' );
-		$db->setIdentifierDelimiter( '`' );
+
+		$db->setIdentifierDelimiter( $d );
 
 		$ex = array(
 			"`foo`",
