@@ -130,7 +130,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		if ( !$cached ) {
 
 			// fetch all rows
-			$query = $this->getQuery();
+			$query = $this->getSelect();
 			$params = $this->whereParams;
 
 			$this->db->onQuery( $query, $params );
@@ -657,7 +657,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Build the SELECT query defined by this result
 	 */
-	function getQuery() {
+	function getSelect() {
 
 		$query = "SELECT ";
 
@@ -674,37 +674,44 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		$table = $this->db->rewriteTable( $this->table );
 		$query .= " FROM " . $this->db->quoteIdentifier( $table );
 
-		if ( !empty( $this->joins ) ) {
+		$query .= $this->getSuffix();
 
-			$query .= " " . $this->implode( " ", $this->joins );
+		return $query;
 
-		}
+	}
+
+	/**
+	 * Return WHERE/LIMIT/ORDER suffix for queries
+	 */
+	function getSuffix() {
+
+		$suffix = "";
 
 		if ( !empty( $this->where ) ) {
 
-			$query .= " WHERE " . implode( " AND ", $this->where );
+			$suffix .= " WHERE " . implode( " AND ", $this->where );
 
 		}
 
-		if ( !empty( $this->orderBy ) )  {
+		if ( !empty( $this->orderBy ) ) {
 
-			$query .= " ORDER BY " . implode( ", ", $this->orderBy );
+			$suffix .= " ORDER BY " . implode( ", ", $this->orderBy );
 
 		}
 
 		if ( isset( $this->limitCount ) ) {
 
-			$query .= " LIMIT :limitCount";
+			$suffix .= " LIMIT " . intval( $this->limitCount );
 
 			if ( isset( $this->limitOffset ) ) {
 
-				$query .= " OFFSET :limitOffset";
+				$suffix .= " OFFSET " . intval( $this->limitOffset );
 
 			}
 
 		}
 
-		return $query;
+		return $suffix;
 
 	}
 
@@ -761,7 +768,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		$select = $this->select;
 		$this->select = array( $function );
 
-		$query = $this->getQuery();
+		$query = $this->getSelect();
 		$params = $this->whereParams;
 
 		$this->select = $select;

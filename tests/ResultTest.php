@@ -210,6 +210,20 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testLimit() {
+
+		$db = self::$db;
+
+		$db->dummy()->limit( 3 )->fetch();
+		$db->dummy()->limit( 3, 10 )->fetch();
+
+		$this->assertEquals( array(
+			"SELECT * FROM `dummy` LIMIT 3",
+			"SELECT * FROM `dummy` LIMIT 3 OFFSET 10",
+		), $this->queries );
+
+	}
+
 	function testKeys() {
 
 		$db = self::$db;
