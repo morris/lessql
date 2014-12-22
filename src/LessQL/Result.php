@@ -459,25 +459,31 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function update( $data ) {
 
+		// if this is a related result or it is limited,
+		// create specific result for local rows and execute
+
+		if ( $this->parent_  || isset( $this->limitCount ) ) {
+
+			return $this->primaryResult()->update( $data );
+
+		}
+
 		if ( empty( $data ) ) return;
 
 		$set = array();
 
-		foreach ( $data as $field => $value ) {
+		foreach ( $data as $column => $value ) {
 
-			$set[] = $this->db->quoteIdentifier( $field ) . " = " . $this->db->quote( $value );
+			$set[] = $this->db->quoteIdentifier( $column ) . " = " . $this->db->quote( $value );
 
 		}
 
 		$table = $this->db->rewriteTable( $this->table );
+
 		$query = "UPDATE " . $this->db->quoteIdentifier( $table );
 		$query .= " SET " . implode( ", ", $set );
 
-		if ( !empty( $this->where ) ) {
-
-			$query .= " WHERE " . implode( " AND ", $this->where );
-
-		}
+		$query .= $this->db->getSuffix( $this->where ); // ignore limit/order
 
 		$params = $this->whereParams;
 
@@ -495,14 +501,19 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function delete() {
 
+		// if this is a related result or it is limited,
+		// create specific result for local rows and execute
+
+		if ( $this->parent_ || isset( $this->limitCount ) ) {
+
+			return $this->primaryResult()->delete();
+
+		}
+
 		$table = $this->db->rewriteTable( $this->table );
 		$query = "DELETE FROM " . $this->db->quoteIdentifier( $table );
 
-		if ( !empty( $this->where ) ) {
-
-			$query .= " WHERE " . implode( " AND ", $this->where );
-
-		}
+		$query .= $this->db->getSuffix( $this->where ); // ignore limit/order
 
 		$params = $this->whereParams;
 
@@ -512,6 +523,41 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		$statement->execute( $params );
 
 		return $statement;
+
+	}
+
+	/**
+	 * Return a new root result which selects all rows in this result by primary key
+	 */
+	function primaryResult() {
+
+		$result = $this->db->table( $this->table );
+		$primary = $this->db->getPrimary( $this->table );
+
+		if ( is_array( $primary ) ) {
+
+			$this->execute();
+			$or = array();
+
+			foreach ( $this->rows as $row ) {
+
+				$and = array();
+
+				foreach ( $primary as $column ) {
+
+					$and[] = $this->db->is( $column, $row[ $column ] );
+
+				}
+
+				$or[] = "( " . implode( " AND ", $and ) . " )";
+
+			}
+
+			return $result->where( implode( " OR ", $or ) );
+
+		}
+
+		return $result->where( $primary, $this->getLocalKeys( $primary ) );
 
 	}
 
@@ -674,44 +720,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		$table = $this->db->rewriteTable( $this->table );
 		$query .= " FROM " . $this->db->quoteIdentifier( $table );
 
-		$query .= $this->getSuffix();
+		$query .= $this->db->getSuffix( $this->where, $this->limitCount, $this->limitOffset, $this->orderBy );
 
 		return $query;
-
-	}
-
-	/**
-	 * Return WHERE/LIMIT/ORDER suffix for queries
-	 */
-	function getSuffix() {
-
-		$suffix = "";
-
-		if ( !empty( $this->where ) ) {
-
-			$suffix .= " WHERE " . implode( " AND ", $this->where );
-
-		}
-
-		if ( !empty( $this->orderBy ) ) {
-
-			$suffix .= " ORDER BY " . implode( ", ", $this->orderBy );
-
-		}
-
-		if ( isset( $this->limitCount ) ) {
-
-			$suffix .= " LIMIT " . intval( $this->limitCount );
-
-			if ( isset( $this->limitOffset ) ) {
-
-				$suffix .= " OFFSET " . intval( $this->limitOffset );
-
-			}
-
-		}
-
-		return $suffix;
 
 	}
 

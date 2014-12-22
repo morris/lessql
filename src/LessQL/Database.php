@@ -366,6 +366,41 @@ class Database {
 	// SQL utility
 
 	/**
+	 * Return WHERE/LIMIT/ORDER suffix for queries
+	 */
+	function getSuffix( $where, $limitCount = null, $limitOffset = null, $orderBy = array() ) {
+
+		$suffix = "";
+
+		if ( !empty( $where ) ) {
+
+			$suffix .= " WHERE " . implode( " AND ", $where );
+
+		}
+
+		if ( !empty( $orderBy ) ) {
+
+			$suffix .= " ORDER BY " . implode( ", ", $orderBy );
+
+		}
+
+		if ( isset( $limitCount ) ) {
+
+			$suffix .= " LIMIT " . intval( $limitCount );
+
+			if ( isset( $limitOffset ) ) {
+
+				$suffix .= " OFFSET " . intval( $limitOffset );
+
+			}
+
+		}
+
+		return $suffix;
+
+	}
+
+	/**
 	 * Build an SQL condition expressing that "$column is $value",
 	 * or "$column is in $value" if $value is an array. Handles null
 	 * and literals like new Literal( "NOW()" ) correctly.

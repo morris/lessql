@@ -190,10 +190,7 @@ class RowTest extends BaseTest {
 				'name' => 'Fantasy Guy'
 			),
 			'editor' => array(
-				'name' => 'Big Boss',
-				'post' => array(
-					'title' => 'Favorite Post'
-				)
+				'name' => 'Big Boss'
 			),
 			'categorizationList' => array(
 
@@ -214,12 +211,10 @@ class RowTest extends BaseTest {
 		$this->assertEquals( array(
 			"INSERT INTO `post` ( `title`, `author_id`, `editor_id` ) VALUES ( 'Fantasy Movie Review', NULL, NULL )",
 			"INSERT INTO `user` ( `name` ) VALUES ( 'Fantasy Guy' )",
-			"INSERT INTO `user` ( `name`, `post_id` ) VALUES ( 'Big Boss', NULL )",
-			"INSERT INTO `post` ( `title` ) VALUES ( 'Favorite Post' )",
+			"INSERT INTO `user` ( `name` ) VALUES ( 'Big Boss' )",
 			"INSERT INTO `category` ( `title` ) VALUES ( 'Movies' )",
 			"INSERT INTO `category` ( `title` ) VALUES ( 'Fantasy' )",
 			"UPDATE `post` SET `author_id` = '4', `editor_id` = '5' WHERE `id` = '14'",
-			"UPDATE `user` SET `post_id` = '15' WHERE `id` = '5'",
 			"INSERT INTO `categorization` ( `post_id`, `category_id` ) VALUES ( '14', '24' )",
 			"INSERT INTO `categorization` ( `post_id`, `category_id` ) VALUES ( '14', '25' )"
 		), $this->queries );
@@ -232,7 +227,7 @@ class RowTest extends BaseTest {
 
 		$data = array(
 			'title' => 'Fantasy Movie Review',
-			'published' => new \DateTime( '2014-01-01 01:00:00' ),
+			'date_published' => new \DateTime( '2014-01-01 01:00:00' ),
 			'author' => array(
 				'name' => 'Fantasy Guy'
 			),
@@ -250,7 +245,7 @@ class RowTest extends BaseTest {
 
 		$a = $row->jsonSerialize();
 		$ex = $data;
-		$ex[ 'published' ] = $data[ 'published' ]->format( 'Y-m-d H:i:s' );
+		$ex[ 'date_published' ] = $data[ 'date_published' ]->format( 'Y-m-d H:i:s' );
 
 		$this->assertEquals( $ex, $a );
 
@@ -263,6 +258,8 @@ class RowTest extends BaseTest {
 		$db = self::$db;
 
 		$post = $db->post( 11 );
+
+		$this->assertNotNull( $post );
 
 		$author = $post->author()->fetch();
 		$categorizations = $post->categorizationList()->fetchAll();

@@ -2,6 +2,9 @@
 
 ## master
 
+- Improved UPDATE/DELETE behavior
+- Improved UPDATE/DELETE tests
+- Fixed LIMIT with test
 - PostgreSQL support (all tests pass)
 - Made tests MySQL-compatible (all tests pass)
 

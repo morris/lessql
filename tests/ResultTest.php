@@ -11,7 +11,11 @@ class ResultTest extends BaseTest {
 
 		$a = $db->user( 2 );
 		$b = $db->user( 3 );
+		$c = $db->user( 42 );
 
+		$this->assertNotNull( $a );
+		$this->assertNotNull( $b );
+		$this->assertNull( $c );
 		$this->assertTrue( $a->exists() );
 		$this->assertTrue( $b->exists() );
 		$this->assertEquals( 'Editor', $a->name );
@@ -24,6 +28,8 @@ class ResultTest extends BaseTest {
 		$db = self::$db;
 
 		$post = $db->post( 12 );
+
+		$this->assertNotNull( $post );
 
 		$author = $post->user()->via( 'author_id' )->fetch();
 		$editor = $post->user()->via( 'editor_id' )->fetch();
@@ -48,19 +54,19 @@ class ResultTest extends BaseTest {
 
 		$db->begin();
 		$db->dummy()->insert( array() ); // does nothing
-		$db->dummy()->insert( array( 'test' => 42 ) );
+		$db->dummy()->insert( array( 'id' => 1, 'test' => 42 ) );
 		$db->dummy()->insert( array(
-			array( 'test' => 1 ),
-			array( 'test' => 2 ),
-			array( 'test' => 3 )
+			array( 'id' => 2,  'test' => 1 ),
+			array( 'id' => 3,  'test' => 2 ),
+			array( 'id' => 4,  'test' => 3 )
 		) );
 		$db->commit();
 
 		$this->assertEquals( array(
-			"INSERT INTO `dummy` ( `test` ) VALUES ( '42' )",
-			"INSERT INTO `dummy` ( `test` ) VALUES ( '1' )",
-			"INSERT INTO `dummy` ( `test` ) VALUES ( '2' )",
-			"INSERT INTO `dummy` ( `test` ) VALUES ( '3' )"
+			"INSERT INTO `dummy` ( `id`, `test` ) VALUES ( '1', '42' )",
+			"INSERT INTO `dummy` ( `id`, `test` ) VALUES ( '2', '1' )",
+			"INSERT INTO `dummy` ( `id`, `test` ) VALUES ( '3', '2' )",
+			"INSERT INTO `dummy` ( `id`, `test` ) VALUES ( '4', '3' )"
 		), $this->queries );
 
 	}
@@ -124,14 +130,39 @@ class ResultTest extends BaseTest {
 		$db = self::$db;
 
 		$db->begin();
+
 		$db->dummy()->update( array() );
 		$db->dummy()->update( array( 'test' => 42 ) );
-		$db->dummy()->where( 'test', 31 )->update( array( 'test' => 42 ) );
+		$db->dummy()->where( 'test', 1 )->update( array( 'test' => 42 ) );
+
+
+		$queries = $this->queries;
+		$db->dummy()->insert( array( 'id' => 1, 'test' => 44 ) );
+		$db->dummy()->insert( array( 'id' => 2, 'test' => 42 ) );
+		$db->dummy()->insert( array( 'id' => 3, 'test' => 45 ) );
+		$db->dummy()->insert( array( 'id' => 4, 'test' => 47 ) );
+		$db->dummy()->insert( array( 'id' => 5, 'test' => 48 ) );
+		$db->dummy()->insert( array( 'id' => 6, 'test' => 43 ) );
+		$db->dummy()->insert( array( 'id' => 7, 'test' => 41 ) );
+		$db->dummy()->insert( array( 'id' => 8, 'test' => 46 ) );
+		$this->queries = $queries;
+
+		$db->commit();
+
+		$db->begin();
+		$db->dummy()->where( 'test > 42' )->limit( 2, 2 )->update( array( 'test' => 42 ) );
+		$db->dummy()->where( 'test > 42' )->orderBy( 'test' )->limit( 2 )->update( array( 'test' => 42 ) );
+		$db->dummy()->where( 'test > 42' )->orderBy( 'test' )->update( array( 'test' => 42 ) );
 		$db->commit();
 
 		$this->assertEquals( array(
 			"UPDATE `dummy` SET `test` = '42'",
-			"UPDATE `dummy` SET `test` = '42' WHERE `test` = '31'",
+			"UPDATE `dummy` SET `test` = '42' WHERE `test` = '1'",
+			"SELECT * FROM `dummy` WHERE test > 42 LIMIT 2 OFFSET 2",
+			"UPDATE `dummy` SET `test` = '42' WHERE `id` IN ( '4', '5' )",
+			"SELECT * FROM `dummy` WHERE test > 42 ORDER BY `test` ASC LIMIT 2",
+			"UPDATE `dummy` SET `test` = '42' WHERE `id` IN ( '6', '1' )",
+			"UPDATE `dummy` SET `test` = '42' WHERE test > 42"
 		), $this->queries );
 
 	}
@@ -141,14 +172,44 @@ class ResultTest extends BaseTest {
 		$db = self::$db;
 
 		$db->begin();
+
 		$db->dummy()->delete();
-		$db->dummy()->where( 'test', 31 )->delete();
+		$db->dummy()->where( 'test', 1 )->delete();
+
+		$queries = $this->queries;
+		$db->dummy()->insert( array( 'id' => 1, 'test' => 44 ) );
+		$db->dummy()->insert( array( 'id' => 2, 'test' => 42 ) );
+		$db->dummy()->insert( array( 'id' => 3, 'test' => 45 ) );
+		$db->dummy()->insert( array( 'id' => 4, 'test' => 47 ) );
+		$db->dummy()->insert( array( 'id' => 5, 'test' => 48 ) );
+		$db->dummy()->insert( array( 'id' => 6, 'test' => 43 ) );
+		$db->dummy()->insert( array( 'id' => 7, 'test' => 41 ) );
+		$db->dummy()->insert( array( 'id' => 8, 'test' => 46 ) );
+		$this->queries = $queries;
+
+		$db->commit();
+
+		$db->begin();
+		$db->dummy()->where( 'test > 42' )->limit( 2, 2 )->delete();
+		$db->dummy()->where( 'test > 42' )->orderBy( 'test' )->limit( 2 )->delete();
+		$db->dummy()->where( 'test > 42' )->orderBy( 'test' )->delete();
 		$db->commit();
 
 		$this->assertEquals( array(
 			"DELETE FROM `dummy`",
-			"DELETE FROM `dummy` WHERE `test` = '31'",
+			"DELETE FROM `dummy` WHERE `test` = '1'",
+			"SELECT * FROM `dummy` WHERE test > 42 LIMIT 2 OFFSET 2",
+			"DELETE FROM `dummy` WHERE `id` IN ( '4', '5' )",
+			"SELECT * FROM `dummy` WHERE test > 42 ORDER BY `test` ASC LIMIT 2",
+			"DELETE FROM `dummy` WHERE `id` IN ( '6', '1' )",
+			"DELETE FROM `dummy` WHERE test > 42"
 		), $this->queries );
+
+	}
+
+	function testDeleteComplex() {
+
+		$db = self::$db;
 
 	}
 
@@ -276,7 +337,7 @@ class ResultTest extends BaseTest {
 
 		$posts = array();
 
-		foreach ( $db->post()->orderBy( 'published', 'DESC' ) as $post ) {
+		foreach ( $db->post()->orderBy( 'date_published', 'DESC' ) as $post ) {
 
 			$author = $post->author()->fetch();
 			$editor = $post->editor()->fetch();
@@ -302,7 +363,7 @@ class ResultTest extends BaseTest {
 		}
 
 		$this->assertEquals( array(
-			"SELECT * FROM `post` ORDER BY `published` DESC",
+			"SELECT * FROM `post` ORDER BY `date_published` DESC",
 			"SELECT * FROM `user` WHERE `id` IN ( '2', '1' )",
 			"SELECT * FROM `user` WHERE `id` IN ( '3', '2' )",
 			"SELECT * FROM `categorization` WHERE `post_id` IN ( '13', '11', '12' )",

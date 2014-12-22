@@ -221,7 +221,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Save this row
-	 * Also saves associated rows if $recursive is true (default)
+	 * Also saves nested rows if $recursive is true (default)
 	 */
 	function save( $recursive = true ) {
 
