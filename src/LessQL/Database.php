@@ -363,12 +363,232 @@ class Database {
 
 	}
 
+	// Queries
+
+	/**
+	 * Select rows from a table
+	 */
+	function select( $table, $exprs = null, $where = array(), $orderBy = array(),
+			$limitCount = null, $limitOffset = null, $params = array() ) {
+
+		$query = "SELECT ";
+
+		if ( empty( $exprs ) ) {
+
+			$query .= "*";
+
+		} else if ( is_array( $exprs ) ) {
+
+			$query .= implode( ", ", $exprs );
+
+		} else {
+
+			$query .= $exprs;
+
+		}
+
+		$table = $this->rewriteTable( $table );
+		$query .= " FROM " . $this->quoteIdentifier( $table );
+
+		$query .= $this->getSuffix( $where, $orderBy, $limitCount, $limitOffset );
+
+		$this->onQuery( $query, $params );
+
+		$statement = $this->prepare( $query );
+		$statement->setFetchMode( \PDO::FETCH_ASSOC );
+		$statement->execute( $params );
+
+		return $statement;
+
+	}
+
+	/**
+	 * Insert one ore more rows into a table
+	 *
+	 * The $method parameter selects one of the following insert methods:
+	 *
+	 * "prepared": Prepare a query and execute it once per row using bound params
+	 *             Does not support Literals in row data (PDO limitation)
+	 *
+	 * "batch":    Create a single query mit multiple value lists
+	 *             Supports Literals, but not supported everywhere
+	 *
+	 * default:    Execute one INSERT per row
+	 *             Supports Literals, supported everywhere, slow for many rows
+	 */
+	function insert( $table, $rows, $method = null ) {
+
+		if ( empty( $rows ) ) return;
+
+		if ( !isset( $rows[ 0 ] ) ) $rows = array( $rows );
+
+		// get ALL columns
+
+		$columns = array();
+
+		foreach ( $rows as $row ) {
+
+			foreach ( $row as $column => $value ) {
+
+				$columns[ $column ] = true;
+
+			}
+
+		}
+
+		$columns = array_keys( $columns );
+
+		if ( empty( $columns ) ) return;
+
+		// query head
+
+		$quotedColumns = array_map( array( $this, 'quoteIdentifier' ), $columns );
+		$table = $this->rewriteTable( $table );
+		$query = "INSERT INTO " . $this->quoteIdentifier( $table );
+		$query .= " ( " . implode( ", ", $quotedColumns ) . " ) VALUES ";
+
+		if ( $method === 'prepared' ) {
+
+			// prepare query and execute once per row
+
+			$query .= "( ?" . str_repeat( ", ?", count( $columns ) - 1 ) . " )";
+
+			$statement = $this->prepare( $query );
+
+			foreach ( $rows as $row ) {
+
+				$values = array();
+
+				foreach ( $columns as $column ) {
+
+					$value = (string) $this->format( @$row[ $column ] );
+					$values[] = $value;
+
+				}
+
+				$this->onQuery( $query, $values );
+
+				$statement->execute( $values );
+
+			}
+
+		} else {
+
+			// build value lists without params
+
+			$lists = array();
+
+			foreach ( $rows as $row ) {
+
+				$values = array();
+
+				foreach ( $columns as $column ) {
+
+					$values[] = $this->quote( @$row[ $column ] );
+
+				}
+
+				$lists[] = "( " . implode( ", ", $values ) . " )";
+
+			}
+
+			if ( $method === 'batch' ) {
+
+				// batch all rows into one query
+
+				$query .= implode( ", ", $lists );
+
+				$this->onQuery( $query );
+
+				$statement = $this->prepare( $query );
+				$statement->execute();
+
+			} else {
+
+				// execute one insert per row
+
+				foreach ( $lists as $list ) {
+
+					$q = $query . $list;
+
+					$this->onQuery( $q );
+
+					$statement = $this->prepare( $q );
+					$statement->execute();
+
+				}
+
+			}
+
+		}
+
+		return $statement;
+
+	}
+
+	/**
+	 * Execute update query and return statement
+	 *
+	 * UPDATE $table SET $data [WHERE $where]
+	 */
+	function update( $table, $data, $where = array(), $params = array() ) {
+
+		if ( empty( $data ) ) return;
+
+		$set = array();
+
+		foreach ( $data as $column => $value ) {
+
+			$set[] = $this->quoteIdentifier( $column ) . " = " . $this->quote( $value );
+
+		}
+
+		if ( !is_array( $where ) ) $where = array( $where );
+		if ( !is_array( $params ) ) $params = array_slice( func_get_args(), 3 );
+
+		$table = $this->rewriteTable( $table );
+		$query = "UPDATE " . $this->quoteIdentifier( $table );
+		$query .= " SET " . implode( ", ", $set );
+		$query .= $this->getSuffix( $where );
+
+		$this->onQuery( $query, $params );
+
+		$statement = $this->prepare( $query );
+		$statement->execute( $params );
+
+		return $statement;
+
+	}
+
+	/**
+	 * Execute delete query and return statement
+	 *
+	 * DELETE FROM $table [WHERE $where]
+	 */
+	function delete( $table, $where = array(), $params = array() ) {
+
+		if ( !is_array( $where ) ) $where = array( $where );
+		if ( !is_array( $params ) ) $params = array_slice( func_get_args(), 2 );
+
+		$table = $this->rewriteTable( $table );
+		$query = "DELETE FROM " . $this->quoteIdentifier( $table );
+		$query .= $this->getSuffix( $where );
+
+		$this->onQuery( $query, $params );
+
+		$statement = $this->prepare( $query );
+		$statement->execute( $params );
+
+		return $statement;
+
+	}
+
 	// SQL utility
 
 	/**
 	 * Return WHERE/LIMIT/ORDER suffix for queries
 	 */
-	function getSuffix( $where, $limitCount = null, $limitOffset = null, $orderBy = array() ) {
+	function getSuffix( $where, $orderBy = array(), $limitCount = null, $limitOffset = null ) {
 
 		$suffix = "";
 

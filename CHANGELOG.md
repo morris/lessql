@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## v0.2-beta
 
 - Improved UPDATE/DELETE behavior
 - Improved UPDATE/DELETE tests

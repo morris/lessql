@@ -116,7 +116,12 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 		$result = $this->getDatabase()->createResult( $this, $name );
 
-		if ( $where !== null ) $result->where( $where, $params );
+		if ( $where !== null ) {
+
+			if ( !is_array( $params ) ) $params = array_slice( func_get_args(), 2 );
+			$result->where( $where, $params );
+
+		}
 
 		return $result;
 
@@ -555,7 +560,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Get
+	 * Get global keys of parent result, or column if row is root
 	 */
 	function getGlobalKeys( $key ) {
 
@@ -665,6 +670,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 		return $array;
 
 	}
+
+	//
 
 	protected $_db;
 

@@ -81,7 +81,12 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$result = $this->db->createResult( $this, $name );
 
-		if ( $where !== null ) $result->where( $where, $params );
+		if ( $where !== null ) {
+
+			if ( !is_array( $params ) ) $params = array_slice( func_get_args(), 2 );
+			$result->where( $where, $params );
+
+		}
 
 		return $result;
 
@@ -130,14 +135,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		if ( !$cached ) {
 
 			// fetch all rows
-			$query = $this->getSelect();
-			$params = $this->whereParams;
-
-			$this->db->onQuery( $query, $params );
-
-			$statement = $this->db->prepare( $query );
-			$statement->setFetchMode( \PDO::FETCH_ASSOC );
-			$statement->execute( $params );
+			$statement = $this->db->select(
+				$this->table, $this->select, $this->where, $this->orderBy,
+				$this->limitCount, $this->limitOffset, $this->whereParams
+			);
 
 			$rows = $statement->fetchAll();
 			$cached = array();
@@ -328,129 +329,11 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Insert one ore more rows into the table of this result
-	 *
-	 * The $method parameter selects one of the following insert methods:
-	 *
-	 * "prepared": Prepare a query and execute it once per row using bound params
-	 *             Does not support Literals in row data (PDO limitation)
-	 *
-	 * "batch":    Create a single query mit multiple value lists
-	 *             Supports Literals, but not supported everywhere
-	 *
-	 * default:    Execute one INSERT per row
-	 *             Supports Literals, supported everywhere, slow for many rows
+	 * See Database::insert for information on $method
 	 */
 	function insert( $rows, $method = null ) {
 
-		if ( empty( $rows ) ) return;
-
-		if ( !isset( $rows[ 0 ] ) ) {
-
-			$rows = array( $rows );
-
-		}
-
-		// get ALL columns
-
-		$columns = array();
-
-		foreach ( $rows as $row ) {
-
-			foreach ( $row as $column => $value ) {
-
-				$columns[ $column ] = true;
-
-			}
-
-		}
-
-		$columns = array_keys( $columns );
-
-		if ( empty( $columns ) ) return;
-
-		// query head
-
-		$quotedColumns = array_map( array( $this->db, 'quoteIdentifier' ), $columns );
-		$table = $this->db->rewriteTable( $this->table );
-		$query = "INSERT INTO " . $this->db->quoteIdentifier( $table );
-		$query .= " ( " . implode( ", ", $quotedColumns ) . " ) VALUES ";
-
-		if ( $method === 'prepared' ) {
-
-			// prepare query and execute once per row
-
-			$query .= "( ?" . str_repeat( ", ?", count( $columns ) - 1 ) . " )";
-
-			$statement = $this->db->prepare( $query );
-
-			foreach ( $rows as $row ) {
-
-				$values = array();
-
-				foreach ( $columns as $column ) {
-
-					$value = (string) $this->db->format( @$row[ $column ] );
-					$values[] = $value;
-
-				}
-
-				$this->db->onQuery( $query, $values );
-
-				$statement->execute( $values );
-
-			}
-
-		} else {
-
-			// build value lists without params
-
-			$lists = array();
-
-			foreach ( $rows as $row ) {
-
-				$values = array();
-
-				foreach ( $columns as $column ) {
-
-					$values[] = $this->db->quote( @$row[ $column ] );
-
-				}
-
-				$lists[] = "( " . implode( ", ", $values ) . " )";
-
-			}
-
-			if ( $method === 'batch' ) {
-
-				// batch all rows into one query
-
-				$query .= implode( ", ", $lists );
-
-				$this->db->onQuery( $query );
-
-				$statement = $this->db->prepare( $query );
-				$statement->execute();
-
-			} else {
-
-				// execute one insert per row
-
-				foreach ( $lists as $list ) {
-
-					$q = $query . $list;
-
-					$this->db->onQuery( $q );
-
-					$statement = $this->db->prepare( $q );
-					$statement->execute();
-
-				}
-
-			}
-
-		}
-
-		return $statement;
+		$this->db->insert( $this->table, $rows, $method );
 
 	}
 
@@ -462,37 +345,13 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		// if this is a related result or it is limited,
 		// create specific result for local rows and execute
 
-		if ( $this->parent_  || isset( $this->limitCount ) ) {
+		if ( $this->parent_ || isset( $this->limitCount ) ) {
 
 			return $this->primaryResult()->update( $data );
 
 		}
 
-		if ( empty( $data ) ) return;
-
-		$set = array();
-
-		foreach ( $data as $column => $value ) {
-
-			$set[] = $this->db->quoteIdentifier( $column ) . " = " . $this->db->quote( $value );
-
-		}
-
-		$table = $this->db->rewriteTable( $this->table );
-
-		$query = "UPDATE " . $this->db->quoteIdentifier( $table );
-		$query .= " SET " . implode( ", ", $set );
-
-		$query .= $this->db->getSuffix( $this->where ); // ignore limit/order
-
-		$params = $this->whereParams;
-
-		$this->db->onQuery( $query );
-
-		$statement = $this->db->prepare( $query );
-		$statement->execute( $params );
-
-		return $statement;
+		return $this->db->update( $this->table, $data, $this->where, $this->whereParams );
 
 	}
 
@@ -510,19 +369,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
-		$table = $this->db->rewriteTable( $this->table );
-		$query = "DELETE FROM " . $this->db->quoteIdentifier( $table );
-
-		$query .= $this->db->getSuffix( $this->where ); // ignore limit/order
-
-		$params = $this->whereParams;
-
-		$this->db->onQuery( $query );
-
-		$statement = $this->db->prepare( $query );
-		$statement->execute( $params );
-
-		return $statement;
+		return $this->db->delete( $this->table, $this->where, $this->whereParams );
 
 	}
 
@@ -698,34 +545,6 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	}
 
-	//
-
-	/**
-	 * Build the SELECT query defined by this result
-	 */
-	function getSelect() {
-
-		$query = "SELECT ";
-
-		if ( empty( $this->select ) ) {
-
-			$query .= "*";
-
-		} else {
-
-			$query .= implode( ", ", $this->select );
-
-		}
-
-		$table = $this->db->rewriteTable( $this->table );
-		$query .= " FROM " . $this->db->quoteIdentifier( $table );
-
-		$query .= $this->db->getSuffix( $this->where, $this->limitCount, $this->limitOffset, $this->orderBy );
-
-		return $query;
-
-	}
-
 	// Aggregate functions
 
 	/**
@@ -776,18 +595,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
-		$select = $this->select;
-		$this->select = array( $function );
-
-		$query = $this->getSelect();
-		$params = $this->whereParams;
-
-		$this->select = $select;
-
-		$this->db->onQuery( $query, $params );
-
-		$statement = $this->db->prepare( $query );
-		$statement->execute( $params );
+		$statement = $this->db->select( $this->table, $function, $this->where, $this->orderBy,
+			$this->limitCount, $this->limitOffset, $this->whereParams );
 
 		foreach ( $statement->fetch() as $return ) {
 
