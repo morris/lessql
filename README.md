@@ -5,7 +5,7 @@ It provides an intuitive API for efficient traversal of related database tables.
 
 http://lessql.net
 
-## Quick Tour
+## Usage
 
 ```php
 // SCHEMA
@@ -20,7 +20,7 @@ $db = new \LessQL\Database( $pdo );
 $db->setAlias( 'author', 'user' );
 
 foreach ( $db->post()->where( 'is_published', 1 )
-		->order( 'date_published', 'DESC' ) as $post ) {
+		->orderBy( 'date_published', 'DESC' ) as $post ) {
 
 	$author = $post->author()->fetch();
 
@@ -36,7 +36,7 @@ foreach ( $db->post()->where( 'is_published', 1 )
 ```
 
 Traversing related tables efficiently is a killer feature.
-The example above only needs *four* queries (one for each table) to retrieve the data.
+The example above only needs *four queries* (one for each table) to retrieve the data.
 
 <hr>
 
@@ -75,7 +75,7 @@ $row->save();
 
 Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
 
-For full documentation and examples, see the [homepage](http://lessql.net).
+__For full documentation and examples, see the [homepage](http://lessql.net).__
 
 ## Status
 
