@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.1
+
+- SEMVER
+
 ## v0.2-beta
 
 - Improved UPDATE/DELETE behavior

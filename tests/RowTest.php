@@ -275,4 +275,35 @@ class RowTest extends BaseTest {
 
 	}
 
+	function testReadmeExample() {
+
+		$db = self::$db;
+
+		$existingCategoryRow = $db->category( 21 );
+
+		$row = $db->createRow( 'post', array(
+			'title' => 'News',
+
+			'categorizationList' => array(
+				array(
+					'category' => array( 'title' => 'New Category' )
+				),
+				array( 'category' => $existingCategoryRow )
+			)
+		) );
+
+		// creates a post, two new categorizations, a new category
+		// and connects them all correctly
+		$row->save();
+
+		$this->assertEquals( array(
+			"SELECT * FROM `category` WHERE `id` = '21'",
+			"INSERT INTO `post` ( `title` ) VALUES ( 'News' )",
+			"INSERT INTO `category` ( `title` ) VALUES ( 'New Category' )",
+			"INSERT INTO `categorization` ( `post_id`, `category_id` ) VALUES ( '14', '21' )",
+			"INSERT INTO `categorization` ( `post_id`, `category_id` ) VALUES ( '14', '24' )",
+		), $this->queries );
+
+	}
+
 }
