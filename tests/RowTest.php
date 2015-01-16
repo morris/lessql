@@ -279,7 +279,10 @@ class RowTest extends BaseTest {
 
 		$db = self::$db;
 
-		$existingCategoryRow = $db->category( 21 );
+		$category = $db->category( 21 );
+
+		$this->assertNotNull( $category );
+		$this->assertEquals( 21, $category->id );
 
 		$row = $db->createRow( 'post', array(
 			'title' => 'News',
@@ -288,7 +291,7 @@ class RowTest extends BaseTest {
 				array(
 					'category' => array( 'title' => 'New Category' )
 				),
-				array( 'category' => $existingCategoryRow )
+				array( 'category' => $category )
 			)
 		) );
 
