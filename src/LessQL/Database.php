@@ -654,7 +654,7 @@ class Database {
 
 			} else {
 
-				return $column . " " . $bang . "= ".$this->quote( $value );
+				return $column . " " . $bang . "= " . $this->quote( $value );
 			}
 
 		} else if ( count( $value ) > 1 ) {

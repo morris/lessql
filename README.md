@@ -3,33 +3,21 @@
 LessQL is a thin but powerful data access layer for SQL databases using PDO (PHP Data Objects).
 It provides an intuitive API for efficient traversal of related database tables.
 
-Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
-
 http://lessql.net
-
-
-## Features
-
-- Traverse related tables with a minimal amount of queries
-- Save related structures with one method call
-- Convention over configuration
-- Work closely to your database: LessQL is not an ORM
-- Does not attempt to analyze the database, instead relies on conventions and minimal user hints
-- Clean, readable source code so forks and extensions are easy to develop
-- Fully tested with SQLite3, MySQL and PostgreSQL
-- MIT license
-
-For full documentation and examples, see the [homepage](http://lessql.net).
-
 
 ## Quick Tour
 
-Traversing related tables efficiently is a killer feature.
-The following example only needs four queries (one for each table) to retrieve the data:
-
 ```php
+// SCHEMA
+// user( id, name )
+// post( id, title, body, date_published, is_published, author_id )
+// categorization( category_id, post_id )
+// category( id, title )
+
 $pdo = new \PDO( 'sqlite:blog.sqlite3' );
 $db = new \LessQL\Database( $pdo );
+
+$db->setAlias( 'author', 'user' );
 
 foreach ( $db->post()->where( 'is_published', 1 )
 		->order( 'date_published', 'DESC' ) as $post ) {
@@ -47,30 +35,51 @@ foreach ( $db->post()->where( 'is_published', 1 )
 }
 ```
 
+Traversing related tables efficiently is a killer feature.
+The example above only needs *four* queries (one for each table) to retrieve the data.
+
+<hr>
+
 Saving is also a breeze. Row objects can be saved with all its associated structures in one call.
 For instance, you can create a `Row` from a plain array and save it:
 
 ```php
-$row = $db->createRow( 'user', array(
-	'name' => 'GitHub User',
-	'address' => array(
-		'location' => 'Berlin',
-		'street' => '...'
+$row = $db->createRow( 'post', array(
+	'title' => 'News',
+	'body' => 'Yay!',
+
+	'categorizationList' => array(
+		array(
+			'category' => array( 'title' => 'New Category'
+		),
+		array( 'category' => $existingCategoryRow )
 	)
 );
 
-$row->save(); // creates a user, an address and connects them via user.address_id
+// creates a post, two new categorizations, a new category
+// and connects them all correctly
+$row->save();
 ```
 
 
+## Features
+
+- Traverse related tables with a minimal amount of queries (automatic eager loading)
+- Save related structures with one method call
+- Convention over configuration
+- Work closely to your database: LessQL is not an ORM
+- Does not attempt to analyze the database, instead relies on conventions and minimal user hints
+- Clean, readable source code so forks and extensions are easy to develop
+- Fully tested with SQLite3, MySQL and PostgreSQL
+- MIT license
+
+Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
+
+For full documentation and examples, see the [homepage](http://lessql.net).
+
 ## Status
 
-LessQL has not been used in production yet, but it's fully tested.
-It is therefore currently in beta status.
-
-See `CHANGELOG.md` for details about the releases.
-
-If you want to contribute, please do! Feedback is welcome, too.
+See `CHANGELOG.md` for details about the releases. If you want to contribute, please do! Feedback is welcome, too.
 
 
 ## Installation
