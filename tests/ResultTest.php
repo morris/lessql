@@ -411,10 +411,12 @@ class ResultTest extends BaseTest {
 	}
 
 	function testCountResultIsAnInteger() {
+
 		$db = self::$db;
-		$expected = count($db->user()->fetchAll());
+		$expected = count( $db->user()->fetchAll() );
 		$result = $db->user()->count();
-		$this->assertSame($expected, $result);
+		$this->assertSame( $expected, $result );
+
 	}
 
 }

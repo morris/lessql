@@ -30,10 +30,10 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 		self::$pdo = new \PDO( 'sqlite:tests/shop.sqlite3' );
 
 		// mysql
-		//self::$pdo = new \PDO( 'mysql:host=localhost;dbname=test', 'root', 'onos' );
+		//self::$pdo = new \PDO( 'mysql:host=localhost;dbname=test', 'root', 'pass' );
 
 		// postgres
-		//self::$pdo = new \PDO( 'pgsql:host=localhost;port=5432;dbname=test;user=postgres;password=onos' );
+		//self::$pdo = new \PDO( 'pgsql:host=localhost;port=5432;dbname=test;user=postgres;password=pass' );
 
 		//
 

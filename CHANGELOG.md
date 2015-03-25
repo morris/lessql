@@ -1,5 +1,9 @@
 # Changelog
 
+## master
+
+- fix: count() returns integers now (palicao)
+
 ## v0.2.1
 
 - SEMVER
