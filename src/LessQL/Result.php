@@ -553,7 +553,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function count( $expr = "*" ) {
 
-		return $this->aggregate( "COUNT(" . $expr . ")" );
+		return (int) $this->aggregate( "COUNT(" . $expr . ")" );
 
 	}
 
