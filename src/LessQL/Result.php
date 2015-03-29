@@ -6,11 +6,11 @@ namespace LessQL;
  * Represents a filtered table result.
  *
  *  SELECT
- *        {* | select_expr, ...}
- *        FROM table
- *            [WHERE condition [AND condition [...]]]
- *            [ORDER BY {col_name | expr | position} [ASC | DESC], ...]
- *            [LIMIT count [OFFSET offset]]
+ * 		{* | select_expr, ...}
+ * 		FROM table
+ * 			[WHERE condition [AND condition [...]]]
+ * 			[ORDER BY {col_name | expr | position} [ASC | DESC], ...]
+ * 			[LIMIT count [OFFSET offset]]
  *
  * TODO Add more SQL dialect specifics like FETCH FIRST, TOP etc.
  *
@@ -166,7 +166,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 				$row = $this->db->createRow( $this->table, $row, $this );
 				$row->setClean();
 
-				$cached[ ] = $row;
+				$cached[] = $row;
 
 			}
 
@@ -189,7 +189,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 				if ( in_array( $row[ $this->key ], $keys ) ) {
 
-					$this->rows[ ] = $row;
+					$this->rows[] = $row;
 
 				}
 
@@ -254,9 +254,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		foreach ( $this->rows as $row ) {
 
-			if ( isset( $row->{$key} ) ) {
+			if ( isset( $row->{ $key } ) ) {
 
-				$keys[ ] = $row->{$key};
+				$keys[] = $row->{ $key };
 
 			}
 
@@ -280,9 +280,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		foreach ( $this->globalRows as $row ) {
 
-			if ( isset( $row->{$key} ) ) {
+			if ( isset( $row->{ $key } ) ) {
 
-				$keys[ ] = $row->{$key};
+				$keys[] = $row->{ $key };
 
 			}
 
@@ -446,11 +446,11 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 				foreach ( $primary as $column ) {
 
-					$and[ ] = $this->db->is( $column, $row[ $column ] );
+					$and[] = $this->db->is( $column, $row[ $column ] );
 
 				}
 
-				$or[ ] = "( " . implode( " AND ", $and ) . " )";
+				$or[] = "( " . implode( " AND ", $and ) . " )";
 
 			}
 
@@ -515,7 +515,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		// shortcut for basic "column is (in) value"
 		if ( preg_match( '/^[a-z0-9_.`"]+$/i', $condition ) ) {
 
-			$this->where[ ] = $this->db->is( $condition, $params );
+			$this->where[] = $this->db->is( $condition, $params );
 
 			return $this;
 
@@ -528,7 +528,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
-		$this->where[ ] = $condition;
+		$this->where[] = $condition;
 		$this->whereParams = array_merge( $this->whereParams, $params );
 
 		return $this;
@@ -559,7 +559,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
-		$this->where[ ] = $this->db->isNot( $column, $value );
+		$this->where[] = $this->db->isNot( $column, $value );
 
 		return $this;
 
@@ -576,7 +576,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$this->immutable();
 
-		$this->orderBy[ ] = $this->db->quoteIdentifier( $column ) . " " . $direction;
+		$this->orderBy[] = $this->db->quoteIdentifier( $column ) . " " . $direction;
 
 		return $this;
 
@@ -616,7 +616,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function paged( $pageSize, $page ) {
 
-		$this->limit( $pageSize, ( $page - 1 ) * $pageSize );
+		$this->limit( $pageSize, ($page - 1) * $pageSize );
 
 		return $this;
 
@@ -633,7 +633,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function count( $expr = "*" ) {
 
-		return (int)$this->aggregate( "COUNT(" . $expr . ")" );
+		return (int) $this->aggregate( "COUNT(" . $expr . ")" );
 
 	}
 

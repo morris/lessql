@@ -10,11 +10,11 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Constructor
 	 * Use $db->createRow() instead
-     *
-     * @param Database $db
-     * @param string $name
-     * @param array $properties
-     * @param Result|null $result
+	 *
+	 * @param Database $db
+	 * @param string $name
+	 * @param array $properties
+	 * @param Result|null $result
 	 */
 	function __construct( $db, $name, $properties = array(), $result = null ) {
 
@@ -28,9 +28,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get a property
-     *
-     * @param string $column
-     * @return mixed
+	 *
+	 * @param string $column
+	 * @return mixed
 	 */
 	function &__get( $column ) {
 
@@ -47,9 +47,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Set a property
-     *
-     * @param string $column
-     * @param mixed $value
+	 *
+	 * @param string $column
+	 * @param mixed $value
 	 */
 	function __set( $column, $value ) {
 
@@ -89,9 +89,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Check if property is not null
-     *
-     * @param string $column
-     * @return bool
+	 *
+	 * @param string $column
+	 * @return bool
 	 */
 	function __isset( $column ) {
 
@@ -102,9 +102,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Remove a property from this row
 	 * Property will be ignored when saved, different to setting to null
-     *
-     * @param string $column
-     * @return void
+	 *
+	 * @param string $column
+	 * @return void
 	 */
 	function __unset( $column ) {
 
@@ -116,10 +116,10 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Get referenced row(s) by name. Suffix "List" gets many rows using
 	 * a back reference.
-     *
-     * @param string $name
-     * @param array $args
-     * @return mixed
+	 *
+	 * @param string $name
+	 * @param array $args
+	 * @return mixed
 	 */
 	function __call( $name, $args ) {
 
@@ -132,11 +132,11 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Get referenced row(s) by name. Suffix "List" gets many rows using
 	 * a back reference.
-     *
-     * @param string $name
-     * @param string|array|null $where
-     * @param array $params
-     * @return mixed
+	 *
+	 * @param string $name
+	 * @param string|array|null $where
+	 * @param array $params
+	 * @return mixed
 	 */
 	function referenced( $name, $where = null, $params = array() ) {
 
@@ -155,8 +155,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the id
-     *
-     * @return string|array
+	 *
+	 * @return string|array
 	 */
 	function getId() {
 
@@ -184,8 +184,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the row data
-     *
-     * @return array
+	 *
+	 * @return array
 	 */
 	function getData() {
 
@@ -209,9 +209,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Set row data (extends the row)
-     *
-     * @param array $data
-     * @return $this
+	 *
+	 * @param array $data
+	 * @return $this
 	 */
 	function setData( $data ) {
 
@@ -227,8 +227,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the original id
-     *
-     * @return string|array
+	 *
+	 * @return string|array
 	 */
 	function getOriginalId() {
 
@@ -238,8 +238,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get modified data
-     *
-     * @return array
+	 *
+	 * @return array
 	 */
 	function getModified() {
 
@@ -264,10 +264,10 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Save this row
 	 * Also saves nested rows if $recursive is true (default)
-     *
-     * @param bool $recursive
-     * @return $this
-     * @throws \LogicException
+	 *
+	 * @param bool $recursive
+	 * @return $this
+	 * @throws \LogicException
 	 */
 	function save( $recursive = true ) {
 
@@ -371,9 +371,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	}
 
-    /**
-     * @param array $list
-     */
+	/**
+	 * @param array $list
+	 */
 	protected function listRows( &$list ) {
 
 		$list[] = $this;
@@ -401,8 +401,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Check references and set respective keys
 	 * Returns list of keys to unknown references
-     *
-     * @return array
+	 *
+	 * @return array
 	 */
 	function updateReferences() {
 
@@ -425,8 +425,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Check back references and set respective keys
-     *
-     * @return $this|null
+	 *
+	 * @return $this|null
 	 */
 	function updateBackReferences() {
 
@@ -457,8 +457,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Get missing columns, i.e. any that is null but required by the
 	 * schema
-     *
-     * @return array
+	 *
+	 * @return array
 	 */
 	function getMissing() {
 
@@ -481,10 +481,10 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Update this row directly
-     *
-     * @param $data
-     * @param bool $recursive
-     * @return $this
+	 *
+	 * @param $data
+	 * @param bool $recursive
+	 * @return $this
 	 */
 	function update( $data, $recursive = true ) {
 
@@ -494,8 +494,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Delete this row
-     *
-     * @return $this|Row
+	 *
+	 * @return $this|Row
 	 */
 	function delete() {
 
@@ -522,8 +522,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Does this row exist?
-     *
-     * @return bool
+	 *
+	 * @return bool
 	 */
 	function exists() {
 
@@ -533,9 +533,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Is this row clean, i.e. in sync with the database?
-     *
-     * @return bool
-     */
+	 *
+	 * @return bool
+	 */
 	function isClean() {
 
 		return empty( $this->_modified );
@@ -544,8 +544,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Set this row to "clean" state, i.e. in sync with database
-     *
-     * @return $this
+	 *
+	 * @return $this
 	 */
 	function setClean() {
 
@@ -566,8 +566,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Set this row to "dirty" state, i.e. out of sync with database
-     *
-     * @return $this
+	 *
+	 * @return $this
 	 */
 	function setDirty() {
 
@@ -579,8 +579,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get root result
-     *
-     * @return $this|Result
+	 *
+	 * @return $this|Result
 	 */
 	function getRoot() {
 
@@ -594,9 +594,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get value from cache
-     *
-     * @param $key
-     * @return mixed
+	 *
+	 * @param $key
+	 * @return mixed
 	 */
 	function getCache( $key ) {
 
@@ -606,9 +606,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Set cache value
-     *
-     * @param string $key
-     * @param mixed $value
+	 *
+	 * @param string $key
+	 * @param mixed $value
 	 */
 	function setCache( $key, $value ) {
 
@@ -618,9 +618,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get column, used by result if row is parent
-     *
-     * @param string $key
-     * @return array
+	 *
+	 * @param string $key
+	 * @return array
 	 */
 	function getLocalKeys( $key ) {
 
@@ -636,9 +636,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get global keys of parent result, or column if row is root
-     *
-     * @param string $key
-     * @return array
+	 *
+	 * @param string $key
+	 * @return array
 	 */
 	function getGlobalKeys( $key ) {
 
@@ -652,8 +652,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the database
-     *
-     * @return Database
+	 *
+	 * @return Database
 	 */
 	function getDatabase() {
 
@@ -663,8 +663,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the bound result, if any
-     *
-     * @return Result|null
+	 *
+	 * @return Result|null
 	 */
 	function getResult() {
 
@@ -674,8 +674,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the table
-     *
-     * @return string
+	 *
+	 * @return string
 	 */
 	function getTable() {
 
@@ -778,27 +778,27 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	//
 
-    /** @var Database */
+	/** @var Database */
 	protected $_db;
 
-    /** @var string */
+	/** @var string */
 	protected $_table;
 
-    /** @var Result|null */
+	/** @var Result|null */
 	protected $_result;
 
-    /** @var array */
+	/** @var array */
 	protected $_properties;
 
-    /** @var array */
+	/** @var array */
 	protected $_modified;
 
-    /** @var string|array  */
+	/** @var string|array */
 	protected $_originalId;
 
 	//
 
-    /** @var array */
+	/** @var array */
 	protected $_cache = array();
 
 }
