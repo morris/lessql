@@ -9,6 +9,8 @@ class Database {
 
 	/**
 	 * Constructor. Sets PDO to exception.
+	 *
+	 * @param \PDO $pdo
 	 */
 	function __construct( $pdo ) {
 
@@ -25,6 +27,10 @@ class Database {
 	 * Examples:
 	 * $db->user()->where( ... )
 	 * $db->user( 1 )
+	 *
+	 * @param string $name
+	 * @param array $args
+	 * @return mixed
 	 */
 	function __call( $name, $args ) {
 
@@ -37,6 +43,10 @@ class Database {
 	/**
 	 * Returns a result for table $name.
 	 * If $id is given, return the row with that id.
+	 *
+	 * @param $name
+	 * @param int|null $id
+	 * @return Result
 	 */
 	function table( $name, $id = null ) {
 
@@ -68,6 +78,11 @@ class Database {
 	/**
 	 * Create a row from given properties.
 	 * Optionally bind it to the given result.
+	 *
+	 * @param string $name
+	 * @param array $properties
+	 * @param Result|null $result
+	 * @return Row
 	 */
 	function createRow( $name, $properties = array(), $result = null ) {
 
@@ -78,6 +93,10 @@ class Database {
 	/**
 	 * Create a result bound to $parent using table or association $name.
 	 * $parent may be the database, a result, or a row
+	 *
+	 * @param Database|Result|Row $parent
+	 * @param string $name
+	 * @return Result
 	 */
 	function createResult( $parent, $name ) {
 
@@ -89,6 +108,9 @@ class Database {
 
 	/**
 	 * Prepare an SQL statement
+	 *
+	 * @param string $query
+	 * @return \PDOStatement
 	 */
 	function prepare( $query ) {
 
@@ -98,6 +120,9 @@ class Database {
 
 	/**
 	 * Return last inserted id
+	 *
+	 * @param string|null $sequence
+	 * @return string
 	 */
 	function lastInsertId( $sequence = null ) {
 
@@ -107,6 +132,8 @@ class Database {
 
 	/**
 	 * Begin a transaction
+	 *
+	 * @return bool
 	 */
 	function begin() {
 
@@ -116,6 +143,8 @@ class Database {
 
 	/**
 	 * Commit changes of transaction
+	 *
+	 * @return bool
 	 */
 	function commit() {
 
@@ -125,6 +154,8 @@ class Database {
 
 	/**
 	 * Rollback any changes during transaction
+	 *
+	 * @return bool
 	 */
 	function rollback() {
 
@@ -138,6 +169,9 @@ class Database {
 	 * Get primary key of a table, may be array for compound keys
 	 *
 	 * Convention is "id"
+	 *
+	 * @param $table
+	 * @return string|array
 	 */
 	function getPrimary( $table ) {
 
@@ -154,6 +188,10 @@ class Database {
 	/**
 	 * Set primary key of a table, may be array for compound keys.
 	 * Always set it for tables with compound primary keys.
+	 *
+	 * @param string $table
+	 * @param string|array $key
+	 * @return $this
 	 */
 	function setPrimary( $table, $key ) {
 
@@ -181,6 +219,10 @@ class Database {
 	 * "How would $table reference another table under $name?"
 	 *
 	 * Convention is "$name_id"
+	 *
+	 * @param string $table
+	 * @param string $name
+	 * @return string
 	 */
 	function getReference( $table, $name ) {
 
@@ -196,6 +238,11 @@ class Database {
 
 	/**
 	 * Set a reference key for a association on a table
+	 *
+	 * @param string $table
+	 * @param string $name
+	 * @param string $key
+	 * @return $this
 	 */
 	function setReference( $table, $name, $key ) {
 
@@ -211,6 +258,10 @@ class Database {
 	 * "How would $table be referenced by another table under $name?"
 	 *
 	 * Convention is "$table_id"
+	 *
+	 * @param string $table
+	 * @param string $name
+	 * @return string
 	 */
 	function getBackReference( $table, $name ) {
 
@@ -226,6 +277,11 @@ class Database {
 
 	/**
 	 * Set a back reference key for a association on a table
+	 *
+	 * @param string $table
+	 * @param string $name
+	 * @param string $key
+	 * @return $this
 	 */
 	function setBackReference( $table, $name, $key ) {
 
@@ -237,6 +293,9 @@ class Database {
 
 	/**
 	 * Get alias of a table
+	 *
+	 * @param string $alias
+	 * @return string
 	 */
 	function getAlias( $alias ) {
 
@@ -246,6 +305,10 @@ class Database {
 
 	/**
 	 * Set alias of a table
+	 *
+	 * @param string $alias
+	 * @param string $table
+	 * @return $this
 	 */
 	function setAlias( $alias, $table ) {
 
@@ -257,6 +320,10 @@ class Database {
 
 	/**
 	 * Is a column of a table required for saving? Default is no
+	 *
+	 * @param string $table
+	 * @param string $column
+	 * @return bool
 	 */
 	function isRequired( $table, $column ) {
 
@@ -266,6 +333,9 @@ class Database {
 
 	/**
 	 * Get a map of required columns of a table
+	 *
+	 * @param string $table
+	 * @return array
 	 */
 	function getRequired( $table ) {
 
@@ -277,6 +347,10 @@ class Database {
 	 * Set a column to be required for saving
 	 * Any primary key that is not auto-generated should be required
 	 * Compound primary keys are required by default
+	 *
+	 * @param string $table
+	 * @param string $column
+	 * @return $this
 	 */
 	function setRequired( $table, $column ) {
 
@@ -290,6 +364,9 @@ class Database {
 	 * Get primary sequence name of table (used in INSERT by Postgres)
 	 *
 	 * Conventions is "$tableRewritten_$primary_seq"
+	 *
+	 * @param string $table
+	 * @return null|string
 	 */
 	function getSequence( $table ) {
 
@@ -310,6 +387,9 @@ class Database {
 
 	/**
 	 * Set primary sequence name of table
+	 *
+	 * @param string $table
+	 * @param string $sequence
 	 */
 	function setSequence( $table, $sequence ) {
 
@@ -319,6 +399,9 @@ class Database {
 
 	/**
 	 * Get rewritten table name
+	 *
+	 * @param string $table
+	 * @return string
 	 */
 	function rewriteTable( $table ) {
 
@@ -335,6 +418,8 @@ class Database {
 	/**
 	 * Set table rewrite function
 	 * For example, it could add a prefix
+	 *
+	 * @param callable $rewrite
 	 */
 	function setRewrite( $rewrite ) {
 
@@ -346,6 +431,8 @@ class Database {
 
 	/**
 	 * Get identifier delimiter
+	 *
+	 * @return string
 	 */
 	function getIdentifierDelimiter() {
 
@@ -356,6 +443,9 @@ class Database {
 	/**
 	 * Sets delimiter used when quoting identifiers. Should be backtick
 	 * or double quote. Set to null to disable quoting.
+	 *
+	 * @param string|null $d
+	 * @return void
 	 */
 	function setIdentifierDelimiter( $d ) {
 
@@ -367,6 +457,15 @@ class Database {
 
 	/**
 	 * Select rows from a table
+	 *
+	 * @param string $table
+	 * @param mixed $exprs
+	 * @param array $where
+	 * @param array $orderBy
+	 * @param int|null $limitCount
+	 * @param int|null $limitOffset
+	 * @param array $params
+	 * @return \PDOStatement
 	 */
 	function select( $table, $exprs = null, $where = array(), $orderBy = array(),
 			$limitCount = null, $limitOffset = null, $params = array() ) {
@@ -415,6 +514,11 @@ class Database {
 	 *
 	 * default:    Execute one INSERT per row
 	 *             Supports Literals, supported everywhere, slow for many rows
+	 *
+	 * @param string $table
+	 * @param array $rows
+	 * @param string|null $method
+	 * @return \PDOStatement|null
 	 */
 	function insert( $table, $rows, $method = null ) {
 
@@ -530,6 +634,12 @@ class Database {
 	 * Execute update query and return statement
 	 *
 	 * UPDATE $table SET $data [WHERE $where]
+	 *
+	 * @param string $table
+	 * @param array $data
+	 * @param array $where
+	 * @param array $params
+	 * @return null|\PDOStatement
 	 */
 	function update( $table, $data, $where = array(), $params = array() ) {
 
@@ -564,6 +674,11 @@ class Database {
 	 * Execute delete query and return statement
 	 *
 	 * DELETE FROM $table [WHERE $where]
+	 *
+	 * @param string $table
+	 * @param array $where
+	 * @param array $params
+	 * @return \PDOStatement
 	 */
 	function delete( $table, $where = array(), $params = array() ) {
 
@@ -587,6 +702,12 @@ class Database {
 
 	/**
 	 * Return WHERE/LIMIT/ORDER suffix for queries
+	 *
+	 * @param array $where
+	 * @param array $orderBy
+	 * @param int|null $limitCount
+	 * @param int|null $limitOffset
+	 * @return string
 	 */
 	function getSuffix( $where, $orderBy = array(), $limitCount = null, $limitOffset = null ) {
 
@@ -624,6 +745,11 @@ class Database {
 	 * Build an SQL condition expressing that "$column is $value",
 	 * or "$column is in $value" if $value is an array. Handles null
 	 * and literals like new Literal( "NOW()" ) correctly.
+	 *
+	 * @param string $column
+	 * @param string|array $value
+	 * @param bool $not
+	 * @return string
 	 */
 	function is( $column, $value, $not = false ) {
 
@@ -704,6 +830,10 @@ class Database {
 	 * Build an SQL condition expressing that "$column is not $value"
 	 * or "$column is not in $value" if $value is an array. Handles null
 	 * and literals like new Literal( "NOW()" ) correctly.
+	 *
+	 * @param string $column
+	 * @param string|array $value
+	 * @return string
 	 */
 	function isNot( $column, $value ) {
 
@@ -713,6 +843,9 @@ class Database {
 
 	/**
 	 * Quote a value for SQL
+	 *
+	 * @param mixed $value
+	 * @return string
 	 */
 	function quote( $value ) {
 
@@ -760,6 +893,9 @@ class Database {
 
 	/**
 	 * Format a value for SQL, e.g. DateTime objects
+	 *
+	 * @param mixed $value
+	 * @return string
 	 */
 	function format( $value ) {
 
@@ -775,6 +911,9 @@ class Database {
 
 	/**
 	 * Quote identifier
+	 *
+	 * @param string $identifier
+	 * @return string
 	 */
 	function quoteIdentifier( $identifier ) {
 
@@ -795,6 +934,9 @@ class Database {
 
 	/**
 	 * Create a SQL Literal
+	 *
+	 * @param string $value
+	 * @return Literal
 	 */
 	function literal( $value ) {
 
@@ -806,6 +948,9 @@ class Database {
 
 	/**
 	 * Calls the query callback, if any
+	 *
+	 * @param string $query
+	 * @param array $params
 	 */
 	function onQuery( $query, $params = array() ) {
 
@@ -819,6 +964,8 @@ class Database {
 
 	/**
 	 * Set the query callback
+	 *
+	 * @param callable $callback
 	 */
 	function setQueryCallback( $callback ) {
 
@@ -828,26 +975,35 @@ class Database {
 
 	//
 
+	/** @var string */
 	protected $identifierDelimiter = "`";
 
 	//
 
+	/** @var array */
 	protected $primary = array();
 
+	/** @var array */
 	protected $references = array();
 
+	/** @var array */
 	protected $backReferences = array();
 
+	/** @var array */
 	protected $aliases = array();
 
+	/** @var array */
 	protected $required = array();
 
+	/** @var array */
 	protected $sequences = array();
 
+	/** @var callable */
 	protected $rewrite;
 
 	//
 
+	/** @var callable */
 	protected $queryCallback;
 
 }

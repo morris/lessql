@@ -20,6 +20,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Constructor
 	 * Use $db->createResult( $parent, $name ) instead
+	 *
+	 * @param Database|Result|Row $parent
+	 * @param string $name
 	 */
 	function __construct( $parent, $name ) {
 
@@ -65,6 +68,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Get referenced row(s) by name. Suffix "List" gets many rows
 	 * Arguments are passed to where( $where, $params )
+	 *
+	 * @param string $name
+	 * @param array $args
+	 * @return mixed
 	 */
 	function __call( $name, $args ) {
 
@@ -76,6 +83,11 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get referenced row(s) by name. Suffix "List" gets many rows
+	 *
+	 * @param string $name
+	 * @param string|array|null $where
+	 * @param array $params
+	 * @return Result|Row
 	 */
 	function referenced( $name, $where = null, $params = array() ) {
 
@@ -94,6 +106,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Set reference key for this result
+	 *
+	 * @param string $key
+	 * @return $this
 	 */
 	function via( $key ) {
 
@@ -115,6 +130,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Execute the select query defined by this result.
+	 *
+	 * @return $this
 	 */
 	function execute() {
 
@@ -186,6 +203,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the database
+	 *
+	 * @return Database
 	 */
 	function getDatabase() {
 
@@ -195,6 +214,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the root result
+	 *
+	 * @return Result
 	 */
 	function getRoot() {
 
@@ -210,6 +231,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get the table of this result
+	 *
+	 * @return string
 	 */
 	function getTable() {
 
@@ -219,6 +242,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get $key values of this result
+	 *
+	 * @param string $key
+	 * @return array
 	 */
 	function getLocalKeys( $key ) {
 
@@ -242,6 +268,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get global $key values of the result, i.e., disregarding its parent
+	 *
+	 * @param string $key
+	 * @return array
 	 */
 	function getGlobalKeys( $key ) {
 
@@ -265,6 +294,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Get value from cache
+	 *
+	 * @param string $key
+	 * @return null|mixed
 	 */
 	function getCache( $key ) {
 
@@ -274,6 +306,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Set cache value
+	 *
+	 * @param string $key
+	 * @param mixed $value
 	 */
 	function setCache( $key, $value ) {
 
@@ -283,6 +318,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Is this result a single association, i.e. not a list of rows?
+	 *
+	 * @return bool
 	 */
 	function isSingle() {
 
@@ -292,6 +329,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Fetch the next row in this result
+	 *
+	 * @return Row
 	 */
 	function fetch() {
 
@@ -305,6 +344,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Fetch all rows in this result
+	 *
+	 * @return Row[]
 	 */
 	function fetchAll() {
 
@@ -316,6 +357,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Return number of rows in this result
+	 *
+	 * @return int
 	 */
 	function rowCount() {
 
@@ -330,6 +373,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Insert one ore more rows into the table of this result
 	 * See Database::insert for information on $method
+	 *
+	 * @param array $rows
+	 * @param string|null $method
+	 * @return null|\PDOStatement
 	 */
 	function insert( $rows, $method = null ) {
 
@@ -339,6 +386,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Update the rows matched by this result, setting $data
+	 *
+	 * @param array $data
+	 * @return null|\PDOStatement
 	 */
 	function update( $data ) {
 
@@ -357,6 +407,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Delete all rows matched by this result
+	 *
+	 * @return \PDOStatement
 	 */
 	function delete() {
 
@@ -375,6 +427,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Return a new root result which selects all rows in this result by primary key
+	 *
+	 * @return $this
 	 */
 	function primaryResult() {
 
@@ -412,6 +466,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Add an expression to the SELECT part
+	 *
+	 * @param string $expr
+	 * @return $this
 	 */
 	function select( $expr ) {
 
@@ -433,6 +490,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Add a WHERE condition (multiple are combined with AND)
+	 *
+	 * @param string|array $condition
+	 * @param string|array $params
+	 * @return $this
 	 */
 	function where( $condition, $params = array() ) {
 
@@ -476,6 +537,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Add a "$column is not $value" condition to WHERE (multiple are combined with AND)
+	 *
+	 * @param string|array $column
+	 * @param string|array $value
+	 * @return $this
 	 */
 	function whereNot( $column, $value = null ) {
 
@@ -502,6 +567,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Add an ORDER BY column and direction
+	 *
+	 * @param string $column
+	 * @param string $direction
+	 * @return $this
 	 */
 	function orderBy( $column, $direction = "ASC" ) {
 
@@ -515,6 +584,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Set a result limit and optionally an offset
+	 *
+	 * @param int $count
+	 * @param int|null $offset
+	 * @return $this
 	 */
 	function limit( $count, $offset = null ) {
 
@@ -536,6 +609,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Set a paged limit
 	 * Pages start at 1
+	 *
+	 * @param int $pageSize
+	 * @param int $page
+	 * @return $this
 	 */
 	function paged( $pageSize, $page ) {
 
@@ -550,6 +627,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Count number of rows
 	 * Implements Countable
+	 *
+	 * @param string $expr
+	 * @return int
 	 */
 	function count( $expr = "*" ) {
 
@@ -559,6 +639,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Return minimum value from a expression
+	 *
+	 * @param string $expr
+	 * @return string
 	 */
 	function min( $expr ) {
 
@@ -568,6 +651,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Return maximum value from a expression
+	 *
+	 * @param string $expr
+	 * @return string
 	 */
 	function max( $expr ) {
 
@@ -577,6 +663,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Return sum of values in a expression
+	 *
+	 * @param string $expr
+	 * @return string
 	 */
 	function sum( $expr ) {
 
@@ -586,6 +675,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Execute aggregate function and return value
+	 *
+	 * @param string $function
+	 * @return mixed
 	 */
 	function aggregate( $function ) {
 
@@ -610,6 +702,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * IteratorAggregate
+	 *
 	 * @return \ArrayIterator
 	 */
 	function getIterator() {
@@ -623,6 +716,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Get a JSON string defining the SELECT information of this Result
 	 * Used as identification in caches
+	 *
+	 * @return string
 	 */
 	function getDefinition() {
 
@@ -644,6 +739,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Throw exception if this Result has been already executed
+	 *
+	 * @throws \LogicException
 	 */
 	protected function immutable() {
 
@@ -659,6 +756,8 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/**
 	 * Implements JsonSerialize
+	 *
+	 * @return Row[]
 	 */
 	function jsonSerialize() {
 
@@ -668,43 +767,58 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	// General members
 
+	/** @var Database */
 	protected $db;
 
+	/** @var array */
 	protected $rows;
 
+	/** @var array */
 	protected $globalRows;
 
 
 	// Select information
 
+	/** @var string */
 	public $table;
 
+	/** @var string */
 	public $select;
 
+	/** @var array */
 	public $where = array();
 
+	/** @var array */
 	public $whereParams = array();
 
+	/** @var array */
 	public $orderBy = array();
 
+	/** @var int */
 	public $limitCount;
 
+	/** @var int */
 	public $limitOffset;
 
 
 	// Members for results representing associations
 
+	/** @var Database|Result|Row */
 	protected $parent_;
 
+	/** @var bool */
 	protected $single;
 
+	/** @var string */
 	protected $key;
 
+	/** @var array|string */
 	protected $parentKey;
 
 
 	// Root members
 
+	/** @var array */
 	protected $_cache;
 
 }

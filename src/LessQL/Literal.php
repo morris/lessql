@@ -9,6 +9,8 @@ class Literal {
 
 	/**
 	 * Constructor
+	 *
+	 * @param string
 	 */
 	function __construct( $value ) {
 
@@ -18,6 +20,8 @@ class Literal {
 
 	/**
 	 * Return the literal value
+	 *
+	 * @return string
 	 */
 	function __toString() {
 
@@ -25,6 +29,7 @@ class Literal {
 
 	}
 
+	/** @var string */
 	public $value;
 
 }
