@@ -1,7 +1,9 @@
 # Changelog
 
-## master
+## v0.2.2
 
+- minor fixes
+- Docblock (palicao)
 - fix: count() returns integers now (palicao)
 
 ## v0.2.1
