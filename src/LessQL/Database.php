@@ -30,7 +30,7 @@ class Database {
 	 *
 	 * @param string $name
 	 * @param array $args
-	 * @return mixed
+	 * @return Result|Row|null
 	 */
 	function __call( $name, $args ) {
 
@@ -46,7 +46,7 @@ class Database {
 	 *
 	 * @param $name
 	 * @param int|null $id
-	 * @return Result
+	 * @return Result|Row|null
 	 */
 	function table( $name, $id = null ) {
 
@@ -170,7 +170,7 @@ class Database {
 	 *
 	 * Convention is "id"
 	 *
-	 * @param $table
+	 * @param string $table
 	 * @return string|array
 	 */
 	function getPrimary( $table ) {
@@ -186,8 +186,9 @@ class Database {
 	}
 
 	/**
-	 * Set primary key of a table, may be array for compound keys.
-	 * Always set it for tables with compound primary keys.
+	 * Set primary key of a table.
+	 * Compound keys may be passed as an array.
+	 * Always set compound primary keys explicitly with this method.
 	 *
 	 * @param string $table
 	 * @param string|array $key
@@ -214,7 +215,7 @@ class Database {
 	}
 
 	/**
-	 * Get a reference key for a association on a table
+	 * Get a reference key for an association on a table
 	 *
 	 * "How would $table reference another table under $name?"
 	 *
@@ -237,7 +238,7 @@ class Database {
 	}
 
 	/**
-	 * Set a reference key for a association on a table
+	 * Set a reference key for an association on a table
 	 *
 	 * @param string $table
 	 * @param string $name
@@ -253,7 +254,7 @@ class Database {
 	}
 
 	/**
-	 * Get a back reference key for a association on a table
+	 * Get a back reference key for an association on a table
 	 *
 	 * "How would $table be referenced by another table under $name?"
 	 *
@@ -276,7 +277,7 @@ class Database {
 	}
 
 	/**
-	 * Set a back reference key for a association on a table
+	 * Set a back reference key for an association on a table
 	 *
 	 * @param string $table
 	 * @param string $name
@@ -377,9 +378,10 @@ class Database {
 		}
 
 		$primary = $this->getPrimary( $table );
-		$table = $this->rewriteTable( $table );
 
 		if ( is_array( $primary ) ) return null;
+
+		$table = $this->rewriteTable( $table );
 
 		return $table . '_' . $primary . '_seq';
 
@@ -390,10 +392,13 @@ class Database {
 	 *
 	 * @param string $table
 	 * @param string $sequence
+	 * @return $this
 	 */
 	function setSequence( $table, $sequence ) {
 
 		$this->sequences[ $table ] = $sequence;
+
+		return $this;
 
 	}
 
@@ -420,10 +425,13 @@ class Database {
 	 * For example, it could add a prefix
 	 *
 	 * @param callable $rewrite
+	 * @return $this
 	 */
 	function setRewrite( $rewrite ) {
 
 		$this->rewrite = $rewrite;
+
+		return $this;
 
 	}
 
@@ -441,15 +449,18 @@ class Database {
 	}
 
 	/**
-	 * Sets delimiter used when quoting identifiers. Should be backtick
-	 * or double quote. Set to null to disable quoting.
+	 * Sets delimiter used when quoting identifiers.
+	 * Should be backtick or double quote.
+	 * Set to null to disable quoting.
 	 *
 	 * @param string|null $d
-	 * @return void
+	 * @return $this
 	 */
 	function setIdentifierDelimiter( $d ) {
 
 		$this->identifierDelimiter = $d;
+
+		return $this;
 
 	}
 
@@ -966,10 +977,13 @@ class Database {
 	 * Set the query callback
 	 *
 	 * @param callable $callback
+	 * @return $this
 	 */
 	function setQueryCallback( $callback ) {
 
 		$this->queryCallback = $callback;
+
+		return $this;
 
 	}
 

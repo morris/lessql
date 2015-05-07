@@ -154,7 +154,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Get the id
+	 * Get the row's id
 	 *
 	 * @return string|array
 	 */
@@ -183,7 +183,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Get the row data
+	 * Get row data
 	 *
 	 * @return array
 	 */
@@ -292,18 +292,15 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 					}
 
-					$db
-						->table( $table )
+					$db->table( $table )
 						->where( $idCondition )
 						->update( $this->getModified() );
-
 
 					$this->setClean();
 
 				} else {
 
-					$db
-						->table( $table )
+					$db->table( $table )
 						->insert( $this->getData() );
 
 					if ( !is_array( $primary ) && !isset( $this[ $primary ] ) ) {
@@ -407,12 +404,13 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	function updateReferences() {
 
 		$unknown = array();
+		$db = $this->getDatabase();
 
 		foreach ( $this->_properties as $column => $value ) {
 
 			if ( $value instanceof Row ) {
 
-				$key = $this->getDatabase()->getReference( $this->getTable(), $column );
+				$key = $db->getReference( $this->getTable(), $column );
 				$this[ $key ] = $value->getId();
 
 			}
@@ -426,19 +424,21 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/**
 	 * Check back references and set respective keys
 	 *
-	 * @return $this|null
+	 * @return $this
 	 */
 	function updateBackReferences() {
 
 		$id = $this->getId();
 
-		if ( is_array( $id ) ) return;
+		if ( is_array( $id ) ) return $this;
+
+		$db = $this->getDatabase();
 
 		foreach ( $this->_properties as $column => $value ) {
 
 			if ( is_array( $value ) ) {
 
-				$key = $this->getDatabase()->getBackReference( $this->getTable(), $column );
+				$key = $db->getBackReference( $this->getTable(), $column );
 
 				foreach ( $value as $row ) {
 
@@ -455,8 +455,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Get missing columns, i.e. any that is null but required by the
-	 * schema
+	 * Get missing columns, i.e. any that is null but required by the schema
 	 *
 	 * @return array
 	 */
@@ -499,7 +498,10 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	 */
 	function delete() {
 
-		$result = $this->getDatabase()->table( $this->getTable() );
+		$db = $this->getDatabase();
+		$table = $this->getTable();
+
+		$result = $db->table( $table );
 
 		$idCondition = $this->getOriginalId();
 
@@ -507,7 +509,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 		if ( !is_array( $idCondition ) ) {
 
-			$primary = $this->getDatabase()->getPrimary( $this->getTable() );
+			$primary = $db->getPrimary( $table );
 			$idCondition = array( $primary => $idCondition );
 
 		}
@@ -578,9 +580,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Get root result
+	 * Get root result or row
 	 *
-	 * @return $this|Result
+	 * @return Result|Row
 	 */
 	function getRoot() {
 
@@ -793,7 +795,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	/** @var array */
 	protected $_modified;
 
-	/** @var string|array */
+	/** @var null|string|array */
 	protected $_originalId;
 
 	//

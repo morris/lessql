@@ -309,10 +309,13 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 *
 	 * @param string $key
 	 * @param mixed $value
+	 * @return $this;
 	 */
 	function setCache( $key, $value ) {
 
 		$this->_cache[ $key ] = $value;
+
+		return $this;
 
 	}
 
@@ -380,7 +383,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function insert( $rows, $method = null ) {
 
-		$this->db->insert( $this->table, $rows, $method );
+		return $this->db->insert( $this->table, $rows, $method );
 
 	}
 
@@ -392,7 +395,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function update( $data ) {
 
-		// if this is a related result or it is limited,
+		// if this is an association result or it is limited,
 		// create specific result for local rows and execute
 
 		if ( $this->parent_ || isset( $this->limitCount ) ) {
@@ -412,7 +415,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function delete() {
 
-		// if this is a related result or it is limited,
+		// if this is an association result or it is limited,
 		// create specific result for local rows and execute
 
 		if ( $this->parent_ || isset( $this->limitCount ) ) {
@@ -539,7 +542,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 * Add a "$column is not $value" condition to WHERE (multiple are combined with AND)
 	 *
 	 * @param string|array $column
-	 * @param string|array $value
+	 * @param string|array|null $value
 	 * @return $this
 	 */
 	function whereNot( $column, $value = null ) {
@@ -638,7 +641,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Return minimum value from a expression
+	 * Return minimum value from an expression
 	 *
 	 * @param string $expr
 	 * @return string
@@ -650,7 +653,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Return maximum value from a expression
+	 * Return maximum value from an expression
 	 *
 	 * @param string $expr
 	 * @return string
@@ -662,7 +665,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Return sum of values in a expression
+	 * Return sum of values in an expression
 	 *
 	 * @param string $expr
 	 * @return string
@@ -770,10 +773,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/** @var Database */
 	protected $db;
 
-	/** @var array */
+	/** @var Row[] */
 	protected $rows;
 
-	/** @var array */
+	/** @var Row[] */
 	protected $globalRows;
 
 
