@@ -1,5 +1,7 @@
 # LessQL
 
+[![Build Status](https://travis-ci.org/morris/lessql.svg?branch=master)](https://travis-ci.org/morris/lessql)
+
 LessQL is a thin but powerful data access layer for SQL databases using PDO (PHP Data Objects).
 It provides an intuitive API for efficient traversal of related database tables.
 
