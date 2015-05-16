@@ -534,10 +534,144 @@ class Database {
 	function insert( $table, $rows, $method = null ) {
 
 		if ( empty( $rows ) ) return;
-
 		if ( !isset( $rows[ 0 ] ) ) $rows = array( $rows );
 
-		// get ALL columns
+		if ( $method === 'prepared' ) {
+
+			$statement = $this->insertPrepared( $table, $rows );
+
+		} else if ( $method === 'batch' ) {
+
+			$statement = $this->insertBatch( $table, $rows );
+
+		} else {
+
+			$statement = $this->insertDefault( $table, $rows );
+
+		}
+
+		return $statement;
+
+	}
+
+	/**
+	 * Insert rows using a prepared query
+	 *
+	 * @param string $table
+	 * @param array $rows
+	 * @return \PDOStatement|null
+	 */
+	protected function insertPrepared( $table, $rows ) {
+
+		$columns = $this->getColumns( $rows );
+		if ( empty( $columns ) ) return;
+
+		$query = $this->insertHead( $table, $columns );
+		$query .= "( ?" . str_repeat( ", ?", count( $columns ) - 1 ) . " )";
+
+		$statement = $this->prepare( $query );
+
+		foreach ( $rows as $row ) {
+
+			$values = array();
+
+			foreach ( $columns as $column ) {
+
+				$value = (string) $this->format( @$row[ $column ] );
+				$values[] = $value;
+
+			}
+
+			$this->onQuery( $query, $values );
+
+			$statement->execute( $values );
+
+		}
+
+		return $statement;
+
+	}
+
+	/**
+	 * Insert rows using a single batch query
+	 *
+	 * @param string $table
+	 * @param array $rows
+	 * @return \PDOStatement|null
+	 */
+	protected function insertBatch( $table, $rows ) {
+
+		$columns = $this->getColumns( $rows );
+		if ( empty( $columns ) ) return;
+
+		$query = $this->insertHead( $table, $columns );
+		$lists = $this->valueLists( $rows, $columns );
+		$query .= implode( ", ", $lists );
+
+		$this->onQuery( $query );
+
+		$statement = $this->prepare( $query );
+		$statement->execute();
+
+		return $statement;
+
+	}
+
+	/**
+	 * Insert rows using one query per row
+	 *
+	 * @param string $table
+	 * @param array $rows
+	 * @return \PDOStatement|null
+	 */
+	protected function insertDefault( $table, $rows ) {
+
+		$columns = $this->getColumns( $rows );
+		if ( empty( $columns ) ) return;
+
+		$query = $this->insertHead( $table, $columns );
+		$lists = $this->valueLists( $rows, $columns );
+
+		foreach ( $lists as $list ) {
+
+			$singleQuery = $query . $list;
+
+			$this->onQuery( $singleQuery );
+
+			$statement = $this->prepare( $singleQuery );
+			$statement->execute();
+
+		}
+
+		return $statement; // last statement is returned
+
+	}
+
+	/**
+	 * Build head of INSERT query (without values)
+	 *
+	 * @param string $table
+	 * @param array $columns
+	 * @return string
+	 */
+	protected function insertHead( $table, $columns ) {
+
+		$quotedColumns = array_map( array( $this, 'quoteIdentifier' ), $columns );
+		$table = $this->rewriteTable( $table );
+		$query = "INSERT INTO " . $this->quoteIdentifier( $table );
+		$query .= " ( " . implode( ", ", $quotedColumns ) . " ) VALUES ";
+
+		return $query;
+
+	}
+
+	/**
+	 * Get list of all columns used in the given rows
+	 *
+	 * @param array $rows
+	 * @return array
+	 */
+	protected function getColumns( $rows ) {
 
 		$columns = array();
 
@@ -551,93 +685,36 @@ class Database {
 
 		}
 
-		$columns = array_keys( $columns );
+		return array_keys( $columns );
 
-		if ( empty( $columns ) ) return;
+	}
 
-		// query head
+	/**
+	 * Build lists of quoted values for INSERT
+	 *
+	 * @param array $rows
+	 * @param array $columns
+	 * @return array
+	 */
+	protected function valueLists( $rows, $columns ) {
 
-		$quotedColumns = array_map( array( $this, 'quoteIdentifier' ), $columns );
-		$table = $this->rewriteTable( $table );
-		$query = "INSERT INTO " . $this->quoteIdentifier( $table );
-		$query .= " ( " . implode( ", ", $quotedColumns ) . " ) VALUES ";
+		$lists = array();
 
-		if ( $method === 'prepared' ) {
+		foreach ( $rows as $row ) {
 
-			// prepare query and execute once per row
+			$values = array();
 
-			$query .= "( ?" . str_repeat( ", ?", count( $columns ) - 1 ) . " )";
+			foreach ( $columns as $column ) {
 
-			$statement = $this->prepare( $query );
-
-			foreach ( $rows as $row ) {
-
-				$values = array();
-
-				foreach ( $columns as $column ) {
-
-					$value = (string) $this->format( @$row[ $column ] );
-					$values[] = $value;
-
-				}
-
-				$this->onQuery( $query, $values );
-
-				$statement->execute( $values );
+				$values[] = $this->quote( @$row[ $column ] );
 
 			}
 
-		} else {
-
-			// build value lists without params
-
-			$lists = array();
-
-			foreach ( $rows as $row ) {
-
-				$values = array();
-
-				foreach ( $columns as $column ) {
-
-					$values[] = $this->quote( @$row[ $column ] );
-
-				}
-
-				$lists[] = "( " . implode( ", ", $values ) . " )";
-
-			}
-
-			if ( $method === 'batch' ) {
-
-				// batch all rows into one query
-
-				$query .= implode( ", ", $lists );
-
-				$this->onQuery( $query );
-
-				$statement = $this->prepare( $query );
-				$statement->execute();
-
-			} else {
-
-				// execute one insert per row
-
-				foreach ( $lists as $list ) {
-
-					$q = $query . $list;
-
-					$this->onQuery( $q );
-
-					$statement = $this->prepare( $q );
-					$statement->execute();
-
-				}
-
-			}
+			$lists[] = "( " . implode( ", ", $values ) . " )";
 
 		}
 
-		return $statement;
+		return $lists;
 
 	}
 
@@ -928,14 +1005,14 @@ class Database {
 	 */
 	function quoteIdentifier( $identifier ) {
 
-		$d = $this->identifierDelimiter;
+		$delimiter = $this->identifierDelimiter;
 
-		if ( empty( $d ) ) return $identifier;
+		if ( empty( $delimiter ) ) return $identifier;
 
 		$identifier = explode( ".", $identifier );
 
 		$identifier = array_map(
-			function( $part ) use ( $d ) { return $d . str_replace( $d, $d.$d, $part ) . $d; },
+			function( $part ) use ( $delimiter ) { return $delimiter . str_replace( $delimiter, $delimiter.$delimiter, $part ) . $delimiter; },
 			$identifier
 		);
 
