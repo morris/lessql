@@ -137,37 +137,34 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 	static function reset() {
 
-		$q = array( self::$pdo, 'query' );
-		$e = array( self::$db, 'quoteIdentifier' );
-
 		self::$pdo->beginTransaction();
 
 		// sequences
 
 		if ( self::driver() === 'sqlite' ) {
 
-			$q( "DELETE FROM sqlite_sequence WHERE name='user'" );
-			$q( "DELETE FROM sqlite_sequence WHERE name='post'" );
-			$q( "DELETE FROM sqlite_sequence WHERE name='category'" );
-			$q( "DELETE FROM sqlite_sequence WHERE name='dummy'" );
+			self::query( "DELETE FROM sqlite_sequence WHERE name='user'" );
+			self::query( "DELETE FROM sqlite_sequence WHERE name='post'" );
+			self::query( "DELETE FROM sqlite_sequence WHERE name='category'" );
+			self::query( "DELETE FROM sqlite_sequence WHERE name='dummy'" );
 
 		}
 
 		if ( self::driver() === 'mysql' ) {
 
-			$q( "ALTER TABLE user AUTO_INCREMENT = 1" );
-			$q( "ALTER TABLE post AUTO_INCREMENT = 1" );
-			$q( "ALTER TABLE category AUTO_INCREMENT = 1" );
-			$q( "ALTER TABLE dummy AUTO_INCREMENT = 1" );
+			self::query( "ALTER TABLE user AUTO_INCREMENT = 1" );
+			self::query( "ALTER TABLE post AUTO_INCREMENT = 1" );
+			self::query( "ALTER TABLE category AUTO_INCREMENT = 1" );
+			self::query( "ALTER TABLE dummy AUTO_INCREMENT = 1" );
 
 		}
 
 		if ( self::driver() === 'pgsql' ) {
 
-			$q( "SELECT setval('user_id_seq', 3)" );
-			$q( "SELECT setval('post_id_seq', 13)" );
-			$q( "SELECT setval('category_id_seq', 23)" );
-			$q( "SELECT setval('dummy_id_seq', 1, false)" );
+			self::query( "SELECT setval('user_id_seq', 3)" );
+			self::query( "SELECT setval('post_id_seq', 13)" );
+			self::query( "SELECT setval('category_id_seq', 23)" );
+			self::query( "SELECT setval('dummy_id_seq', 1, false)" );
 
 		}
 
@@ -175,40 +172,40 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 		// users
 
-		$q( "DELETE FROM " . $e( "user" ) . "" );
+		self::query( "DELETE FROM " . self::quoteIdentifier( "user" ) . "" );
 
-		$q( "INSERT INTO " . $e( "user" ) . " (id, name) VALUES (1, 'Writer')" );
-		$q( "INSERT INTO " . $e( "user" ) . " (id, name) VALUES (2, 'Editor')" );
-		$q( "INSERT INTO " . $e( "user" ) . " (id, name) VALUES (3, 'Chief Editor')" );
+		self::query( "INSERT INTO " . self::quoteIdentifier( "user" ) . " (id, name) VALUES (1, 'Writer')" );
+		self::query( "INSERT INTO " . self::quoteIdentifier( "user" ) . " (id, name) VALUES (2, 'Editor')" );
+		self::query( "INSERT INTO " . self::quoteIdentifier( "user" ) . " (id, name) VALUES (3, 'Chief Editor')" );
 
 		// posts
 
-		$q( "DELETE FROM post" );
+		self::query( "DELETE FROM post" );
 
-		$q( "INSERT INTO post (id, title, date_published, author_id, editor_id) VALUES (11, 'Championship won', '2014-09-18', 1, NULL)" );
-		$q( "INSERT INTO post (id, title, date_published, author_id, editor_id) VALUES (12, 'Foo released', '2014-09-15', 1, 2)" );
-		$q( "INSERT INTO post (id, title, date_published, author_id, editor_id) VALUES (13, 'Bar released', '2014-09-21', 2, 3)" );
+		self::query( "INSERT INTO post (id, title, date_published, author_id, editor_id) VALUES (11, 'Championship won', '2014-09-18', 1, NULL)" );
+		self::query( "INSERT INTO post (id, title, date_published, author_id, editor_id) VALUES (12, 'Foo released', '2014-09-15', 1, 2)" );
+		self::query( "INSERT INTO post (id, title, date_published, author_id, editor_id) VALUES (13, 'Bar released', '2014-09-21', 2, 3)" );
 
 		// categories
 
-		$q( "DELETE FROM category" );
+		self::query( "DELETE FROM category" );
 
-		$q( "INSERT INTO category (id, title) VALUES (21, 'Tech')" );
-		$q( "INSERT INTO category (id, title) VALUES (22, 'Sports')" );
-		$q( "INSERT INTO category (id, title) VALUES (23, 'Basketball')" );
+		self::query( "INSERT INTO category (id, title) VALUES (21, 'Tech')" );
+		self::query( "INSERT INTO category (id, title) VALUES (22, 'Sports')" );
+		self::query( "INSERT INTO category (id, title) VALUES (23, 'Basketball')" );
 
 		// categorization
 
-		$q( "DELETE FROM categorization" );
+		self::query( "DELETE FROM categorization" );
 
-		$q( "INSERT INTO categorization (category_id, post_id) VALUES (22, 11)" );
-		$q( "INSERT INTO categorization (category_id, post_id) VALUES (23, 11)" );
-		$q( "INSERT INTO categorization (category_id, post_id) VALUES (21, 12)" );
-		$q( "INSERT INTO categorization (category_id, post_id) VALUES (21, 13)" );
+		self::query( "INSERT INTO categorization (category_id, post_id) VALUES (22, 11)" );
+		self::query( "INSERT INTO categorization (category_id, post_id) VALUES (23, 11)" );
+		self::query( "INSERT INTO categorization (category_id, post_id) VALUES (21, 12)" );
+		self::query( "INSERT INTO categorization (category_id, post_id) VALUES (21, 13)" );
 
 		// dummy
 
-		$q( "DELETE FROM dummy" );
+		self::query( "DELETE FROM dummy" );
 
 		self::$pdo->commit();
 
@@ -225,6 +222,18 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 			// ignore
 
 		}
+
+	}
+
+	static function query( $q ) {
+
+		return self::$pdo->query( $q );
+
+	}
+
+	static function quoteIdentifier( $id ) {
+
+		return self::$db->quoteIdentifier( $id );
 
 	}
 
