@@ -66,9 +66,6 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 	static function schema() {
 
-		$q = array( self::$pdo, 'query' );
-		$e = array( self::$db, 'quoteIdentifier' );
-
 		self::$pdo->beginTransaction();
 
 		//
@@ -92,16 +89,16 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 
 		}
 
-		$q( "DROP TABLE IF EXISTS " . $e( "user" ) );
+		self::query( "DROP TABLE IF EXISTS " . self::quoteIdentifier( "user" ) );
 
-		$q( "CREATE TABLE " . $e( "user" ) . " (
+		self::query( "CREATE TABLE " . self::quoteIdentifier( "user" ) . " (
 			id $p,
 			name varchar(30) NOT NULL
 		)" );
 
-		$q( "DROP TABLE IF EXISTS post" );
+		self::query( "DROP TABLE IF EXISTS post" );
 
-		$q( "CREATE TABLE post (
+		self::query( "CREATE TABLE post (
 			id $p,
 			author_id INTEGER DEFAULT NULL,
 			editor_id INTEGER DEFAULT NULL,
@@ -110,23 +107,23 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 			title VARCHAR(30) NOT NULL
 		)" );
 
-		$q( "DROP TABLE IF EXISTS category" );
+		self::query( "DROP TABLE IF EXISTS category" );
 
-		$q( "CREATE TABLE category (
+		self::query( "CREATE TABLE category (
 			id $p,
 			title varchar(30) NOT NULL
 		)" );
 
-		$q( "DROP TABLE IF EXISTS categorization" );
+		self::query( "DROP TABLE IF EXISTS categorization" );
 
-		$q( "CREATE TABLE categorization (
+		self::query( "CREATE TABLE categorization (
 			category_id INTEGER NOT NULL,
 			post_id INTEGER NOT NULL
 		)" );
 
-		$q( "DROP TABLE IF EXISTS dummy" );
+		self::query( "DROP TABLE IF EXISTS dummy" );
 
-		$q( "CREATE TABLE dummy (
+		self::query( "CREATE TABLE dummy (
 			id $p,
 			test INTEGER
 		)" );
