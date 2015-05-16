@@ -538,19 +538,17 @@ class Database {
 
 		if ( $method === 'prepared' ) {
 
-			$statement = $this->insertPrepared( $table, $rows );
+			return $this->insertPrepared( $table, $rows );
 
 		} else if ( $method === 'batch' ) {
 
-			$statement = $this->insertBatch( $table, $rows );
+			return $this->insertBatch( $table, $rows );
 
 		} else {
 
-			$statement = $this->insertDefault( $table, $rows );
+			return $this->insertDefault( $table, $rows );
 
 		}
-
-		return $statement;
 
 	}
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## master
+
+- travis CI
+- code climate coverage
+- refactored insert
+
 ## v0.2.2
 
 - minor fixes
