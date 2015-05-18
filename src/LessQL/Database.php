@@ -3,12 +3,12 @@
 namespace LessQL;
 
 /**
- * Base object wrapping a PDO instance
+ * Database object wrapping a PDO instance
  */
 class Database {
 
 	/**
-	 * Constructor. Sets PDO to exception.
+	 * Constructor. Sets PDO to exception mode.
 	 *
 	 * @param \PDO $pdo
 	 */

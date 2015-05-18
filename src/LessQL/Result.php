@@ -13,7 +13,6 @@ namespace LessQL;
  * 			[LIMIT count [OFFSET offset]]
  *
  * TODO Add more SQL dialect specifics like FETCH FIRST, TOP etc.
- *
  */
 class Result implements \IteratorAggregate, \JsonSerializable {
 
@@ -779,7 +778,6 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/** @var Row[] */
 	protected $globalRows;
 
-
 	// Select information
 
 	/** @var string */
@@ -803,7 +801,6 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/** @var int */
 	public $limitOffset;
 
-
 	// Members for results representing associations
 
 	/** @var Database|Result|Row */
@@ -817,7 +814,6 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	/** @var array|string */
 	protected $parentKey;
-
 
 	// Root members
 

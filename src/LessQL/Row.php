@@ -355,7 +355,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 			if ( !$solvable ) {
 
 				throw new \LogicException(
-					"Cannot recursively save structure (" . $table . ") - add required values or allow NULL"
+					'Cannot recursively save structure (' . $table . ') - add required values or allow NULL'
 				);
 
 			}

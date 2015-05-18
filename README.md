@@ -13,19 +13,17 @@ http://lessql.net
 ```php
 // SCHEMA
 // user( id, name )
-// post( id, title, body, date_published, is_published, author_id )
+// post( id, title, body, date_published, is_published, user_id )
 // categorization( category_id, post_id )
 // category( id, title )
 
 $pdo = new \PDO( 'sqlite:blog.sqlite3' );
 $db = new \LessQL\Database( $pdo );
 
-$db->setAlias( 'author', 'user' );
-
 foreach ( $db->post()->where( 'is_published', 1 )
 		->orderBy( 'date_published', 'DESC' ) as $post ) {
 
-	$author = $post->author()->fetch();
+	$author = $post->user()->fetch();
 
 	foreach ( $post->categorizationList()->category() as $category ) {
 
