@@ -747,6 +747,11 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	}
 
+	/**
+	 * Get parent result or row, if any
+	 *
+	 * @return Result|Row
+	 */
 	function getParent() {
 
 		return $this->parent_;
