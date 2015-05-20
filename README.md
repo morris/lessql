@@ -5,7 +5,7 @@
 
 LessQL is a lightweight and powerful alternative to Object-Relational Mapping for PHP.
 
-Docs and examples at __[LessQL.net](http://lessql.net)__
+__[LessQL.net](http://lessql.net)__
 
 ## Usage
 
