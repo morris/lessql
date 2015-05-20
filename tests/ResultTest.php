@@ -341,6 +341,7 @@ class ResultTest extends BaseTest {
 
 			$author = $post->author()->fetch();
 			$editor = $post->editor()->fetch();
+			$editor2 = $post->editor( 'id > ?', 0 )->fetch();
 
 			if ( $author ) $this->assertTrue( $author->exists() );
 			if ( $editor ) $this->assertTrue( $editor->exists() );
@@ -366,6 +367,7 @@ class ResultTest extends BaseTest {
 			"SELECT * FROM `post` ORDER BY `date_published` DESC",
 			"SELECT * FROM `user` WHERE `id` IN ( '2', '1' )",
 			"SELECT * FROM `user` WHERE `id` IN ( '3', '2' )",
+			"SELECT * FROM `user` WHERE id > ? AND `id` IN ( '3', '2' )",
 			"SELECT * FROM `categorization` WHERE `post_id` IN ( '13', '11', '12' )",
 			"SELECT * FROM `category` WHERE `id` IN ( '22', '23', '21' )"
 		), $this->queries );

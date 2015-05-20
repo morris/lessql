@@ -145,7 +145,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 		if ( $where !== null ) {
 
 			if ( !is_array( $params ) ) $params = array_slice( func_get_args(), 2 );
-			$result->where( $where, $params );
+			$result = $result->where( $where, $params );
 
 		}
 
