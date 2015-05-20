@@ -104,26 +104,28 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Set reference key for this result
+	 * Create result with new reference key
 	 *
 	 * @param string $key
-	 * @return $this
+	 * @return Result
 	 */
 	function via( $key ) {
 
 		if ( !$this->parent_ ) throw new \LogicException( 'Cannot set reference key on basic Result' );
 
-		if ( $this->single ) {
+		$clone = clone $this;
 
-			$this->parentKey = $key;
+		if ( $clone->single ) {
+
+			$clone->parentKey = $key;
 
 		} else {
 
-			$this->key = $key;
+			$clone->key = $key;
 
 		}
 
-		return $this;
+		return $clone;
 
 	}
 
@@ -139,7 +141,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		if ( $this->parent_ ) {
 
 			// restrict to parent
-			$this->where( $this->key, $this->parent_->getGlobalKeys( $this->parentKey ) );
+			$this->where[] = $this->db->is( $this->key, $this->parent_->getGlobalKeys( $this->parentKey ) );
 
 		}
 
@@ -428,9 +430,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
-	 * Return a new root result which selects all rows in this result by primary key
+	 * Return a new basic result which selects all rows in this result by primary key
 	 *
-	 * @return $this
+	 * @return Result
 	 */
 	function primaryResult() {
 
@@ -467,26 +469,26 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	// Select
 
 	/**
-	 * Add an expression to the SELECT part
+	 * Return a new result with an additional expression to the SELECT part
 	 *
 	 * @param string $expr
-	 * @return $this
+	 * @return Result
 	 */
 	function select( $expr ) {
 
-		$this->immutable();
+		$clone = clone $this;
 
-		if ( $this->select === null ) {
+		if ( $clone->select === null ) {
 
-			$this->select = func_get_args();
+			$clone->select = func_get_args();
 
 		} else {
 
-			$this->select = array_merge( $this->select, func_get_args() );
+			$clone->select = array_merge( $clone->select, func_get_args() );
 
 		}
 
-		return $this;
+		return $clone;
 
 	}
 
@@ -495,31 +497,31 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 *
 	 * @param string|array $condition
 	 * @param string|array $params
-	 * @return $this
+	 * @return Result
 	 */
 	function where( $condition, $params = array() ) {
 
-		$this->immutable();
+		$clone = clone $this;
 
 		// conditions in key-value array
 		if ( is_array( $condition ) ) {
 
 			foreach ( $condition as $c => $params ) {
 
-				$this->where( $c, $params );
+				$clone = $clone->where( $c, $params );
 
 			}
 
-			return $this;
+			return $clone;
 
 		}
 
 		// shortcut for basic "column is (in) value"
 		if ( preg_match( '/^[a-z0-9_.`"]+$/i', $condition ) ) {
 
-			$this->where[] = $this->db->is( $condition, $params );
+			$clone->where[] = $clone->db->is( $condition, $params );
 
-			return $this;
+			return $clone;
 
 		}
 
@@ -530,10 +532,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
-		$this->where[] = $condition;
-		$this->whereParams = array_merge( $this->whereParams, $params );
+		$clone->where[] = $condition;
+		$clone->whereParams = array_merge( $clone->whereParams, $params );
 
-		return $this;
+		return $clone;
 
 	}
 
@@ -576,11 +578,11 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function orderBy( $column, $direction = "ASC" ) {
 
-		$this->immutable();
+		$clone = clone $this;
 
-		$this->orderBy[] = $this->db->quoteIdentifier( $column ) . " " . $direction;
+		$clone->orderBy[] = $this->db->quoteIdentifier( $column ) . " " . $direction;
 
-		return $this;
+		return $clone;
 
 	}
 
@@ -593,18 +595,18 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function limit( $count, $offset = null ) {
 
-		$this->immutable();
-
 		if ( $this->parent_ ) {
 
 			throw new \LogicException( 'Cannot limit referenced result' );
 
 		}
 
-		$this->limitCount = $count;
-		$this->limitOffset = $offset;
+		$clone = clone $this;
 
-		return $this;
+		$clone->limitCount = $count;
+		$clone->limitOffset = $offset;
+
+		return $clone;
 
 	}
 
@@ -618,9 +620,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function paged( $pageSize, $page ) {
 
-		$this->limit( $pageSize, ($page - 1) * $pageSize );
-
-		return $this;
+		return $this->limit( $pageSize, ($page - 1) * $pageSize );
 
 	}
 
@@ -740,17 +740,12 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	//
 
 	/**
-	 * Throw exception if this Result has been already executed
 	 *
-	 * @throws \LogicException
 	 */
-	protected function immutable() {
+	function __clone() {
 
-		if ( isset( $this->rows ) ) {
-
-			throw new \LogicException( 'Cannot modify Result after execution' );
-
-		}
+		$this->rows = null;
+		$this->globalRows = null;
 
 	}
 
