@@ -478,35 +478,45 @@ class Database {
 	 * @param array $params
 	 * @return \PDOStatement
 	 */
-	function select( $table, $exprs = null, $where = array(), $orderBy = array(),
-			$limitCount = null, $limitOffset = null, $params = array() ) {
+	function select( $table, $options = array() ) {
+
+		$options = array_merge( array(
+
+			'expr' => null,
+			'where' => array(),
+			'orderBy' => array(),
+			'limitCount' => null,
+			'limitOffset' => null,
+			'params' => array()
+
+		), $options );
 
 		$query = "SELECT ";
 
-		if ( empty( $exprs ) ) {
+		if ( empty( $options[ 'expr' ] ) ) {
 
 			$query .= "*";
 
-		} else if ( is_array( $exprs ) ) {
+		} else if ( is_array( $options[ 'expr' ] ) ) {
 
-			$query .= implode( ", ", $exprs );
+			$query .= implode( ", ", $options[ 'expr' ] );
 
 		} else {
 
-			$query .= $exprs;
+			$query .= $options[ 'expr' ];
 
 		}
 
 		$table = $this->rewriteTable( $table );
 		$query .= " FROM " . $this->quoteIdentifier( $table );
 
-		$query .= $this->getSuffix( $where, $orderBy, $limitCount, $limitOffset );
+		$query .= $this->getSuffix( $options[ 'where' ], $options[ 'orderBy' ], $options[ 'limitCount' ], $options[ 'limitOffset' ] );
 
-		$this->onQuery( $query, $params );
+		$this->onQuery( $query, $options[ 'params' ] );
 
 		$statement = $this->prepare( $query );
 		$statement->setFetchMode( \PDO::FETCH_ASSOC );
-		$statement->execute( $params );
+		$statement->execute( $options[ 'params' ] );
 
 		return $statement;
 

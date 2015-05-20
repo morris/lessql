@@ -153,10 +153,14 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		if ( !$cached ) {
 
 			// fetch all rows
-			$statement = $this->db->select(
-				$this->table, $this->select, $this->where, $this->orderBy,
-				$this->limitCount, $this->limitOffset, $this->whereParams
-			);
+			$statement = $this->db->select( $this->table, array(
+				'expr' => $this->select,
+				'where' => $this->where,
+				'orderBy' => $this->orderBy,
+				'limitCount' => $this->limitCount,
+				'limitOffset' => $this->limitOffset,
+				'params' => $this->whereParams
+			) );
 
 			$rows = $statement->fetchAll();
 			$cached = array();
@@ -689,8 +693,14 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		}
 
-		$statement = $this->db->select( $this->table, $function, $this->where, $this->orderBy,
-			$this->limitCount, $this->limitOffset, $this->whereParams );
+		$statement = $this->db->select( $this->table, array(
+			'expr' => $function,
+			'where' => $this->where,
+			'orderBy' => $this->orderBy,
+			'limitCount' => $this->limitCount,
+			'limitOffset' => $this->limitOffset,
+			'params' => $this->whereParams
+		) );
 
 		foreach ( $statement->fetch() as $return ) {
 
