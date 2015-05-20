@@ -3,26 +3,33 @@
 [![Build Status](https://travis-ci.org/morris/lessql.svg?branch=master)](https://travis-ci.org/morris/lessql)
 [![Test Coverage](https://codeclimate.com/github/morris/lessql/badges/coverage.svg)](https://codeclimate.com/github/morris/lessql/coverage)
 
-LessQL is a thin but powerful data access layer for SQL databases using PDO (PHP Data Objects).
-It provides an intuitive API for efficient traversal of related database tables.
+LessQL is a lightweight and powerful alternative to Object-Relational Mapping for PHP.
 
-http://lessql.net
+Docs and examples at __[LessQL.net](http://lessql.net)__
 
 ## Usage
 
 ```php
 // SCHEMA
-// user( id, name )
-// post( id, title, body, date_published, is_published, user_id )
-// categorization( category_id, post_id )
-// category( id, title )
+// user: id, name
+// post: id, title, body, date_published, is_published, user_id
+// categorization: category_id, post_id
+// category: id, title
 
-$pdo = new \PDO( 'sqlite:blog.sqlite3' );
-$db = new \LessQL\Database( $pdo );
+// Connect to database
+$pdo = new PDO( 'sqlite:blog.sqlite3' );
+$db = new LessQL\Database( $pdo );
 
-foreach ( $db->post()->where( 'is_published', 1 )
-		->orderBy( 'date_published', 'DESC' ) as $post ) {
+// Find posts, their authors and categories
+$posts = $db->post()
+	->where( 'is_published', 1 )
+	->orderBy( 'date_published', 'DESC' );
 
+foreach ( $posts as $post ) {
+
+	// Efficient deep finding:
+	// Eager loading of references happens automatically.
+	// This example only needs four queries, one for each table.
 	$author = $post->user()->fetch();
 
 	foreach ( $post->categorizationList()->category() as $category ) {
@@ -31,20 +38,9 @@ foreach ( $db->post()->where( 'is_published', 1 )
 
 	}
 
-	// ...
-
 }
-```
 
-Traversing related tables efficiently is a killer feature.
-The example above only needs *four queries* (one for each table) to retrieve the data.
-
-<hr>
-
-Saving is also a breeze. Row objects can be saved with all its associated structures in one call.
-For instance, you can create a `Row` from a plain array and save it:
-
-```php
+// Saving
 $row = $db->createRow( 'post', array(
 	'title' => 'News',
 	'body' => 'Yay!',
@@ -57,20 +53,20 @@ $row = $db->createRow( 'post', array(
 	)
 );
 
-// creates a post, two new categorizations, a new category
-// and connects them all correctly
+// Creates a post, and a new category, two new categorizations
+// and connects them all correctly.
 $row->save();
 ```
 
-
 ## Features
 
-- Traverse related tables with a minimal amount of queries (automatic eager loading)
-- Save related structures with one method call
+- Efficient deep finding through intelligent eager loading
+- Constant number of queries, no N+1 problems
+- Save complex, nested structures with one method call
 - Convention over configuration
 - Work closely to your database: LessQL is not an ORM
-- Does not attempt to analyze the database, instead relies on conventions and minimal user hints
-- Clean, readable source code so forks and extensions are easy to develop
+- No glue code required
+- Clean, readable source code
 - Fully tested with SQLite3, MySQL and PostgreSQL
 - MIT license
 
@@ -78,16 +74,13 @@ Inspired mainly by NotORM, it was written from scratch to provide a clean API an
 
 __For full documentation and examples, see the [homepage](http://lessql.net).__
 
-## Status
-
-See `CHANGELOG.md` for details about the releases. If you want to contribute, please do! Feedback is welcome, too.
-
 
 ## Installation
 
-LessQL requires at least PHP 5.3 and PDO.
-The composer package name is `morris/lessql`.
-You can also download or fork the repository.
+Install LessQL via composer, the package name is `morris/lessql`.
+You can also download an archive from the repository.
+
+LessQL requires PHP >= 5.3.0 and PDO.
 
 
 ## Tests
