@@ -29,6 +29,29 @@ class DatabaseTest extends BaseTest {
 
 	}
 
+	function testCreateRow() {
+
+		$db = self::$db;
+
+		$row = $db->createRow( 'dummy', array( 'foo' => 'bar' ), 'test' );
+
+		$this->assertEquals( $row->getTable(), 'dummy' );
+		$this->assertEquals( $row->foo, 'bar' );
+		$this->assertEquals( $row->getResult(), 'test' );
+
+	}
+
+	function testCreateResult() {
+
+		$db = self::$db;
+
+		$row = $db->createResult( $db, 'dummy' );
+
+		$this->assertEquals( $row->getTable(), 'dummy' );
+		$this->assertEquals( $row->getParent(), null );
+
+	}
+
 	function testPDO() {
 
 		$db = self::$db;

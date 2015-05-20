@@ -747,6 +747,12 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 	}
 
+	function getParent() {
+
+		return $this->parent_;
+
+	}
+
 	//
 
 	/**
@@ -786,25 +792,25 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	// Select information
 
 	/** @var string */
-	public $table;
+	protected $table;
 
 	/** @var string */
-	public $select;
+	protected $select;
 
 	/** @var array */
-	public $where = array();
+	protected $where = array();
 
 	/** @var array */
-	public $whereParams = array();
+	protected $whereParams = array();
 
 	/** @var array */
-	public $orderBy = array();
+	protected $orderBy = array();
 
 	/** @var int */
-	public $limitCount;
+	protected $limitCount;
 
 	/** @var int */
-	public $limitOffset;
+	protected $limitOffset;
 
 	// Members for results representing associations
 
