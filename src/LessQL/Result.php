@@ -86,7 +86,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 * @param string $name
 	 * @param string|array|null $where
 	 * @param array $params
-	 * @return Result|Row
+	 * @return Result
 	 */
 	function referenced( $name, $where = null, $params = array() ) {
 
