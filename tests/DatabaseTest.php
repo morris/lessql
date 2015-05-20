@@ -232,9 +232,6 @@ class DatabaseTest extends BaseTest {
 
 		$db = self::$db;
 
-		$d = $db->getIdentifierDelimiter();
-		$db->setIdentifierDelimiter( '`' );
-
 		$a = array(
 			$db->quote( null ),
 			$db->quote( false ),
@@ -248,8 +245,6 @@ class DatabaseTest extends BaseTest {
 			$db->quote( '' ),
 			$db->quote( $db->literal( 'BAR' ) ),
 		);
-
-		$db->setIdentifierDelimiter( $d );
 
 		$ex = array(
 			"NULL",
