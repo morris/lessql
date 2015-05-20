@@ -359,6 +359,8 @@ class ResultTest extends BaseTest {
 
 			}
 
+			$post->categorizationList()->category( 'id > ?', 0 )->fetchAll();
+
 			$posts[] = $t;
 
 		}
@@ -369,7 +371,8 @@ class ResultTest extends BaseTest {
 			"SELECT * FROM `user` WHERE `id` IN ( '3', '2' )",
 			"SELECT * FROM `user` WHERE id > ? AND `id` IN ( '3', '2' )",
 			"SELECT * FROM `categorization` WHERE `post_id` IN ( '13', '11', '12' )",
-			"SELECT * FROM `category` WHERE `id` IN ( '22', '23', '21' )"
+			"SELECT * FROM `category` WHERE `id` IN ( '22', '23', '21' )",
+			"SELECT * FROM `category` WHERE id > ? AND `id` IN ( '22', '23', '21' )"
 		), $this->queries );
 
 		$this->assertEquals( array(
