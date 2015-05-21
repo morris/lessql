@@ -285,6 +285,20 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testSelect() {
+
+		$db = self::$db;
+
+		$db->dummy()->select( 'test' )->fetch();
+		$db->dummy()->select( 'test', 'id' )->fetch();
+
+		$this->assertEquals( array(
+			"SELECT test FROM `dummy`",
+			"SELECT test, id FROM `dummy`",
+		), $this->queries );
+
+	}
+
 	function testKeys() {
 
 		$db = self::$db;
@@ -418,9 +432,20 @@ class ResultTest extends BaseTest {
 	function testCountResultIsAnInteger() {
 
 		$db = self::$db;
+
 		$expected = count( $db->user()->fetchAll() );
 		$result = $db->user()->count();
 		$this->assertSame( $expected, $result );
+
+	}
+
+	function testJsonSerialize() {
+
+		$db = self::$db;
+
+		$json = json_encode( $db->user()->select( 'id' )->jsonSerialize() );
+		$expected = '[{"id":"1"},{"id":"2"},{"id":"3"}]';
+		$this->assertEquals( $expected, $json );
 
 	}
 
