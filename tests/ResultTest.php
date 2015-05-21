@@ -441,9 +441,12 @@ class ResultTest extends BaseTest {
 
 	function testJsonSerialize() {
 
+		// only supported for PHP >= 5.4.0
+		if ( version_compare( phpversion(), '5.4.0', '<' ) ) return;
+
 		$db = self::$db;
 
-		$json = json_encode( $db->user()->select( 'id' )->jsonSerialize() );
+		$json = json_encode( $db->user()->select( 'id' ) );
 		$expected = '[{"id":"1"},{"id":"2"},{"id":"3"}]';
 		$this->assertEquals( $expected, $json );
 
