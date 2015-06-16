@@ -790,10 +790,10 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 	protected $_result;
 
 	/** @var array */
-	protected $_properties;
+	protected $_properties = array();
 
 	/** @var array */
-	protected $_modified;
+	protected $_modified = array();
 
 	/** @var null|string|array */
 	protected $_originalId;
