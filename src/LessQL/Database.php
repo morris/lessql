@@ -1097,12 +1097,12 @@ class Database {
 	/** @var array */
 	protected $sequences = array();
 
-	/** @var callable */
+	/** @var null|callable */
 	protected $rewrite;
 
 	//
 
-	/** @var callable */
+	/** @var null|callable */
 	protected $queryCallback;
 
 }

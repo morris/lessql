@@ -788,10 +788,10 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/** @var Database */
 	protected $db;
 
-	/** @var Row[] */
+	/** @var null|Row[] */
 	protected $rows;
 
-	/** @var Row[] */
+	/** @var null|Row[] */
 	protected $globalRows;
 
 	// Select information
@@ -799,7 +799,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/** @var string */
 	protected $table;
 
-	/** @var string */
+	/** @var null|string */
 	protected $select;
 
 	/** @var array */
@@ -811,29 +811,29 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	/** @var array */
 	protected $orderBy = array();
 
-	/** @var int */
+	/** @var null|int */
 	protected $limitCount;
 
-	/** @var int */
+	/** @var null|int */
 	protected $limitOffset;
 
 	// Members for results representing associations
 
-	/** @var Database|Result|Row */
+	/** @var null|Result|Row */
 	protected $parent_;
 
-	/** @var bool */
+	/** @var null|bool */
 	protected $single;
 
-	/** @var string */
+	/** @var null|string */
 	protected $key;
 
-	/** @var array|string */
+	/** @var null|string */
 	protected $parentKey;
 
 	// Root members
 
 	/** @var array */
-	protected $_cache;
+	protected $_cache = array();
 
 }
