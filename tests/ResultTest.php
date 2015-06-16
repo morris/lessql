@@ -167,6 +167,23 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testUpdatePrimary() {
+
+		$db = self::$db;
+
+		$db->begin();
+
+		$db->category()->where( 'id > 21' )->limit( 2 )->update( array( 'title' => 'Test Category' ) );
+
+		$db->commit();
+
+		$this->assertEquals( array(
+			"SELECT * FROM `category` WHERE id > 21 LIMIT 2",
+			"UPDATE `category` SET `title` = 'Test Category' WHERE `id` IN ( '22', '23' )",
+		), $this->queries );
+
+	}
+
 	function testDelete() {
 
 		$db = self::$db;
@@ -207,9 +224,20 @@ class ResultTest extends BaseTest {
 
 	}
 
-	function testDeleteComplex() {
+	function testDeletePrimary() {
 
 		$db = self::$db;
+
+		$db->begin();
+
+		$db->category()->where( 'id > 21' )->limit( 2 )->delete();
+
+		$db->commit();
+
+		$this->assertEquals( array(
+			"SELECT * FROM `category` WHERE id > 21 LIMIT 2",
+			"DELETE FROM `category` WHERE `id` IN ( '22', '23' )",
+		), $this->queries );
 
 	}
 
