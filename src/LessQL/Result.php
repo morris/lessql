@@ -255,6 +255,12 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$this->execute();
 
+		if ( count( $this->rows ) > 0 && !$this->rows[ 0 ]->hasProperty( $key ) ) {
+
+			throw new \LogicException( '"' . $key . '" does not exist in "' . $this->table . '" result' );
+
+		}
+
 		$keys = array();
 
 		foreach ( $this->rows as $row ) {
@@ -280,6 +286,12 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	function getGlobalKeys( $key ) {
 
 		$this->execute();
+
+		if ( count( $this->globalRows ) > 0 && !$this->globalRows[ 0 ]->hasProperty( $key ) ) {
+
+			throw new \LogicException( '"' . $key . '" does not exist in "' . $this->table . '" result' );
+
+		}
 
 		$keys = array();
 

@@ -2,8 +2,9 @@
 
 ## master
 
-- Fixed uninitialized Row properties, with test
-- added hasProperty method to Row
+- Fixed uninitialized Row properties
+- Added hasProperty method to Row
+- Bad single references now throw
 
 ## v0.3.0
 

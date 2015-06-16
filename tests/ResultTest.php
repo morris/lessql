@@ -452,4 +452,16 @@ class ResultTest extends BaseTest {
 
 	}
 
+	/**
+	 * @expectedException \LogicException
+	 * @expectedExceptionMessage "post_id" does not exist in "user" result
+	 */
+	function testBadReference() {
+
+		$db = self::$db;
+
+		$db->user()->post()->fetchAll();
+
+	}
+
 }
