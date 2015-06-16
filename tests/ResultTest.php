@@ -241,6 +241,23 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testDeleteComposite() {
+
+		$db = self::$db;
+
+		$db->begin();
+
+		$db->categorization()->where( 'category_id > 21' )->limit( 2 )->delete();
+
+		$db->commit();
+
+		$this->assertEquals( array(
+			"SELECT * FROM `categorization` WHERE category_id > 21 LIMIT 2",
+			"DELETE FROM `categorization` WHERE ( `category_id` = '22' AND `post_id` = '11' ) OR ( `category_id` = '23' AND `post_id` = '11' )",
+		), $this->queries );
+
+	}
+
 	function testWhere() {
 
 		$db = self::$db;
