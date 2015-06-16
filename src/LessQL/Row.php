@@ -685,6 +685,18 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable {
 
 	}
 
+	/**
+	 * Returns true if the given property exists, even if its value is null
+	 *
+	 * @param string $name Property name to check
+	 * @return bool
+	 */
+	function hasProperty( $name ) {
+
+		return array_key_exists( $name, $this->_properties );
+
+	}
+
 	// ArrayAccess
 
 	/**

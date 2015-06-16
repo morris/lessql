@@ -323,4 +323,19 @@ class RowTest extends BaseTest {
 
 	}
 
+	function testHasProperty() {
+
+		$db = self::$db;
+
+		$row = $db->createRow( 'dummy' );
+
+		$row[ 'foo' ] = 'bar';
+		$row[ 'bar' ] = null;
+
+		$this->assertTrue( $row->hasProperty( 'foo' ) );
+		$this->assertTrue( $row->hasProperty( 'bar' ) );
+		$this->assertFalse( $row->hasProperty( 'baz' ) );
+
+	}
+
 }

@@ -3,6 +3,7 @@
 ## master
 
 - Fixed uninitialized Row properties, with test
+- added hasProperty method to Row
 
 ## v0.3.0
 
