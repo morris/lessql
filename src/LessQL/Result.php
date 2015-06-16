@@ -255,25 +255,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$this->execute();
 
-		if ( count( $this->rows ) > 0 && !$this->rows[ 0 ]->hasProperty( $key ) ) {
-
-			throw new \LogicException( '"' . $key . '" does not exist in "' . $this->table . '" result' );
-
-		}
-
-		$keys = array();
-
-		foreach ( $this->rows as $row ) {
-
-			if ( isset( $row->{ $key } ) ) {
-
-				$keys[] = $row->{ $key };
-
-			}
-
-		}
-
-		return array_values( array_unique( $keys ) );
+		return $this->getKeys( $this->rows, $key );
 
 	}
 
@@ -287,7 +269,20 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$this->execute();
 
-		if ( count( $this->globalRows ) > 0 && !$this->globalRows[ 0 ]->hasProperty( $key ) ) {
+		return $this->getKeys( $this->globalRows, $key );
+
+	}
+
+	/**
+	 * Get $key values of given rows
+	 *
+	 * @param Row[] $rows
+	 * @param string $key
+	 * @return array
+	 */
+	protected function getKeys( $rows, $key ) {
+
+		if ( count( $rows ) > 0 && !$rows[ 0 ]->hasProperty( $key ) ) {
 
 			throw new \LogicException( '"' . $key . '" does not exist in "' . $this->table . '" result' );
 
@@ -295,7 +290,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$keys = array();
 
-		foreach ( $this->globalRows as $row ) {
+		foreach ( $rows as $row ) {
 
 			if ( isset( $row->{ $key } ) ) {
 
