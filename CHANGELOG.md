@@ -1,5 +1,9 @@
 # Changelog
 
+## master
+
+- Fixed uninitialized Row properties, with test
+
 ## v0.3.0
 
 - Travis CI

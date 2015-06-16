@@ -309,4 +309,18 @@ class RowTest extends BaseTest {
 
 	}
 
+	function testEmptyRow() {
+
+		$db = self::$db;
+
+		$row = $db->createRow( 'dummy' );
+
+		$i = 0;
+
+		foreach ( $row as $prop ) ++$i;
+
+		$this->assertEquals( 0, $i );
+
+	}
+
 }
