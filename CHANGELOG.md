@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## v0.3.1
 
 - Fixed uninitialized Row properties
 - Added hasProperty method to Row
