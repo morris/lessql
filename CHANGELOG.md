@@ -1,5 +1,9 @@
 # Changelog
 
+## master
+
+- Readme corrections
+
 ## v0.3.1
 
 - Fixed uninitialized Row properties

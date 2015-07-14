@@ -4,9 +4,10 @@
 [![Test Coverage](https://codeclimate.com/github/morris/lessql/badges/coverage.svg)](https://codeclimate.com/github/morris/lessql/coverage)
 [![Join the chat at https://gitter.im/morris/lessql](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/morris/lessql?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-LessQL is a lightweight and powerful alternative to Object-Relational Mapping for PHP.
+LessQL is a lightweight and performant alternative to Object-Relational Mapping for PHP.
 
-__[LessQL.net](http://lessql.net)__
+### [LessQL.net](http://lessql.net)
+
 
 ## Usage
 
@@ -17,47 +18,48 @@ __[LessQL.net](http://lessql.net)__
 // categorization: category_id, post_id
 // category: id, title
 
-// Connect to database
+// Connection
 $pdo = new PDO( 'sqlite:blog.sqlite3' );
 $db = new LessQL\Database( $pdo );
 
-// Find posts, their authors and categories
+// Find posts, their authors and categories efficiently:
+// Eager loading of references happens automatically.
+// This example only needs FOUR queries, one for each table.
 $posts = $db->post()
 	->where( 'is_published', 1 )
 	->orderBy( 'date_published', 'DESC' );
 
 foreach ( $posts as $post ) {
-
-	// Efficient deep finding:
-	// Eager loading of references happens automatically.
-	// This example only needs four queries, one for each table.
 	$author = $post->user()->fetch();
 
 	foreach ( $post->categorizationList()->category() as $category ) {
-
 		// ...
-
 	}
-
 }
 
-// Saving
+// Saving complex structures is easy
 $row = $db->createRow( 'post', array(
 	'title' => 'News',
 	'body' => 'Yay!',
-
 	'categorizationList' => array(
 		array(
-			'category' => array( 'title' => 'New Category'
+			'category' => array( 'title' => 'New Category' )
 		),
 		array( 'category' => $existingCategoryRow )
 	)
 );
 
-// Creates a post, and a new category, two new categorizations
+// Creates a post, a new category, two new categorizations
 // and connects them all correctly.
 $row->save();
 ```
+
+
+## Installation
+
+Install LessQL via composer: `composer require morris/lessql`.
+LessQL requires PHP >= 5.3.0 and PDO.
+
 
 ## Features
 
@@ -73,19 +75,4 @@ $row->save();
 
 Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
 
-__For full documentation and examples, see the [homepage](http://lessql.net).__
-
-
-## Installation
-
-Install LessQL via composer, the package name is `morris/lessql`.
-You can also download an archive from the repository.
-
-LessQL requires PHP >= 5.3.0 and PDO.
-
-
-## Tests
-
-Run `composer update` in the `lessql` directory.
-This will install development dependencies like PHPUnit.
-Run the tests with `vendor/bin/phpunit tests`.
+### For full documentation and examples, see the [homepage](http://lessql.net).
