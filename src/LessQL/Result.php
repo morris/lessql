@@ -168,7 +168,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 			// build row objects
 			foreach ( $rows as $row ) {
 
-				$row = $this->db->createRow( $this->table, $row, $this );
+				$row = $this->createRow( $row );
 				$row->setClean();
 
 				$cached[] = $row;
@@ -203,6 +203,19 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 		}
 
 		return $this;
+
+	}
+
+	/**
+	 * Create a Row for this result's table
+	 * The row is bound to this result
+	 *
+	 * @param array $data Row data
+	 * @return Row
+	 */
+	function createRow( $data ) {
+
+		return $this->db->createRow( $this->table, $data, $this );
 
 	}
 

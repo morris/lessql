@@ -509,4 +509,21 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testCreateRow() {
+
+		$db = self::$db;
+
+		$row = $db->user()->createRow( array( 'name' => 'foo' ) );
+
+		$this->assertTrue( $row instanceof \LessQL\Row );
+		$this->assertSame( 'user', $row->getTable() );
+
+		$row->save();
+
+		$row = $db->user( $row[ 'id' ] );
+
+		$this->assertSame( 'foo', $row[ 'name' ] );
+
+	}
+
 }
