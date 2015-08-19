@@ -3,6 +3,7 @@
 ## master
 
 - Readme corrections
+- Added `Result/createRow`
 
 ## v0.3.1
 
