@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## v0.3.2
 
 - Readme corrections
 - Added `Result/createRow`
