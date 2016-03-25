@@ -192,7 +192,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 			foreach ( $cached as $row ) {
 
-				if ( in_array( $row[ $this->key ], $keys ) ) {
+				if ( in_array( $row->__get( $this->key ), $keys ) ) {
 
 					$this->rows[] = $row;
 
@@ -305,9 +305,9 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		foreach ( $rows as $row ) {
 
-			if ( isset( $row->{ $key } ) ) {
+			if ( $row->__isset( $key ) ) {
 
-				$keys[] = $row->{ $key };
+				$keys[] = $row->__get( $key );
 
 			}
 
@@ -474,7 +474,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 				foreach ( $primary as $column ) {
 
-					$and[] = $this->db->is( $column, $row[ $column ] );
+					$and[] = $this->db->is( $column, $row->__get( $column ) );
 
 				}
 
