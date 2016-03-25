@@ -845,9 +845,10 @@ class Database {
 	 * @param string $column
 	 * @param string|array $value
 	 * @param bool $not
+	 * @param bool $like
 	 * @return string
 	 */
-	function is( $column, $value, $not = false ) {
+	function is( $column, $value, $not = false, $like = false ) {
 
 		$bang = $not ? "!" : "";
 		$or = $not ? " AND " : " OR ";
@@ -873,6 +874,10 @@ class Database {
 			if ( $value === null ) {
 
 				return $column . " IS" . $not . " NULL";
+
+			} else if ($like) {
+
+				return $column . $not . " LIKE " . $this->quote( $value );
 
 			} else {
 
@@ -929,11 +934,12 @@ class Database {
 	 *
 	 * @param string $column
 	 * @param string|array $value
+	 * @param bool $like
 	 * @return string
 	 */
-	function isNot( $column, $value ) {
+	function isNot( $column, $value, $like = false ) {
 
-		return $this->is( $column, $value, true );
+		return $this->is( $column, $value, true, $like );
 
 	}
 

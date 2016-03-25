@@ -594,6 +594,83 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	}
 
 	/**
+	 * Add a WHERE LIKE condition (multiple are combined with AND)
+	 *
+	 * @param string|array $condition
+	 * @param string|array $params
+	 * @return Result
+	 */
+	function whereLike( $condition, $params = array() ) {
+
+		$clone = clone $this;
+
+		// conditions in key-value array
+		if ( is_array( $condition ) ) {
+
+			foreach ( $condition as $c => $params ) {
+
+				$clone = $clone->whereLike( $c, $params );
+
+			}
+
+			return $clone;
+
+		}
+
+		// shortcut for basic "column is (in) value"
+		if ( preg_match( '/^[a-z0-9_.`"]+$/i', $condition ) ) {
+
+			$clone->where[] = $clone->db->is( $condition, $params, false, true );
+
+			return $clone;
+
+		}
+
+		if ( !is_array( $params ) ) {
+
+			$params = func_get_args();
+			array_shift( $params );
+
+		}
+
+		$clone->where[] = $condition;
+		$clone->whereParams = array_merge( $clone->whereParams, $params );
+
+		return $clone;
+
+	}
+
+	/**
+	 * Add a "$column is not $value" condition to WHERE NOT LIKE (multiple are combined with AND)
+	 *
+	 * @param string|array $column
+	 * @param string|array|null $value
+	 * @return $this
+	 */
+	function whereNotLike( $column, $value = null ) {
+
+		$this->immutable();
+
+		// conditions in key-value array
+		if ( is_array( $column ) ) {
+
+			foreach ( $column as $c => $params ) {
+
+				$this->whereLikeNot( $c, $params );
+
+			}
+
+			return $this;
+
+		}
+
+		$this->where[] = $this->db->isNot( $column, $value, true );
+
+		return $this;
+
+	}
+
+	/**
 	 * Add an ORDER BY column and direction
 	 *
 	 * @param string $column
