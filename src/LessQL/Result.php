@@ -213,7 +213,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 * @param array $data Row data
 	 * @return Row
 	 */
-	function createRow( $data ) {
+	function createRow( $data = array() ) {
 
 		return $this->db->createRow( $this->table, $data, $this );
 
