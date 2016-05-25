@@ -119,6 +119,18 @@ class Database {
 	}
 
 	/**
+	 * Execute an SQL statement directly
+	 *
+	 * @param string $query
+	 * @return \PDOStatement
+	 */
+	function query( $query ) {
+
+		return $this->pdo->query( $query );
+
+	}
+
+	/**
 	 * Return last inserted id
 	 *
 	 * @param string|null $sequence
