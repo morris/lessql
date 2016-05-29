@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.3
+
+- Added `Database/query`
+
 ## v0.3.2
 
 - Readme corrections
