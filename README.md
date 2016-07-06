@@ -58,7 +58,7 @@ $row->save();
 ## Installation
 
 Install LessQL via composer: `composer require morris/lessql`.
-LessQL requires PHP >= 5.3.0 and PDO.
+LessQL requires PHP >= 5.3.4 and PDO.
 
 
 ## Features
