@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.4
+
+- Fix `whereNot`
+- Fix PHP requirement to 5.3.4
+
 ## v0.3.3
 
 - Added `Database/query`
