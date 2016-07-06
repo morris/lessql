@@ -572,24 +572,24 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 	 */
 	function whereNot( $column, $value = null ) {
 
-		$this->immutable();
+		$clone = clone $this;
 
 		// conditions in key-value array
 		if ( is_array( $column ) ) {
 
 			foreach ( $column as $c => $params ) {
 
-				$this->whereNot( $c, $params );
+				$clone = $clone->whereNot( $c, $params );
 
 			}
 
-			return $this;
+			return $clone;
 
 		}
 
-		$this->where[] = $this->db->isNot( $column, $value );
+		$clone->where[] = $this->db->isNot( $column, $value );
 
-		return $this;
+		return $clone;
 
 	}
 
