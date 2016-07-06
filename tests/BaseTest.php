@@ -128,6 +128,15 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 			test INTEGER
 		)" );
 
+		// #20
+
+		self::query( "DROP TABLE IF EXISTS " . self::quoteIdentifier( "TABLES" ) );
+
+		self::query( "CREATE TABLE " . self::quoteIdentifier( "TABLES" ) . " (
+			TABLE_NAME varchar(30) NOT NULL,
+			TABLE_SCHEMA varchar(30) NOT NULL
+		)" );
+
 		self::$pdo->commit();
 
 	}
@@ -203,6 +212,10 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 		// dummy
 
 		self::query( "DELETE FROM dummy" );
+
+		// #20
+
+		self::query( "INSERT INTO TABLES (TABLE_NAME,TABLE_SCHEMA) VALUES ('testname', 'test')" );
 
 		self::$pdo->commit();
 

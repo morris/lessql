@@ -526,4 +526,19 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testIssue20() {
+
+		$db = self::$db;
+
+		$db->setPrimary( 'TABLES', 'TABLE_NAME' );
+
+		$data = $db->table( 'TABLES' )
+			->select( 'TABLE_NAME' )
+			->where( 'TABLE_SCHEMA', 'test' )
+			->fetchAll();
+
+		$this->assertEquals( $data[ 0 ][ 'TABLE_NAME' ], 'testname' );
+
+	}
+
 }
