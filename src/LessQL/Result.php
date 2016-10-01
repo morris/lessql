@@ -604,7 +604,11 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$clone = clone $this;
 
-		$clone->orderBy[] = $this->db->quoteIdentifier( $column ) . " " . $direction;
+		if ($direction===true) {
+			$clone->orderBy[] = $column;
+		}else{
+			$clone->orderBy[] = $this->db->quoteIdentifier( $column ) . " " . $direction;
+		}
 
 		return $clone;
 
