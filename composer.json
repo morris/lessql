@@ -3,11 +3,11 @@
 	"description": "LessQL: The agile PHP ORM alternative",
 	"keywords": [ "orm", "notorm", "sql", "pdo", "database" ],
 	"license": "MIT",
-	"homepage": "http://github.com/morris/lessql",
+	"homepage": "https://github.com/morris/lessql",
 	"authors": [
 		{
 			"name": "Morris Brodersen",
-			"homepage": "http://morrisbrodersen.de"
+			"homepage": "https://morrisbrodersen.de"
 		}
 	],
 
