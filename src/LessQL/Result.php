@@ -364,9 +364,7 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 		$this->execute();
 
-		list( $index, $row ) = each( $this->rows );
-
-		return $row;
+		return isset($this->rows[0]) ? $this->rows[0] : null;
 
 	}
 
