@@ -17,7 +17,9 @@ class Database {
 		// required for safety
 		$pdo->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 		$this->pdo = $pdo;
-
+        if ($this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+            $this->setIdentifierDelimiter('');
+        }
 	}
 
 	/**
