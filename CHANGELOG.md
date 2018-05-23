@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Added PHP 7 to Travis CI
+
 ## v0.3.4
 
 - Fix `whereNot`
