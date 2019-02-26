@@ -497,6 +497,8 @@ class Database {
 			'expr' => null,
 			'where' => array(),
 			'orderBy' => array(),
+			'groupBy' => array(),
+			'having' => array(),
 			'limitCount' => null,
 			'limitOffset' => null,
 			'params' => array()
@@ -520,9 +522,14 @@ class Database {
 		}
 
 		$table = $this->rewriteTable( $table );
-		$query .= " FROM " . $this->quoteIdentifier( $table );
 
-		$query .= $this->getSuffix( $options[ 'where' ], $options[ 'orderBy' ], $options[ 'limitCount' ], $options[ 'limitOffset' ] );
+		if (strpos($table, ' ')!== false){
+			$query .= " FROM " . $table; // Raw table expression for JOINs
+		} else {
+			$query .= " FROM " . $this->quoteIdentifier( $table );
+		}
+
+		$query .= $this->getSuffix( $options[ 'where' ], $options[ 'orderBy' ], $options[ 'groupBy' ], $options[ 'having' ], $options[ 'limitCount' ], $options[ 'limitOffset' ] );
 
 		$this->onQuery( $query, $options[ 'params' ] );
 
@@ -817,7 +824,7 @@ class Database {
 	 * @param int|null $limitOffset
 	 * @return string
 	 */
-	function getSuffix( $where, $orderBy = array(), $limitCount = null, $limitOffset = null ) {
+	function getSuffix( $where, $orderBy = array(), $groupBy = array(), $having = array(), $limitCount = null, $limitOffset = null ) {
 
 		$suffix = "";
 
@@ -830,6 +837,18 @@ class Database {
 		if ( !empty( $orderBy ) ) {
 
 			$suffix .= " ORDER BY " . implode( ", ", $orderBy );
+
+		}
+
+		if ( !empty( $groupBy ) ) {
+
+			$suffix .= " GROUP BY " . implode( ", ", $groupBy );
+
+		}
+
+		if ( !empty( $having ) ) {
+
+			$suffix .= " HAVING " . implode( " AND ", $having );
 
 		}
 
