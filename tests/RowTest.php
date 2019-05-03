@@ -1,9 +1,9 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once 'BaseTest.php';
+require_once 'TestBase.php';
 
-class RowTest extends BaseTest {
+class RowTest extends TestBase {
 
 	function testAccess() {
 

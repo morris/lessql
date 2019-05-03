@@ -2,7 +2,7 @@
 
 require_once 'vendor/autoload.php';
 
-class BaseTest extends PHPUnit_Framework_TestCase {
+class TestBase extends PHPUnit\Framework\TestCase {
 
 	// static
 
@@ -281,10 +281,6 @@ class BaseTest extends PHPUnit_Framework_TestCase {
 			self::reset();
 
 		}
-
-	}
-
-	function testDummy() {
 
 	}
 
