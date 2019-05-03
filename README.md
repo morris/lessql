@@ -18,33 +18,33 @@ LessQL is a lightweight and performant alternative to Object-Relational Mapping 
 // category: id, title
 
 // Connection
-$pdo = new PDO( 'sqlite:blog.sqlite3' );
-$db = new LessQL\Database( $pdo );
+$pdo = new PDO('sqlite:blog.sqlite3');
+$db = new LessQL\Database($pdo);
 
 // Find posts, their authors and categories efficiently:
 // Eager loading of references happens automatically.
 // This example only needs FOUR queries, one for each table.
 $posts = $db->post()
-	->where( 'is_published', 1 )
-	->orderBy( 'date_published', 'DESC' );
+	        ->where('is_published', 1)
+	        ->orderBy('date_published', 'DESC');
 
-foreach ( $posts as $post ) {
+foreach ($posts as $post) {
 	$author = $post->user()->fetch();
 
-	foreach ( $post->categorizationList()->category() as $category ) {
+	foreach ($post->categorizationList()->category() as $category) {
 		// ...
 	}
 }
 
 // Saving complex structures is easy
-$row = $db->createRow( 'post', array(
+$row = $db->createRow('post', array(
 	'title' => 'News',
 	'body' => 'Yay!',
 	'categorizationList' => array(
 		array(
-			'category' => array( 'title' => 'New Category' )
+			'category' => array('title' => 'New Category')
 		),
-		array( 'category' => $existingCategoryRow )
+		array('category' => $existingCategoryRow)
 	)
 );
 
@@ -52,7 +52,6 @@ $row = $db->createRow( 'post', array(
 // and connects them all correctly.
 $row->save();
 ```
-
 
 ## Installation
 
