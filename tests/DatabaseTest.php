@@ -21,8 +21,8 @@ class DatabaseTest extends TestBase
             $result2->getTable(),
             $row1->getTable(),
             $row2->getTable(),
-            $row1[ 'id' ],
-            $row2[ 'id' ]
+            $row1['id'],
+            $row2['id']
         );
 
         $this->assertEquals($ex, $a);

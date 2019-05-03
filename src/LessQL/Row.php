@@ -7,7 +7,6 @@ namespace LessQL;
  */
 class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
 {
-
     /**
      * Constructor
      * Use $db->createRow() instead
@@ -34,12 +33,12 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function &__get($column)
     {
-        if (!isset($this->_properties[ $column ])) {
+        if (!isset($this->_properties[$column])) {
             $null = null;
             return $null;
         }
 
-        return $this->_properties[ $column ];
+        return $this->_properties[$column];
     }
 
     /**
@@ -50,7 +49,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function __set($column, $value)
     {
-        if (isset($this->_properties[ $column ]) && $this->_properties[ $column ] === $value) {
+        if (isset($this->_properties[$column]) && $this->_properties[$column] === $value) {
             return;
         }
 
@@ -61,18 +60,16 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
             $table = $this->getDatabase()->getAlias($name);
 
             if ($name === $column) { // row
-
                 $value = $this->getDatabase()->createRow($table, $value);
             } else { // list
-
                 foreach ($value as $i => $v) {
-                    $value[ $i ] = $this->getDatabase()->createRow($table, $v);
+                    $value[$i] = $this->getDatabase()->createRow($table, $v);
                 }
             }
         }
 
-        $this->_properties[ $column ] = $value;
-        $this->_modified[ $column ] = $value;
+        $this->_properties[$column] = $value;
+        $this->_modified[$column] = $value;
     }
 
     /**
@@ -83,7 +80,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function __isset($column)
     {
-        return isset($this->_properties[ $column ]);
+        return isset($this->_properties[$column]);
     }
 
     /**
@@ -95,8 +92,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function __unset($column)
     {
-        unset($this->_properties[ $column ]);
-        unset($this->_modified[ $column ]);
+        unset($this->_properties[$column]);
+        unset($this->_modified[$column]);
     }
 
     /**
@@ -111,7 +108,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
     {
         array_unshift($args, $name);
 
-        return call_user_func_array(array( $this, 'referenced' ), $args);
+        return call_user_func_array(array($this, 'referenced'), $args);
     }
 
     /**
@@ -150,17 +147,17 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
             $id = array();
 
             foreach ($primary as $column) {
-                if (!isset($this[ $column ])) {
+                if (!isset($this[$column])) {
                     return null;
                 }
 
-                $id[ $column ] = $this[ $column ];
+                $id[$column] = $this[$column];
             }
 
             return $id;
         }
 
-        return $this[ $primary ];
+        return $this[$primary];
     }
 
     /**
@@ -177,7 +174,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
                 continue;
             }
 
-            $data[ $column ] = $value;
+            $data[$column] = $value;
         }
 
         return $data;
@@ -222,7 +219,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
                 continue;
             }
 
-            $modified[ $column ] = $value;
+            $modified[$column] = $value;
         }
 
         return $modified;
@@ -242,7 +239,6 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
         $table = $this->getTable();
 
         if (!$recursive) { // just save the row
-
             $this->updateReferences();
 
             if (!$this->isClean()) {
@@ -252,7 +248,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
                     $idCondition = $this->getOriginalId();
 
                     if (!is_array($idCondition)) {
-                        $idCondition = array( $primary => $idCondition );
+                        $idCondition = array($primary => $idCondition);
                     }
 
                     $db->table($table)
@@ -264,11 +260,11 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
                     $db->table($table)
                         ->insert($this->getData());
 
-                    if (!is_array($primary) && !isset($this[ $primary ])) {
+                    if (!is_array($primary) && !isset($this[$primary])) {
                         $id = $db->lastInsertId($db->getSequence($table));
 
                         if (isset($id)) {
-                            $this[ $primary ] = $id;
+                            $this[$primary] = $id;
                         }
                     }
 
@@ -353,7 +349,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
         foreach ($this->_properties as $column => $value) {
             if ($value instanceof Row) {
                 $key = $db->getReference($this->getTable(), $column);
-                $this[ $key ] = $value->getId();
+                $this[$key] = $value->getId();
             }
         }
 
@@ -399,7 +395,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
         $required = $this->getDatabase()->getRequired($this->getTable());
 
         foreach ($required as $column => $true) {
-            if (!isset($this[ $column ])) {
+            if (!isset($this[$column])) {
                 $missing[] = $column;
             }
         }
@@ -439,7 +435,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
 
         if (!is_array($idCondition)) {
             $primary = $db->getPrimary($table);
-            $idCondition = array( $primary => $idCondition );
+            $idCondition = array($primary => $idCondition);
         }
 
         $result->where($idCondition)->delete();
@@ -524,7 +520,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function getCache($key)
     {
-        return isset($this->_cache[ $key ]) ? $this->_cache[ $key ] : null;
+        return isset($this->_cache[$key]) ? $this->_cache[$key] : null;
     }
 
     /**
@@ -535,7 +531,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function setCache($key, $value)
     {
-        $this->_cache[ $key ] = $value;
+        $this->_cache[$key] = $value;
     }
 
     /**
@@ -546,8 +542,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function getLocalKeys($key)
     {
-        if (isset($this[ $key ])) {
-            return array( $this[ $key ] );
+        if (isset($this[$key])) {
+            return array($this[$key]);
         }
 
         return array();
@@ -669,25 +665,23 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
 
         foreach ($this->_properties as $key => $value) {
             if ($value instanceof \JsonSerializable) {
-                $array[ $key ] = $value->jsonSerialize();
+                $array[$key] = $value->jsonSerialize();
             } elseif ($value instanceof \DateTime) {
-                $array[ $key ] = $value->format('Y-m-d H:i:s');
+                $array[$key] = $value->format('Y-m-d H:i:s');
             } elseif (is_array($value)) { // list of Rows
 
                 foreach ($value as $i => $row) {
-                    $value[ $i ] = $row->jsonSerialize();
+                    $value[$i] = $row->jsonSerialize();
                 }
 
-                $array[ $key ] = $value;
+                $array[$key] = $value;
             } else {
-                $array[ $key ] = $value;
+                $array[$key] = $value;
             }
         }
 
         return $array;
     }
-
-    //
 
     /** @var Database */
     protected $_db;
@@ -706,8 +700,6 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
 
     /** @var null|string|array */
     protected $_originalId;
-
-    //
 
     /** @var array */
     protected $_cache = array();

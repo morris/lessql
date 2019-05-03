@@ -4,15 +4,12 @@ require_once 'vendor/autoload.php';
 
 class TestBase extends PHPUnit\Framework\TestCase
 {
-
     // static
-
     public static $pdo;
     public static $db;
 
     public static function setUpBeforeClass()
     {
-
         // do this only once
         if (isset(self::$db)) {
             return;
@@ -35,12 +32,10 @@ class TestBase extends PHPUnit\Framework\TestCase
         self::$pdo = new \PDO('sqlite:tests/shop.sqlite3');
 
         // mysql
-        //self::$pdo = new \PDO( 'mysql:host=localhost;dbname=test', 'root', 'pass' );
+        //self::$pdo = new \PDO('mysql:host=localhost;dbname=test', 'root', 'pass');
 
         // postgres
-        //self::$pdo = new \PDO( 'pgsql:host=localhost;port=5432;dbname=test;user=postgres;password=pass' );
-
-        //
+        //self::$pdo = new \PDO('pgsql:host=localhost;port=5432;dbname=test;user=postgres;password=pass');
 
         self::$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
@@ -62,7 +57,7 @@ class TestBase extends PHPUnit\Framework\TestCase
 
         self::$db->setAlias('author', 'user');
         self::$db->setAlias('editor', 'user');
-        self::$db->setPrimary('categorization', array( 'category_id', 'post_id' ));
+        self::$db->setPrimary('categorization', array('category_id', 'post_id'));
 
         self::$db->setAlias('edit_post', 'post');
         self::$db->setBackReference('user', 'edit_post', 'editor_id');
@@ -71,8 +66,6 @@ class TestBase extends PHPUnit\Framework\TestCase
     public static function schema()
     {
         self::$pdo->beginTransaction();
-
-        //
 
         if (self::driver() === 'sqlite') {
             $p = "INTEGER PRIMARY KEY AUTOINCREMENT";
@@ -216,7 +209,6 @@ class TestBase extends PHPUnit\Framework\TestCase
         try {
             self::$pdo->rollBack();
         } catch (\Exception $ex) {
-
             // ignore
         }
     }
@@ -237,7 +229,7 @@ class TestBase extends PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        self::$db->setQueryCallback(array( $this, 'onQuery' ));
+        self::$db->setQueryCallback(array($this, 'onQuery'));
         $this->queries = array();
         $this->params = array();
     }

@@ -9,17 +9,17 @@ class RowTest extends TestBase
     {
         $db = self::$db;
 
-        $row = $db->createRow('user', array( 'name' => 'Foo Bar' ));
+        $row = $db->createRow('user', array('name' => 'Foo Bar'));
 
-        $row[ 'bar' ] = 1;
+        $row['bar'] = 1;
         $row->baz = 2;
 
-        $row->setData(array( 'zip' => 'zap' ));
+        $row->setData(array('zip' => 'zap'));
 
         $a = array(
-            $row[ 'name' ],
+            $row['name'],
             $row->name,
-            $row[ 'id' ],
+            $row['id'],
             $row->id,
             $row->bar,
             $row->baz
@@ -41,7 +41,7 @@ class RowTest extends TestBase
         $a = array();
 
         foreach ($row as $key => $value) {
-            $a[ $key ] = $value;
+            $a[$key] = $value;
         }
 
         $ex = $row->getData();
@@ -53,9 +53,9 @@ class RowTest extends TestBase
     {
         $db = self::$db;
 
-        $row = $db->createRow('user', array( 'id' => 42, 'name' => 'Foo Bar' ));
+        $row = $db->createRow('user', array('id' => 42, 'name' => 'Foo Bar'));
 
-        $this->assertEquals(array( 'name' => 'Foo Bar', 'id' => 42 ), $row->getModified());
+        $this->assertEquals(array('name' => 'Foo Bar', 'id' => 42), $row->getModified());
         $this->assertEquals(null, $row->getOriginalid());
         $this->assertEquals(false, $row->isClean());
 
@@ -73,7 +73,7 @@ class RowTest extends TestBase
     {
         $db = self::$db;
 
-        $row = $db->createRow('user', array( 'name' => 'Foo Bar' ));
+        $row = $db->createRow('user', array('name' => 'Foo Bar'));
         $row->setClean();
     }
 
@@ -81,10 +81,10 @@ class RowTest extends TestBase
     {
         $db = self::$db;
 
-        $row = $db->createRow('user', array( 'id' => 42, 'name' => 'Foo Bar' ));
+        $row = $db->createRow('user', array('id' => 42, 'name' => 'Foo Bar'));
 
         $a = array(
-            $row[ 'id' ],
+            $row['id'],
             $row->id,
             $row->getId(),
             $row->getOriginalId()
@@ -113,18 +113,18 @@ class RowTest extends TestBase
 
         $a[] = $row->getId();
 
-        $row[ 'category_id' ] = 1;
+        $row['category_id'] = 1;
 
         $a[] = $row->getId();
 
-        $row[ 'post_id' ] = 2;
+        $row['post_id'] = 2;
 
         $a[] = $row->getId();
 
         $ex = array(
             null,
             null,
-            array( 'category_id' => 1, 'post_id' => 2 )
+            array('category_id' => 1, 'post_id' => 2)
         );
 
         $this->assertEquals($ex, $a);
@@ -142,24 +142,24 @@ class RowTest extends TestBase
             'categorizationList' => array(
 
                 array(
-                    'category' => array( 'title' => 'Movies' )
+                    'category' => array('title' => 'Movies')
                 ),
                 array(
-                    'category' => array( 'title' => 'Fantasy' )
+                    'category' => array('title' => 'Fantasy')
                 )
 
             )
         ));
 
-        $this->assertEquals(array( 'title' => 'Fantasy Movie Review' ), $row->getData());
-        $this->assertEquals(array( 'title' => 'Fantasy Movie Review' ), $row->getModified());
+        $this->assertEquals(array('title' => 'Fantasy Movie Review'), $row->getData());
+        $this->assertEquals(array('title' => 'Fantasy Movie Review'), $row->getModified());
     }
 
     public function testDelete()
     {
         $db = self::$db;
 
-        $row = $db->createRow('user', array( 'id' => 42, 'name' => 'Foo Bar' ));
+        $row = $db->createRow('user', array('id' => 42, 'name' => 'Foo Bar'));
 
         $row->delete(); // does nothing
 
@@ -168,7 +168,7 @@ class RowTest extends TestBase
 
         $this->assertFalse($row->isClean());
         $this->assertFalse($row->exists());
-        $this->assertEquals(array( "DELETE FROM `user` WHERE `id` = '42'" ), $this->queries);
+        $this->assertEquals(array("DELETE FROM `user` WHERE `id` = '42'"), $this->queries);
     }
 
     public function testSave()
@@ -186,10 +186,10 @@ class RowTest extends TestBase
             'categorizationList' => array(
 
                 array(
-                    'category' => array( 'title' => 'Movies' )
+                    'category' => array('title' => 'Movies')
                 ),
                 array(
-                    'category' => array( 'title' => 'Fantasy' )
+                    'category' => array('title' => 'Fantasy')
                 )
 
             )
@@ -235,12 +235,10 @@ class RowTest extends TestBase
 
         $a = $row->jsonSerialize();
         $ex = $data;
-        $ex[ 'date_published' ] = $data[ 'date_published' ]->format('Y-m-d H:i:s');
+        $ex['date_published'] = $data['date_published']->format('Y-m-d H:i:s');
 
         $this->assertEquals($ex, $a);
     }
-
-    //
 
     public function testReferenced()
     {
@@ -277,9 +275,9 @@ class RowTest extends TestBase
 
             'categorizationList' => array(
                 array(
-                    'category' => array( 'title' => 'New Category' )
+                    'category' => array('title' => 'New Category')
                 ),
-                array( 'category' => $category )
+                array('category' => $category)
             )
         ));
 
@@ -317,8 +315,8 @@ class RowTest extends TestBase
 
         $row = $db->createRow('dummy');
 
-        $row[ 'foo' ] = 'bar';
-        $row[ 'bar' ] = null;
+        $row['foo'] = 'bar';
+        $row['bar'] = null;
 
         $this->assertTrue($row->hasProperty('foo'));
         $this->assertTrue($row->hasProperty('bar'));

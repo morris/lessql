@@ -7,7 +7,6 @@ namespace LessQL;
  */
 class Literal
 {
-
     /**
      * Constructor
      *

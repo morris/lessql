@@ -16,7 +16,6 @@ namespace LessQL;
  */
 class Result implements \IteratorAggregate, \JsonSerializable
 {
-
     /**
      * Constructor
      * Use $db->createResult( $parent, $name ) instead
@@ -130,7 +129,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
         }
 
         if ($this->parent_) {
-
             // restrict to parent
             $this->where[] = $this->db->is($this->key, $this->parent_->getGlobalKeys($this->parentKey));
         }
@@ -141,7 +139,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
         $cached = $root->getCache($definition);
 
         if (!$cached) {
-
             // fetch all rows
             $statement = $this->db->select($this->table, array(
                 'expr' => $this->select,
@@ -265,7 +262,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
      */
     protected function getKeys($rows, $key)
     {
-        if (count($rows) > 0 && !$rows[ 0 ]->hasProperty($key)) {
+        if (count($rows) > 0 && !$rows[0]->hasProperty($key)) {
             throw new \LogicException('"' . $key . '" does not exist in "' . $this->table . '" result');
         }
 
@@ -288,7 +285,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
      */
     public function getCache($key)
     {
-        return isset($this->_cache[ $key ]) ? $this->_cache[ $key ] : null;
+        return isset($this->_cache[$key]) ? $this->_cache[$key] : null;
     }
 
     /**
@@ -300,7 +297,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
      */
     public function setCache($key, $value)
     {
-        $this->_cache[ $key ] = $value;
+        $this->_cache[$key] = $value;
 
         return $this;
     }
@@ -374,7 +371,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
      */
     public function update($data)
     {
-
         // if this is an association result or it is limited,
         // create specific result for local rows and execute
 
@@ -392,7 +388,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
      */
     public function delete()
     {
-
         // if this is an association result or it is limited,
         // create specific result for local rows and execute
 
@@ -528,7 +523,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
     {
         $clone = clone $this;
 
-        if ($direction===true) {
+        if ($direction === true) {
             $clone->orderBy[] = $column;
         } else {
             $clone->orderBy[] = $this->db->quoteIdentifier($column) . " " . $direction;
@@ -644,8 +639,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
         }
     }
 
-    //
-
     /**
      * IteratorAggregate
      *
@@ -667,7 +660,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
     public function getDefinition()
     {
         return json_encode(array(
-
             'table' => $this->table,
             'select' => $this->select,
             'where' => $this->where,
@@ -675,7 +667,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
             'orderBy' => $this->orderBy,
             'limitCount' => $this->limitCount,
             'limitOffset' => $this->limitOffset
-
         ));
     }
 
@@ -689,8 +680,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
         return $this->parent_;
     }
 
-    //
-
     /**
      *
      */
@@ -699,8 +688,6 @@ class Result implements \IteratorAggregate, \JsonSerializable
         $this->rows = null;
         $this->globalRows = null;
     }
-
-    //
 
     /**
      * Implements JsonSerialize

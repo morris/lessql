@@ -19,7 +19,7 @@ class ResultTest extends TestBase
         $this->assertTrue($a->exists());
         $this->assertTrue($b->exists());
         $this->assertEquals('Editor', $a->name);
-        $this->assertEquals('Chief Editor', $b[ 'name' ]);
+        $this->assertEquals('Chief Editor', $b['name']);
     }
 
     public function testVia()
@@ -52,11 +52,11 @@ class ResultTest extends TestBase
 
         $db->begin();
         $db->dummy()->insert(array()); // does nothing
-        $db->dummy()->insert(array( 'id' => 1, 'test' => 42 ));
+        $db->dummy()->insert(array('id' => 1, 'test' => 42));
         $db->dummy()->insert(array(
-            array( 'id' => 2,  'test' => 1 ),
-            array( 'id' => 3,  'test' => 2 ),
-            array( 'id' => 4,  'test' => 3 )
+            array('id' => 2,  'test' => 1),
+            array('id' => 3,  'test' => 2),
+            array('id' => 4,  'test' => 3)
         ));
         $db->commit();
 
@@ -74,9 +74,9 @@ class ResultTest extends TestBase
 
         $db->begin();
         $db->dummy()->insert(array(
-            array( 'test' => 1 ),
-            array( 'test' => 2 ),
-            array( 'test' => 3 )
+            array('test' => 1),
+            array('test' => 2),
+            array('test' => 3)
         ), 'prepared');
         $db->commit();
 
@@ -87,9 +87,9 @@ class ResultTest extends TestBase
         ), $this->queries);
 
         $this->assertEquals(array(
-            array( 1 ),
-            array( 2 ),
-            array( 3 ),
+            array(1),
+            array(2),
+            array(3),
         ), $this->params);
     }
 
@@ -102,9 +102,9 @@ class ResultTest extends TestBase
         try {
             $db->begin();
             $db->dummy()->insert(array(
-                array( 'test' => 1 ),
-                array( 'test' => 2 ),
-                array( 'test' => 3 )
+                array('test' => 1),
+                array('test' => 2),
+                array('test' => 3)
             ), 'batch');
             $db->commit();
         } catch (\Exception $ex) {
@@ -123,27 +123,27 @@ class ResultTest extends TestBase
         $db->begin();
 
         $db->dummy()->update(array());
-        $db->dummy()->update(array( 'test' => 42 ));
-        $db->dummy()->where('test', 1)->update(array( 'test' => 42 ));
+        $db->dummy()->update(array('test' => 42));
+        $db->dummy()->where('test', 1)->update(array('test' => 42));
 
 
         $queries = $this->queries;
-        $db->dummy()->insert(array( 'id' => 1, 'test' => 44 ));
-        $db->dummy()->insert(array( 'id' => 2, 'test' => 42 ));
-        $db->dummy()->insert(array( 'id' => 3, 'test' => 45 ));
-        $db->dummy()->insert(array( 'id' => 4, 'test' => 47 ));
-        $db->dummy()->insert(array( 'id' => 5, 'test' => 48 ));
-        $db->dummy()->insert(array( 'id' => 6, 'test' => 43 ));
-        $db->dummy()->insert(array( 'id' => 7, 'test' => 41 ));
-        $db->dummy()->insert(array( 'id' => 8, 'test' => 46 ));
+        $db->dummy()->insert(array('id' => 1, 'test' => 44));
+        $db->dummy()->insert(array('id' => 2, 'test' => 42));
+        $db->dummy()->insert(array('id' => 3, 'test' => 45));
+        $db->dummy()->insert(array('id' => 4, 'test' => 47));
+        $db->dummy()->insert(array('id' => 5, 'test' => 48));
+        $db->dummy()->insert(array('id' => 6, 'test' => 43));
+        $db->dummy()->insert(array('id' => 7, 'test' => 41));
+        $db->dummy()->insert(array('id' => 8, 'test' => 46));
         $this->queries = $queries;
 
         $db->commit();
 
         $db->begin();
-        $db->dummy()->where('test > 42')->limit(2, 2)->update(array( 'test' => 42 ));
-        $db->dummy()->where('test > 42')->orderBy('test')->limit(2)->update(array( 'test' => 42 ));
-        $db->dummy()->where('test > 42')->orderBy('test')->update(array( 'test' => 42 ));
+        $db->dummy()->where('test > 42')->limit(2, 2)->update(array('test' => 42));
+        $db->dummy()->where('test > 42')->orderBy('test')->limit(2)->update(array('test' => 42));
+        $db->dummy()->where('test > 42')->orderBy('test')->update(array('test' => 42));
         $db->commit();
 
         $this->assertEquals(array(
@@ -163,7 +163,7 @@ class ResultTest extends TestBase
 
         $db->begin();
 
-        $db->category()->where('id > 21')->limit(2)->update(array( 'title' => 'Test Category' ));
+        $db->category()->where('id > 21')->limit(2)->update(array('title' => 'Test Category'));
 
         $db->commit();
 
@@ -183,14 +183,14 @@ class ResultTest extends TestBase
         $db->dummy()->where('test', 1)->delete();
 
         $queries = $this->queries;
-        $db->dummy()->insert(array( 'id' => 1, 'test' => 44 ));
-        $db->dummy()->insert(array( 'id' => 2, 'test' => 42 ));
-        $db->dummy()->insert(array( 'id' => 3, 'test' => 45 ));
-        $db->dummy()->insert(array( 'id' => 4, 'test' => 47 ));
-        $db->dummy()->insert(array( 'id' => 5, 'test' => 48 ));
-        $db->dummy()->insert(array( 'id' => 6, 'test' => 43 ));
-        $db->dummy()->insert(array( 'id' => 7, 'test' => 41 ));
-        $db->dummy()->insert(array( 'id' => 8, 'test' => 46 ));
+        $db->dummy()->insert(array('id' => 1, 'test' => 44 ));
+        $db->dummy()->insert(array('id' => 2, 'test' => 42 ));
+        $db->dummy()->insert(array('id' => 3, 'test' => 45 ));
+        $db->dummy()->insert(array('id' => 4, 'test' => 47 ));
+        $db->dummy()->insert(array('id' => 5, 'test' => 48 ));
+        $db->dummy()->insert(array('id' => 6, 'test' => 43 ));
+        $db->dummy()->insert(array('id' => 7, 'test' => 41 ));
+        $db->dummy()->insert(array('id' => 8, 'test' => 46 ));
         $this->queries = $queries;
 
         $db->commit();
@@ -252,14 +252,14 @@ class ResultTest extends TestBase
         $db->dummy()->where('test', 31)->fetch();
         $db->dummy()->whereNot('test', null)->fetch();
         $db->dummy()->whereNot('test', 31)->fetch();
-        $db->dummy()->where('test', array( 1, 2, 3 ))->fetch();
+        $db->dummy()->where('test', array(1, 2, 3))->fetch();
         $db->dummy()->where('test = 31')->fetch();
         $db->dummy()->where('test = ?', 31)->fetch();
-        $db->dummy()->where('test = ?', array( 31 ))->fetch();
-        $db->dummy()->where('test = :param', array( 'param' => 31 ))->fetch();
+        $db->dummy()->where('test = ?', array(31))->fetch();
+        $db->dummy()->where('test = :param', array('param' => 31))->fetch();
         $db->dummy()
-            ->where('test < :a', array( 'a' => 31 ))
-            ->where('test > :b', array( 'b' => 0 ))
+            ->where('test < :a', array('a' => 31))
+            ->where('test > :b', array('b' => 0))
             ->fetch();
 
         $this->assertEquals(array(
@@ -282,10 +282,10 @@ class ResultTest extends TestBase
             array(),
             array(),
             array(),
-            array( 31 ),
-            array( 31 ),
-            array( 'param' => 31 ),
-            array( 'a' => 31, 'b' => 0 ),
+            array(31),
+            array(31),
+            array('param' => 31),
+            array('a' => 31, 'b' => 0),
         ), $this->params);
     }
 
@@ -333,32 +333,32 @@ class ResultTest extends TestBase
         $a = array();
 
         foreach ($db->post() as $post) {
-            $this->assertEquals(array( $post[ 'id' ] ), $post->getLocalKeys('id'));
-            $this->assertEquals(array( 11, 12, 13 ), $post->getGlobalKeys('id'));
-            $this->assertEquals(array( $post[ 'author_id' ] ), $post->getLocalKeys('author_id'));
-            $this->assertEquals(array( '1', '2' ), $post->getGlobalKeys('author_id'));
+            $this->assertEquals(array($post['id']), $post->getLocalKeys('id'));
+            $this->assertEquals(array(11, 12, 13), $post->getGlobalKeys('id'));
+            $this->assertEquals(array($post['author_id']), $post->getLocalKeys('author_id'));
+            $this->assertEquals(array('1', '2'), $post->getGlobalKeys('author_id'));
 
             $userResult = $post->author();
 
-            $this->assertEquals(array( $post[ 'author_id' ] ), $userResult->getLocalKeys('id'));
-            $this->assertEquals(array( '1', '2' ), $userResult->getGlobalKeys('id'));
+            $this->assertEquals(array($post['author_id']), $userResult->getLocalKeys('id'));
+            $this->assertEquals(array('1', '2'), $userResult->getGlobalKeys('id'));
 
             foreach ($post->categorizationList() as $categorization) {
-                $this->assertEquals(array( $post[ 'id' ] ), $categorization->getLocalKeys('post_id'));
-                $this->assertEquals(array( '11', '12', '13' ), $categorization->getGlobalKeys('post_id'));
+                $this->assertEquals(array($post['id']), $categorization->getLocalKeys('post_id'));
+                $this->assertEquals(array('11', '12', '13'), $categorization->getGlobalKeys('post_id'));
             }
 
             $categorizationResult = $post->categorizationList();
             $categoryResult = $categorizationResult->category();
 
-            $this->assertEquals(array( '22', '23', '21' ), $categorizationResult->getGlobalKeys('category_id'));
+            $this->assertEquals(array('22', '23', '21'), $categorizationResult->getGlobalKeys('category_id'));
 
-            if ($post[ 'id'] == 11) {
-                $this->assertEquals(array( '22', '23' ), $categorizationResult->getLocalKeys('category_id'));
+            if ($post['id'] == 11) {
+                $this->assertEquals(array('22', '23'), $categorizationResult->getLocalKeys('category_id'));
                 $this->assertEquals(2, $categoryResult->rowCount());
-                $this->assertEquals(array( '22', '23' ), $categoryResult->getLocalKeys('id'));
+                $this->assertEquals(array('22', '23'), $categoryResult->getLocalKeys('id'));
             } else {
-                $this->assertEquals(array( '21' ), $categorizationResult->getLocalKeys('category_id'));
+                $this->assertEquals(array('21'), $categorizationResult->getLocalKeys('category_id'));
             }
         }
     }
@@ -383,13 +383,13 @@ class ResultTest extends TestBase
 
             $t = array();
 
-            $t[ 'title' ] = $post->title;
-            $t[ 'author' ] = $author->name;
-            $t[ 'editor' ] = $editor ? $editor->name : null;
-            $t[ 'categories' ] = array();
+            $t['title'] = $post->title;
+            $t['author'] = $author->name;
+            $t['editor'] = $editor ? $editor->name : null;
+            $t['categories'] = array();
 
             foreach ($post->categorizationList()->category() as $category) {
-                $t[ 'categories' ][] = $category->title;
+                $t['categories'][] = $category->title;
             }
 
             $post->categorizationList()->category('id > ?', 0)->fetchAll();
@@ -489,9 +489,9 @@ class ResultTest extends TestBase
 
         $row->save();
 
-        $row = $db->user($row[ 'id' ]);
+        $row = $db->user($row['id']);
 
-        $this->assertSame('foo', $row[ 'name' ]);
+        $this->assertSame('foo', $row['name']);
     }
 
     public function testIssue20()
@@ -505,6 +505,6 @@ class ResultTest extends TestBase
             ->where('TABLE_SCHEMA', 'test')
             ->fetchAll();
 
-        $this->assertEquals($data[ 0 ][ 'TABLE_NAME' ], 'testname');
+        $this->assertEquals($data[0]['TABLE_NAME'], 'testname');
     }
 }
