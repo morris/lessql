@@ -5,8 +5,10 @@
 
 LessQL is a lightweight and performant alternative to Object-Relational Mapping for PHP.
 
-### [LessQL.net](http://lessql.net)
+## Installation
 
+Install LessQL via composer: `composer require morris/lessql`.
+LessQL requires PHP >= 5.3.4 and PDO.
 
 ## Usage
 
@@ -46,18 +48,12 @@ $row = $db->createRow('post', array(
 		),
 		array('category' => $existingCategoryRow)
 	)
-);
+));
 
 // Creates a post, a new category, two new categorizations
 // and connects them all correctly.
 $row->save();
 ```
-
-## Installation
-
-Install LessQL via composer: `composer require morris/lessql`.
-LessQL requires PHP >= 5.3.4 and PDO.
-
 
 ## Features
 
@@ -73,4 +69,4 @@ LessQL requires PHP >= 5.3.4 and PDO.
 
 Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
 
-### For full documentation and examples, see the [homepage](http://lessql.net).
+## [Documentation and Examples](doc)
