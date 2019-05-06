@@ -322,4 +322,44 @@ class RowTest extends TestBase
         $this->assertTrue($row->hasProperty('bar'));
         $this->assertFalse($row->hasProperty('baz'));
     }
+
+    // Test for select without a primary key
+    function testKeylessQuery()
+    {
+        $db = self::$db;
+        $row = $db->post()->select('title')->fetch();
+
+        // If key field is absent exist returns False
+        $this->assertFalse($row->exists());
+        // Row not clean and frozen
+        $this->assertFalse($row->isClean());
+        $this->assertTrue($row->isFrozen());
+
+    }
+
+    // Test for select with JOIN
+    function testJoin()
+    {
+        $db = self::$db;
+
+        $row = $db->table($db->quoteIdentifier('post').' INNER JOIN '.$db->quoteIdentifier('user').
+                        ' ON ('.$db->quoteIdentifier('post.author_id').' = '.
+                               $db->quoteIdentifier('user.id').')')->
+                               select($db->quoteIdentifier('post.id').' AS id','title','name')->
+                               where('post.id',12)->fetch();
+
+        $this->assertEquals(array(
+        "SELECT `post`.`id` AS id, title, name FROM `post` INNER JOIN `user` ON (`post`.`author_id` = `user`.`id`) WHERE `post`.`id` = '12'"
+        ), $this->queries);
+
+        $this->assertEquals( $row['title'], 'Foo released');
+        $this->assertEquals( $row['name'], 'Writer');
+
+        //Query with JOINs mark as Frozen. It cannot be saved or deleted.
+
+        $this->assertFalse($row->exists());
+        $this->assertFalse($row->isClean());
+        $this->assertTrue($row->isFrozen());
+
+    }
 }

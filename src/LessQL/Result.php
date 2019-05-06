@@ -155,7 +155,13 @@ class Result implements \IteratorAggregate, \JsonSerializable
             // build row objects
             foreach ($rows as $row) {
                 $row = $this->createRow($row);
-                $row->setClean();
+
+                //Allows to fetch rows without id and JOINS
+                if ($row->getId() === null || strpos($this->table, ' ') !== false){
+                    $row->setFrozen();
+                } else {
+                    $row->setClean();
+                }
 
                 $cached[] = $row;
             }

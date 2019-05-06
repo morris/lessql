@@ -469,7 +469,12 @@ class Database
         }
 
         $table = $this->rewriteTable($table);
-        $query .= " FROM " . $this->quoteIdentifier($table);
+
+        if (strpos($table, ' ') !== false) {
+            $query .= " FROM " . $table; // Raw table expression for JOINs
+        } else {
+            $query .= " FROM " . $this->quoteIdentifier( $table );
+        }
 
         $query .= $this->getSuffix($options['where'], $options['orderBy'], $options['limitCount'], $options['limitOffset']);
 

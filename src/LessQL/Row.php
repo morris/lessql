@@ -235,6 +235,10 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function save($recursive = true)
     {
+        if($this->isFrozen()){
+            throw new \LogicException('Cannot save frozen row');
+        }
+
         $db = $this->getDatabase();
         $table = $this->getTable();
 
@@ -422,6 +426,10 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
      */
     public function delete()
     {
+        if($this->isFrozen()){
+            throw new \LogicException('Cannot delete frozen row');
+        }
+
         $db = $this->getDatabase();
         $table = $this->getTable();
 
@@ -683,6 +691,24 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
         return $array;
     }
 
+    /**
+     * Check if row is frozen
+     *
+     * @return bool
+     */
+    public function isFrozen()
+    {
+        return $this->_frozen;
+    }
+
+    /**
+     * Make row frozen. This action cannot be undone.
+     */
+    public function setFrozen()
+    {
+        $this->_frozen = true;
+    }
+
     /** @var Database */
     protected $_db;
 
@@ -703,4 +729,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
 
     /** @var array */
     protected $_cache = array();
+
+    /** @var bool */
+    protected $_frozen = false;
 }
