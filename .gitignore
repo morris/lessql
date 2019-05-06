@@ -1,3 +1,4 @@
-vendor/
+coverage
+vendor
+.php_cs.cache
 composer.lock
-coverage.xml

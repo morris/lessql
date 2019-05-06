@@ -5,31 +5,28 @@ namespace LessQL;
 /**
  * SQL Literal
  */
-class Literal {
+class Literal
+{
+    /**
+     * Constructor
+     *
+     * @param string
+     */
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
 
-	/**
-	 * Constructor
-	 *
-	 * @param string
-	 */
-	function __construct( $value ) {
+    /**
+     * Return the literal value
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->value;
+    }
 
-		$this->value = $value;
-
-	}
-
-	/**
-	 * Return the literal value
-	 *
-	 * @return string
-	 */
-	function __toString() {
-
-		return $this->value;
-
-	}
-
-	/** @var string */
-	public $value;
-
+    /** @var string */
+    public $value;
 }

@@ -1,0 +1,12 @@
+<phpunit>
+  <testsuites>
+    <testsuite name="tests">
+      <directory>tests</directory>
+    </testsuite>
+   </testsuites>
+   <filter>
+    <whitelist processUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">src/LessQL</directory>
+    </whitelist>
+  </filter>
+</phpunit>

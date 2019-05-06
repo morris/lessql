@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.1
+
+- Added PHP 7 to Travis CI
+- PSR-2
+- Default to `"` as identifier delimiter for PostgreSQL
+
 ## v0.3.4
 
 - Fix `whereNot`
