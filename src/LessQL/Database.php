@@ -470,7 +470,7 @@ class Database
 
         $table = $this->rewriteTable($table);
 
-        if (strpos($table, ' ') !== false) {
+        if ($this->isJoin($table)) {
             $query .= " FROM " . $table; // Raw table expression for JOINs
         } else {
             $query .= " FROM " . $this->quoteIdentifier( $table );
@@ -976,6 +976,17 @@ class Database
         $this->queryCallback = $callback;
 
         return $this;
+    }
+
+    /**
+     * Table have a JOINs
+     *
+     * @param string $table
+     * @return bool
+     */
+    public function isJoin($table)
+    {
+        return strpos(trim($table), ' ') !== false;
     }
 
     /** @var string */

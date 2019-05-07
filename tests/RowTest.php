@@ -362,4 +362,25 @@ class RowTest extends TestBase
         $this->assertTrue($row->isFrozen());
 
     }
+
+    // Test for select with table join function
+    function testJoinCall()
+    {
+        $db = self::$db;
+
+        $row = $db->table('post')->join('post','author_id', 'user', 'id', 'LEFT')->
+                               select($db->quoteIdentifier('post.id').' AS id','title','name')->
+                               where('post.id',11)->fetch();
+
+        $this->assertEquals(array(
+        "SELECT `post`.`id` AS id, title, name FROM `post` LEFT JOIN `user` ON (`post`.`author_id` = `user`.`id`) WHERE `post`.`id` = '11'"
+        ), $this->queries);
+
+        $this->assertEquals( $row['title'], 'Championship won');
+        $this->assertEquals( $row['name'], 'Writer');
+
+        $this->assertFalse($row->exists());
+        $this->assertFalse($row->isClean());
+        $this->assertTrue($row->isFrozen());
+    }
 }

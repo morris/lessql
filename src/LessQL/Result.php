@@ -157,7 +157,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
                 $row = $this->createRow($row);
 
                 //Allows to fetch rows without id and JOINS
-                if ($row->getId() === null || strpos($this->table, ' ') !== false){
+                if ($row->getId() === null || $this->db->isJoin($this->table)){
                     $row->setFrozen();
                 } else {
                     $row->setClean();
@@ -703,6 +703,32 @@ class Result implements \IteratorAggregate, \JsonSerializable
     public function jsonSerialize()
     {
         return $this->fetchAll();
+    }
+
+    /**
+     * Table Join function
+     * Add expresstion $kind JOIN $table_r ON ($table_l.$column_l = $table_r.$column_r)
+     * $kind is INNER by default
+     *
+     * @param string $table_l
+     * @param string $column_l
+     * @param string $table_r
+     * @param string $column_r
+     * @param string $kind
+     * @return $this
+     */
+    public function join($table_l, $column_l, $table_r, $column_r, $kind = 'INNER')
+    {
+        $clone = clone $this;
+
+        if (!$this->db->isJoin($clone->table)){
+            $clone->table = $this->db->quoteIdentifier($clone->table);
+        }
+
+        $clone->table .= ' '.$kind.' JOIN '.$this->db->quoteIdentifier($table_r).' ON ('.
+                         $this->db->quoteIdentifier($table_l).'.'.$this->db->quoteIdentifier($column_l).' = '.
+                         $this->db->quoteIdentifier($table_r).'.'.$this->db->quoteIdentifier($column_r).')';
+        return $clone;
     }
 
     // General members
