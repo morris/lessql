@@ -464,6 +464,9 @@ class ResultTest extends TestBase
 
         $json = json_encode($db->user()->select('id'));
         $expected = '[{"id":"1"},{"id":"2"},{"id":"3"}]';
+        if (self::driver() === 'pgsql') {
+            $expected = '[{"id":1},{"id":2},{"id":3}]';
+        }
         $this->assertEquals($expected, $json);
     }
 
@@ -501,7 +504,7 @@ class ResultTest extends TestBase
         $db->setPrimary('TABLES', 'TABLE_NAME');
 
         $data = $db->table('TABLES')
-            ->select('TABLE_NAME')
+            ->select($db->quoteIdentifier('TABLE_NAME')) //For pgsql
             ->where('TABLE_SCHEMA', 'test')
             ->fetchAll();
 

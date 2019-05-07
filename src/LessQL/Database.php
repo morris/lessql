@@ -127,7 +127,13 @@ class Database
      */
     public function lastInsertId($sequence = null)
     {
-        return $this->pdo->lastInsertId($sequence);
+        $lastval = NULL;
+        try {
+            $lastval = $this->pdo->lastInsertId($sequence);
+        } catch (\PDOException $pdoex) {
+            // Postgres throws exception if no insert in this session
+        }
+        return $lastval;
     }
 
     /**

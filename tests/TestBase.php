@@ -124,8 +124,8 @@ class TestBase extends PHPUnit\Framework\TestCase
         self::query("DROP TABLE IF EXISTS " . self::quoteIdentifier("TABLES"));
 
         self::query("CREATE TABLE " . self::quoteIdentifier("TABLES") . " (
-			TABLE_NAME varchar(30) NOT NULL,
-			TABLE_SCHEMA varchar(30) NOT NULL
+			".self::quoteIdentifier("TABLE_NAME")." varchar(30) NOT NULL,
+			".self::quoteIdentifier("TABLE_SCHEMA")." varchar(30) NOT NULL
 		)");
 
         self::$pdo->commit();
@@ -199,7 +199,15 @@ class TestBase extends PHPUnit\Framework\TestCase
 
         // #20
 
-        self::query("INSERT INTO TABLES (TABLE_NAME,TABLE_SCHEMA) VALUES ('testname', 'test')");
+        self::query("INSERT INTO ".self::quoteIdentifier("TABLES")." (".self::quoteIdentifier("TABLE_NAME").
+                     ",".self::quoteIdentifier("TABLE_SCHEMA").") VALUES ('testname', 'test')");
+
+        // Reset AUTO_INCREMENT for mysql
+        if (self::driver() === 'mysql') {
+            self::query("ALTER TABLE user AUTO_INCREMENT = 3");
+            self::query("ALTER TABLE post AUTO_INCREMENT = 13");
+            self::query("ALTER TABLE category AUTO_INCREMENT = 23");
+        }
 
         self::$pdo->commit();
     }
