@@ -452,6 +452,8 @@ class Database
             'expr' => null,
             'where' => array(),
             'orderBy' => array(),
+            'groupBy' => array(),
+            'having' => array(),
             'limitCount' => null,
             'limitOffset' => null,
             'params' => array()
@@ -476,13 +478,16 @@ class Database
             $query .= " FROM " . $this->quoteIdentifier( $table );
         }
 
-        $query .= $this->getSuffix($options['where'], $options['orderBy'], $options['limitCount'], $options['limitOffset']);
+        $query .= $this->getSuffix($options['where'], $options['orderBy'],  $options['groupBy'],
+                                   $options['having'], $options['limitCount'], $options['limitOffset']);
 
         $this->onQuery($query, $options['params']);
 
         $statement = $this->prepare($query);
         $statement->setFetchMode(\PDO::FETCH_ASSOC);
-        $statement->execute($options['params']);
+
+        $this->bindValues($statement, $options['params']);
+        $statement->execute();
 
         return $statement;
     }
@@ -553,7 +558,8 @@ class Database
 
             $this->onQuery($query, $values);
 
-            $statement->execute($values);
+            $this->bindValues($statement, $values);
+            $statement->execute();
         }
 
         return $statement;
@@ -712,7 +718,8 @@ class Database
         $this->onQuery($query, $params);
 
         $statement = $this->prepare($query);
-        $statement->execute($params);
+        $this->bindValues($statement, $params);
+        $statement->execute();
 
         return $statement;
     }
@@ -743,7 +750,8 @@ class Database
         $this->onQuery($query, $params);
 
         $statement = $this->prepare($query);
-        $statement->execute($params);
+        $this->bindValues($statement, $params);
+        $statement->execute();
 
         return $statement;
     }
@@ -759,7 +767,8 @@ class Database
      * @param int|null $limitOffset
      * @return string
      */
-    public function getSuffix($where, $orderBy = array(), $limitCount = null, $limitOffset = null)
+    public function getSuffix($where, $orderBy = array(), $groupBy = array(),
+                              $having = array(), $limitCount = null, $limitOffset = null)
     {
         $suffix = "";
 
@@ -769,6 +778,14 @@ class Database
 
         if (!empty($orderBy)) {
             $suffix .= " ORDER BY " . implode(", ", $orderBy);
+        }
+
+        if ( !empty( $groupBy ) ) {
+                $suffix .= " GROUP BY " . implode( ", ", $groupBy);
+        }
+
+        if ( !empty( $having ) ) {
+                $suffix .= " HAVING " . implode( " AND ", $having);
         }
 
         if (isset($limitCount)) {
@@ -987,6 +1004,32 @@ class Database
     public function isJoin($table)
     {
         return strpos(trim($table), ' ') !== false;
+    }
+
+    /**
+     * Bind values for PDO statement with type checking
+     * execute($options['params']) makes all param as PDO::PARAM_STR
+     * this function is set different PDO type for different params
+     *
+     * @param \PDO::statement &$statement
+     * @param array $params
+     */
+    protected function bindValues(&$statement, $params){
+        $type_to_pdo = array('boolean' => \PDO::PARAM_BOOL, 'NULL' => \PDO::PARAM_NULL, 'integer' => \PDO::PARAM_INT,
+                             'double' => \PDO::PARAM_STR, 'string' => \PDO::PARAM_STR);
+        foreach($params as $key => $opt){
+            $typename = gettype($opt);
+            $pdo_type = \PDO::PARAM_STR;
+            if(isset($type_to_pdo[$typename])){
+                $pdo_type = $type_to_pdo[$typename];
+            }
+            if(gettype($key) == 'integer'){
+                // index based PDO params starts with 1
+                $statement->bindValue($key+1, $opt, $pdo_type);
+            } else {
+                $statement->bindValue($key, $opt, $pdo_type);
+            }
+        }
     }
 
     /** @var string */

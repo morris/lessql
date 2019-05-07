@@ -507,4 +507,39 @@ class ResultTest extends TestBase
 
         $this->assertEquals($data[0]['TABLE_NAME'], 'testname');
     }
+
+    public function testGroupBy()
+    {
+        $db = self::$db;
+        $data = $db->table('post')->join('post','author_id','user','id')->
+                select('author_id, COUNT(*) as count')->groupBy('author_id')->fetchAll();
+
+        $this->assertEquals(array(
+            "SELECT author_id, COUNT(*) as count FROM `post` ".
+            "INNER JOIN `user` ON (`post`.`author_id` = `user`.`id`) GROUP BY `author_id`"
+        ), $this->queries);
+
+        $this->assertEquals(count($data),2);
+        $this->assertTrue($data[0]->isFrozen());
+
+    }
+
+    public function testHaving()
+    {
+        $db = self::$db;
+
+        $data = $db->table('post')->join('post','author_id','user','id')->
+                select('author_id, name, COUNT(*) as count')->groupBy('author_id', 'name')->
+                having('author_id > ?', 1)->fetchAll();
+
+        $this->assertEquals(count($data), 1);
+        $this->assertTrue($data[0]->isFrozen());
+
+        $this->assertEquals(array(
+        "SELECT author_id, name, COUNT(*) as count FROM `post` ".
+        "INNER JOIN `user` ON (`post`.`author_id` = `user`.`id`) ".
+        "GROUP BY `author_id`, `name` HAVING author_id > ?"
+        ),
+        $this->queries);
+    }
 }

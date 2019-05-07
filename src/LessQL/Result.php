@@ -144,6 +144,8 @@ class Result implements \IteratorAggregate, \JsonSerializable
                 'expr' => $this->select,
                 'where' => $this->where,
                 'orderBy' => $this->orderBy,
+                'groupBy' => $this->groupBy,
+                'having' => $this->having,
                 'limitCount' => $this->limitCount,
                 'limitOffset' => $this->limitOffset,
                 'params' => $this->whereParams
@@ -466,6 +468,10 @@ class Result implements \IteratorAggregate, \JsonSerializable
     {
         $clone = clone $this;
 
+        if(!empty($clone->having)){
+            throw new \LogicException('Cannot set where after having');
+        }
+
         // conditions in key-value array
         if (is_array($condition)) {
             foreach ($condition as $c => $params) {
@@ -560,6 +566,64 @@ class Result implements \IteratorAggregate, \JsonSerializable
     }
 
     /**
+      * Add GROUP BY condition
+      *
+      * @param string $column
+      * @return $this
+      */
+    public function groupBy( $column ) {
+
+        if ($this->parent_) {
+            throw new \LogicException( 'Cannot group referenced result' );
+        }
+
+        $clone = clone $this;
+
+        if ( !is_array( $column ) ) {
+             $params = func_get_args();
+         } else {
+             $params = $column;
+         }
+
+        foreach($params as $group){
+            $clone->groupBy[] = $this->db->quoteIdentifier($group);
+        }
+
+        return $clone;
+     }
+
+     /**
+      * Add a HAVING condition (multiple are combined with AND)
+      *
+      * @param string|array $condition
+      * @param string|array $params
+      * @return $this
+      */
+     public function having( $condition, $params = array() ) {
+
+         $clone = clone $this;
+
+         // conditions in key-value array
+         if ( is_array( $condition ) ) {
+             foreach ( $condition as $c => $params ) {
+                 $clone = $clone->having( $c, $params );
+             }
+             return $clone;
+         }
+
+
+         if ( !is_array( $params ) ) {
+             $params = func_get_args();
+             array_shift( $params );
+         }
+
+         $clone->having[] = $condition;
+         $clone->whereParams = array_merge( $clone->whereParams, $params );
+
+         return $clone;
+     }
+
+    /**
      * Set a paged limit
      * Pages start at 1
      *
@@ -635,6 +699,8 @@ class Result implements \IteratorAggregate, \JsonSerializable
             'expr' => $function,
             'where' => $this->where,
             'orderBy' => $this->orderBy,
+            'groupBy' => $this->groupBy,
+            'having' => $this->having,
             'limitCount' => $this->limitCount,
             'limitOffset' => $this->limitOffset,
             'params' => $this->whereParams
@@ -671,6 +737,8 @@ class Result implements \IteratorAggregate, \JsonSerializable
             'where' => $this->where,
             'whereParams' => $this->whereParams,
             'orderBy' => $this->orderBy,
+            'groupBy' => $this->groupBy,
+            'having' => $this->having,
             'limitCount' => $this->limitCount,
             'limitOffset' => $this->limitOffset
         ));
@@ -758,6 +826,12 @@ class Result implements \IteratorAggregate, \JsonSerializable
 
     /** @var array */
     protected $orderBy = array();
+
+    /** @var array */
+    protected $groupBy = array();
+
+    /** @var array */
+    protected $having = array();
 
     /** @var null|int */
     protected $limitCount;
