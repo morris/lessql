@@ -541,4 +541,17 @@ class ResultTest extends BaseTest {
 
 	}
 
+	function testIssue45() {
+		$db = self::$db;
+
+		$db->post()->categorizationList()->where('category_id > 1000')->delete();
+
+		$this->assertEquals( array(
+			"SELECT * FROM `post`",
+			"SELECT * FROM `categorization` WHERE category_id > 1000 AND `post_id` IN ( '11', '12', '13' )",
+			"DELETE FROM `categorization` WHERE category_id > 1000 AND `post_id` IN ( '11', '12', '13' )"
+		), $this->queries );
+
+    }
+
 }
