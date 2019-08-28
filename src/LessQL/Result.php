@@ -480,6 +480,13 @@ class Result implements \IteratorAggregate, \JsonSerializable {
 
 			}
 
+			if ( empty( $or ) ) {
+			    //No rows selected by previous query
+			    //Just promote where
+			    $result->where = $this->where;
+			    return $result;
+			}
+
 			return $result->where( implode( " OR ", $or ) );
 
 		}
