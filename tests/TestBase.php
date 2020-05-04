@@ -105,11 +105,15 @@ class TestBase extends PHPUnit\Framework\TestCase
 
         // #20
 
-        self::query("DROP TABLE IF EXISTS " . self::quoteIdentifier("TABLEZ"));
+        $t = self::quoteIdentifier("TABLES");
+        $n = self::quoteIdentifier("TABLE_NAME");
+        $s = self::quoteIdentifier("TABLE_SCHEMA");
 
-        self::query("CREATE TABLE " . self::quoteIdentifier("TABLEZ") . " (
-			TABLE_NAME varchar(30) NOT NULL,
-			TABLE_SCHEMA varchar(30) NOT NULL
+        self::query("DROP TABLE IF EXISTS " . $t);
+
+        self::query("CREATE TABLE " . $t. " (
+			" . $n . " varchar(30) NOT NULL,
+			" . $s . " varchar(30) NOT NULL
         )");
 
         self::$pdo->commit();
@@ -183,7 +187,10 @@ class TestBase extends PHPUnit\Framework\TestCase
 
         // #20
 
-        self::query("INSERT INTO " . self::quoteIdentifier("TABLEZ") . " (TABLE_NAME,TABLE_SCHEMA) VALUES ('testname', 'test')");
+        $t = self::quoteIdentifier("TABLES");
+        $n = self::quoteIdentifier("TABLE_NAME");
+        $s = self::quoteIdentifier("TABLE_SCHEMA");
+        self::query("INSERT INTO " . $t . " (" . $n . "," . $s . ") VALUES ('testname', 'test')");
 
         self::$pdo->commit();
     }
