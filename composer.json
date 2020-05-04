@@ -11,7 +11,7 @@
 		}
 	],
 	"autoload": {
-		"psr-0": {
+		"psr-4": {
 			"LessQL\\": "src/LessQL"
 		}
 	},
