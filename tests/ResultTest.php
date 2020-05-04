@@ -36,13 +36,13 @@ class ResultTest extends TestBase
 
         $this->assertEquals(1, $author->id);
         $this->assertEquals(2, $editor->id);
-        $this->assertEquals(array( '11', '12' ), $posts->getLocalKeys('id'));
+        $this->assertEquals(array('11', '12'), $posts->getLocalKeys('id'));
 
         $this->assertEquals(array(
-            "SELECT * FROM `post` WHERE `id` = '12'",
-            "SELECT * FROM `user` WHERE `id` = '1'",
-            "SELECT * FROM `user` WHERE `id` = '2'",
-            "SELECT * FROM `post` WHERE `author_id` = '1'"
+            "SELECT * FROM `post` WHERE (`id` = '12')",
+            "SELECT * FROM `user` WHERE (`id` = '1')",
+            "SELECT * FROM `user` WHERE (`id` = '2')",
+            "SELECT * FROM `post` WHERE (`author_id` = '1')"
         ), $this->queries);
     }
 
@@ -61,10 +61,10 @@ class ResultTest extends TestBase
         $db->commit();
 
         $this->assertEquals(array(
-            "INSERT INTO `dummy` ( `id`, `test` ) VALUES ( '1', '42' )",
-            "INSERT INTO `dummy` ( `id`, `test` ) VALUES ( '2', '1' )",
-            "INSERT INTO `dummy` ( `id`, `test` ) VALUES ( '3', '2' )",
-            "INSERT INTO `dummy` ( `id`, `test` ) VALUES ( '4', '3' )"
+            "INSERT INTO `dummy` (`id`, `test`) VALUES ('1', '42')",
+            "INSERT INTO `dummy` (`id`, `test`) VALUES ('2', '1')",
+            "INSERT INTO `dummy` (`id`, `test`) VALUES ('3', '2')",
+            "INSERT INTO `dummy` (`id`, `test`) VALUES ('4', '3')"
         ), $this->queries);
     }
 
@@ -81,9 +81,9 @@ class ResultTest extends TestBase
         $db->commit();
 
         $this->assertEquals(array(
-            "INSERT INTO `dummy` ( `test` ) VALUES ( ? )",
-            "INSERT INTO `dummy` ( `test` ) VALUES ( ? )",
-            "INSERT INTO `dummy` ( `test` ) VALUES ( ? )"
+            "INSERT INTO `dummy` (`test`) VALUES (?)",
+            "INSERT INTO `dummy` (`test`) VALUES (?)",
+            "INSERT INTO `dummy` (`test`) VALUES (?)"
         ), $this->queries);
 
         $this->assertEquals(array(
@@ -112,7 +112,7 @@ class ResultTest extends TestBase
         }
 
         $this->assertEquals(array(
-            "INSERT INTO `dummy` ( `test` ) VALUES ( '1' ), ( '2' ), ( '3' )",
+            "INSERT INTO `dummy` (`test`) VALUES ('1'), ('2'), ('3')",
         ), $this->queries);
     }
 
@@ -148,12 +148,12 @@ class ResultTest extends TestBase
 
         $this->assertEquals(array(
             "UPDATE `dummy` SET `test` = '42'",
-            "UPDATE `dummy` SET `test` = '42' WHERE `test` = '1'",
-            "SELECT * FROM `dummy` WHERE test > 42 LIMIT 2 OFFSET 2",
-            "UPDATE `dummy` SET `test` = '42' WHERE `id` IN ( '4', '5' )",
-            "SELECT * FROM `dummy` WHERE test > 42 ORDER BY `test` ASC LIMIT 2",
-            "UPDATE `dummy` SET `test` = '42' WHERE `id` IN ( '6', '1' )",
-            "UPDATE `dummy` SET `test` = '42' WHERE test > 42"
+            "UPDATE `dummy` SET `test` = '42' WHERE (`test` = '1')",
+            "SELECT * FROM `dummy` WHERE (test > 42) LIMIT 2 OFFSET 2",
+            "UPDATE `dummy` SET `test` = '42' WHERE (`id` IN ('4', '5'))",
+            "SELECT * FROM `dummy` WHERE (test > 42) ORDER BY `test` ASC LIMIT 2",
+            "UPDATE `dummy` SET `test` = '42' WHERE (`id` IN ('6', '1'))",
+            "UPDATE `dummy` SET `test` = '42' WHERE (test > 42)"
         ), $this->queries);
     }
 
@@ -168,8 +168,8 @@ class ResultTest extends TestBase
         $db->commit();
 
         $this->assertEquals(array(
-            "SELECT * FROM `category` WHERE id > 21 LIMIT 2",
-            "UPDATE `category` SET `title` = 'Test Category' WHERE `id` IN ( '22', '23' )",
+            "SELECT * FROM `category` WHERE (id > 21) LIMIT 2",
+            "UPDATE `category` SET `title` = 'Test Category' WHERE (`id` IN ('22', '23'))",
         ), $this->queries);
     }
 
@@ -203,12 +203,12 @@ class ResultTest extends TestBase
 
         $this->assertEquals(array(
             "DELETE FROM `dummy`",
-            "DELETE FROM `dummy` WHERE `test` = '1'",
-            "SELECT * FROM `dummy` WHERE test > 42 LIMIT 2 OFFSET 2",
-            "DELETE FROM `dummy` WHERE `id` IN ( '4', '5' )",
-            "SELECT * FROM `dummy` WHERE test > 42 ORDER BY `test` ASC LIMIT 2",
-            "DELETE FROM `dummy` WHERE `id` IN ( '6', '1' )",
-            "DELETE FROM `dummy` WHERE test > 42"
+            "DELETE FROM `dummy` WHERE (`test` = '1')",
+            "SELECT * FROM `dummy` WHERE (test > 42) LIMIT 2 OFFSET 2",
+            "DELETE FROM `dummy` WHERE (`id` IN ('4', '5'))",
+            "SELECT * FROM `dummy` WHERE (test > 42) ORDER BY `test` ASC LIMIT 2",
+            "DELETE FROM `dummy` WHERE (`id` IN ('6', '1'))",
+            "DELETE FROM `dummy` WHERE (test > 42)"
         ), $this->queries);
     }
 
@@ -223,8 +223,8 @@ class ResultTest extends TestBase
         $db->commit();
 
         $this->assertEquals(array(
-            "SELECT * FROM `category` WHERE id > 21 LIMIT 2",
-            "DELETE FROM `category` WHERE `id` IN ( '22', '23' )",
+            "SELECT * FROM `category` WHERE (id > 21) LIMIT 2",
+            "DELETE FROM `category` WHERE (`id` IN ('22', '23'))",
         ), $this->queries);
     }
 
@@ -239,8 +239,8 @@ class ResultTest extends TestBase
         $db->commit();
 
         $this->assertEquals(array(
-            "SELECT * FROM `categorization` WHERE category_id > 21 LIMIT 2",
-            "DELETE FROM `categorization` WHERE ( `category_id` = '22' AND `post_id` = '11' ) OR ( `category_id` = '23' AND `post_id` = '11' )",
+            "SELECT * FROM `categorization` WHERE (category_id > 21) LIMIT 2",
+            "DELETE FROM `categorization` WHERE (((`category_id` = '22') AND (`post_id` = '11')) OR ((`category_id` = '23') AND (`post_id` = '11')))",
         ), $this->queries);
     }
 
@@ -263,16 +263,16 @@ class ResultTest extends TestBase
             ->fetch();
 
         $this->assertEquals(array(
-            "SELECT * FROM `dummy` WHERE `test` IS NULL",
-            "SELECT * FROM `dummy` WHERE `test` = '31'",
-            "SELECT * FROM `dummy` WHERE `test` IS NOT NULL",
-            "SELECT * FROM `dummy` WHERE `test` != '31'",
-            "SELECT * FROM `dummy` WHERE `test` IN ( '1', '2', '3' )",
-            "SELECT * FROM `dummy` WHERE test = 31",
-            "SELECT * FROM `dummy` WHERE test = ?",
-            "SELECT * FROM `dummy` WHERE test = ?",
-            "SELECT * FROM `dummy` WHERE test = :param",
-            "SELECT * FROM `dummy` WHERE test < :a AND test > :b",
+            "SELECT * FROM `dummy` WHERE (`test` IS NULL)",
+            "SELECT * FROM `dummy` WHERE (`test` = '31')",
+            "SELECT * FROM `dummy` WHERE (`test` IS NOT NULL)",
+            "SELECT * FROM `dummy` WHERE (`test` != '31')",
+            "SELECT * FROM `dummy` WHERE (`test` IN ('1', '2', '3'))",
+            "SELECT * FROM `dummy` WHERE (test = 31)",
+            "SELECT * FROM `dummy` WHERE (test = ?)",
+            "SELECT * FROM `dummy` WHERE (test = ?)",
+            "SELECT * FROM `dummy` WHERE (test = :param)",
+            "SELECT * FROM `dummy` WHERE (test < :a) AND (test > :b)",
         ), $this->queries);
 
         $this->assertEquals(array(
@@ -399,30 +399,30 @@ class ResultTest extends TestBase
 
         $this->assertEquals(array(
             "SELECT * FROM `post` ORDER BY `date_published` DESC",
-            "SELECT * FROM `user` WHERE `id` IN ( '2', '1' )",
-            "SELECT * FROM `user` WHERE `id` IN ( '3', '2' )",
-            "SELECT * FROM `user` WHERE id > ? AND `id` IN ( '3', '2' )",
-            "SELECT * FROM `categorization` WHERE `post_id` IN ( '13', '11', '12' )",
-            "SELECT * FROM `category` WHERE `id` IN ( '22', '23', '21' )",
-            "SELECT * FROM `category` WHERE id > ? AND `id` IN ( '22', '23', '21' )"
+            "SELECT * FROM `user` WHERE (`id` IN ('2', '1'))",
+            "SELECT * FROM `user` WHERE (`id` IN ('3', '2'))",
+            "SELECT * FROM `user` WHERE (id > ?) AND (`id` IN ('3', '2'))",
+            "SELECT * FROM `categorization` WHERE (`post_id` IN ('13', '11', '12'))",
+            "SELECT * FROM `category` WHERE (`id` IN ('22', '23', '21'))",
+            "SELECT * FROM `category` WHERE (id > ?) AND (`id` IN ('22', '23', '21'))"
         ), $this->queries);
 
         $this->assertEquals(array(
             array(
                 'title' => 'Bar released',
-                'categories' => array( 'Tech' ),
+                'categories' => array('Tech'),
                 'author' => 'Editor',
                 'editor' => 'Chief Editor'
             ),
             array(
                 'title' => 'Championship won',
-                'categories' => array( 'Sports', 'Basketball' ),
+                'categories' => array('Sports', 'Basketball'),
                 'author' => 'Writer',
                 'editor' => null
             ),
             array(
                 'title' => 'Foo released',
-                'categories' => array( 'Tech' ),
+                'categories' => array('Tech'),
                 'author' => 'Writer',
                 'editor' => 'Editor'
             )
@@ -439,7 +439,7 @@ class ResultTest extends TestBase
 
         $this->assertEquals(array(
             "SELECT * FROM `user`",
-            "SELECT * FROM `post` WHERE `editor_id` IN ( '1', '2', '3' )"
+            "SELECT * FROM `post` WHERE (`editor_id` IN ('1', '2', '3'))"
         ), $this->queries);
     }
 
@@ -454,7 +454,6 @@ class ResultTest extends TestBase
 
     public function testJsonSerialize()
     {
-
         // only supported for PHP >= 5.4.0
         if (version_compare(phpversion(), '5.4.0', '<')) {
             return;
@@ -488,7 +487,7 @@ class ResultTest extends TestBase
     {
         $db = self::$db;
 
-        $row = $db->user()->createRow(array( 'name' => 'foo' ));
+        $row = $db->user()->createRow(array('name' => 'foo'));
 
         $this->assertTrue($row instanceof \LessQL\Row);
         $this->assertSame('user', $row->getTable());

@@ -69,7 +69,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
     {
         array_unshift($args, $name);
 
-        return call_user_func_array(array( $this, 'referenced' ), $args);
+        return call_user_func_array(array($this, 'referenced'), $args);
     }
 
     /**
@@ -416,10 +416,10 @@ class Result implements \IteratorAggregate, \JsonSerializable
                 $and = array();
 
                 foreach ($primary as $column) {
-                    $and[] = $this->db->is($column, $row->__get($column));
+                    $and[] = "(" . $this->db->is($column, $row->__get($column)) . ")";
                 }
 
-                $or[] = "( " . implode(" AND ", $and) . " )";
+                $or[] = "(" . implode(" AND ", $and) . ")";
             }
 
             return $result->where(implode(" OR ", $or));

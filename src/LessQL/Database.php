@@ -547,7 +547,7 @@ class Database
         }
 
         $query = $this->insertHead($table, $columns);
-        $query .= "( ?" . str_repeat(", ?", count($columns) - 1) . " )";
+        $query .= "(?" . str_repeat(", ?", count($columns) - 1) . ")";
 
         $statement = $this->prepare($query);
 
@@ -634,7 +634,7 @@ class Database
         $quotedColumns = array_map(array($this, 'quoteIdentifier' ), $columns);
         $table = $this->rewriteTable($table);
         $query = "INSERT INTO " . $this->quoteIdentifier($table);
-        $query .= " ( " . implode(", ", $quotedColumns) . " ) VALUES ";
+        $query .= " (" . implode(", ", $quotedColumns) . ") VALUES ";
 
         return $query;
     }
@@ -676,7 +676,7 @@ class Database
                 $values[] = $this->quote(@$row[$column]);
             }
 
-            $lists[] = "( " . implode(", ", $values) . " )";
+            $lists[] = "(" . implode(", ", $values) . ")";
         }
 
         return $lists;
@@ -772,7 +772,7 @@ class Database
         $suffix = "";
 
         if (!empty($where)) {
-            $suffix .= " WHERE " . implode(" AND ", $where);
+            $suffix .= " WHERE (" . implode(") AND (", $where) . ")";
         }
 
         if (!empty($orderBy)) {
@@ -844,7 +844,7 @@ class Database
             $clauses = array();
 
             if (!empty($values)) {
-                $clauses[] = $column . $not . " IN ( " . implode(", ", $values) . " )";
+                $clauses[] = $column . $not . " IN (" . implode(", ", $values) . ")";
             }
 
             if ($null) {

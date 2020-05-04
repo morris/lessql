@@ -15,7 +15,7 @@ class DatabaseTest extends TestBase
         $row1 = $db->user(1);
         $row2 = $db->table('user', 2);
 
-        $ex = array( 'user', 'user', 'user', 'user', 1, 2 );
+        $ex = array('user', 'user', 'user', 'user', 1, 2);
         $a = array(
             $result1->getTable(),
             $result2->getTable(),
@@ -32,7 +32,7 @@ class DatabaseTest extends TestBase
     {
         $db = self::$db;
 
-        $row = $db->createRow('dummy', array( 'foo' => 'bar' ), 'test');
+        $row = $db->createRow('dummy', array('foo' => 'bar'), 'test');
 
         $this->assertEquals($row->getTable(), 'dummy');
         $this->assertEquals($row->foo, 'bar');
@@ -71,7 +71,7 @@ class DatabaseTest extends TestBase
 
         $db->setAlias('alias', 'foo');
         $db->setPrimary('foo', 'fid');
-        $db->setPrimary('bar', array( 'x', 'y' ));
+        $db->setPrimary('bar', array('x', 'y'));
         $db->setReference('bar', 'foo', 'fid');
         $db->setBackReference('foo', 'bar', 'fid');
         $db->setRequired('foo', 9);
@@ -94,12 +94,12 @@ class DatabaseTest extends TestBase
         $ex = array(
             'foo',
             'fid',
-            array( 'x', 'y' ),
+            array('x', 'y'),
             'fid',
             'fid',
             true,
             true,
-            array( 9 => true, 10 => true ),
+            array(9 => true, 10 => true),
             'fooseq',
             'baz_id_seq'
         );
@@ -118,8 +118,8 @@ class DatabaseTest extends TestBase
         try {
             $db->begin();
             $db->post()->fetchAll();
-            $db->user()->insert(array( 'test' => 42 ));
-            $db->category()->update(array( 'test' => 42 ));
+            $db->user()->insert(array('test' => 42));
+            $db->category()->update(array('test' => 42));
             $db->post()->delete();
             $db->user()->sum('test');
             $db->commit();
@@ -131,7 +131,7 @@ class DatabaseTest extends TestBase
 
         $this->assertEquals(array(
             "SELECT * FROM `dummy`",
-            "INSERT INTO `dummy` ( `test` ) VALUES ( '42' )",
+            "INSERT INTO `dummy` (`test`) VALUES ('42')",
             "UPDATE `dummy` SET `test` = '42'",
             "DELETE FROM `dummy`",
             "SELECT SUM(test) FROM `dummy`",
@@ -151,11 +151,11 @@ class DatabaseTest extends TestBase
             $db->is('foo', 'bar'),
             $db->is('foo', new \DateTime('2015-01-01 01:00:00')),
             $db->is('foo', $db->literal("BAR")),
-            $db->is('foo', array( 'x', 'y' )),
-            $db->is('foo', array( 'x', null )),
-            $db->is('foo', array( 'x' )),
+            $db->is('foo', array('x', 'y')),
+            $db->is('foo', array('x', null)),
+            $db->is('foo', array('x')),
             $db->is('foo', array()),
-            $db->is('foo', array( null )),
+            $db->is('foo', array( null)),
         );
 
         $db->setIdentifierDelimiter($d);
@@ -166,8 +166,8 @@ class DatabaseTest extends TestBase
             "`foo` = 'bar'",
             "`foo` = '2015-01-01 01:00:00'",
             "`foo` = BAR",
-            "`foo` IN ( 'x', 'y' )",
-            "`foo` IN ( 'x' ) OR `foo` IS NULL",
+            "`foo` IN ('x', 'y')",
+            "`foo` IN ('x') OR `foo` IS NULL",
             "`foo` = 'x'",
             "0=1",
             "`foo` IS NULL",
@@ -189,11 +189,11 @@ class DatabaseTest extends TestBase
             $db->isNot('foo', 'bar'),
             $db->isNot('foo', new \DateTime('2015-01-01 01:00:00')),
             $db->isNot('foo', $db->literal("BAR")),
-            $db->isNot('foo', array( 'x', 'y' )),
-            $db->isNot('foo', array( 'x', null )),
-            $db->isNot('foo', array( 'x' )),
+            $db->isNot('foo', array('x', 'y')),
+            $db->isNot('foo', array('x', null)),
+            $db->isNot('foo', array('x')),
             $db->isNot('foo', array()),
-            $db->isNot('foo', array( null )),
+            $db->isNot('foo', array( null)),
         );
 
         $db->setIdentifierDelimiter($d);
@@ -204,8 +204,8 @@ class DatabaseTest extends TestBase
             "`foo` != 'bar'",
             "`foo` != '2015-01-01 01:00:00'",
             "`foo` != BAR",
-            "`foo` NOT IN ( 'x', 'y' )",
-            "`foo` NOT IN ( 'x' ) AND `foo` IS NOT NULL",
+            "`foo` NOT IN ('x', 'y')",
+            "`foo` NOT IN ('x') AND `foo` IS NOT NULL",
             "`foo` != 'x'",
             "1=1",
             "`foo` IS NOT NULL",
