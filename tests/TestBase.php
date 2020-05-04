@@ -15,8 +15,7 @@ class TestBase extends PHPUnit\Framework\TestCase
             return;
         }
 
-        // pdo
-        self::pdo();
+        self::$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         self::lessql();
         self::schema();
         self::reset();
@@ -24,21 +23,6 @@ class TestBase extends PHPUnit\Framework\TestCase
 
     public static function pdo()
     {
-        if (self::$pdo) {
-            return self::$pdo;
-        }
-
-        // sqlite
-        self::$pdo = new \PDO('sqlite:tests/shop.sqlite3');
-
-        // mysql
-        //self::$pdo = new \PDO('mysql:host=localhost;dbname=test', 'root', 'pass');
-
-        // postgres
-        //self::$pdo = new \PDO('pgsql:host=localhost;port=5432;dbname=test;user=postgres;password=pass');
-
-        self::$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
         return self::$pdo;
     }
 

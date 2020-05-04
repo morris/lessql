@@ -20,11 +20,10 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.6|~5|~6|~7",
-		"codeclimate/php-test-reporter": "dev-master",
-		"friendsofphp/php-cs-fixer": "v2.2.20"
+		"friendsofphp/php-cs-fixer": "^2.16"
 	},
 	"scripts": {
-		"test": "vendor/bin/phpunit --coverage-html=coverage tests",
+		"test": "vendor/bin/phpunit --bootstrap=tests/sqlite.php --coverage-html=coverage tests",
 		"format": "vendor/bin/php-cs-fixer fix ."
 	}
 }
