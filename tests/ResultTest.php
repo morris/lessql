@@ -464,6 +464,12 @@ class ResultTest extends TestBase
 
         $json = json_encode($db->user()->select('id'));
         $expected = '[{"id":"1"},{"id":"2"},{"id":"3"}]';
+
+        if (self::driver() === 'pgsql') {
+            // TODO is this expected behavior or should LessQL do something about it?
+            $expected = '[{"id":1},{"id":2},{"id":3}]';
+        }
+
         $this->assertEquals($expected, $json);
     }
 

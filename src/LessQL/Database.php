@@ -127,7 +127,20 @@ class Database
      */
     public function lastInsertId($sequence = null)
     {
-        return $this->pdo->lastInsertId($sequence);
+        try {
+            return $this->pdo->lastInsertId($sequence);
+        } catch (\PDOException $ex) {
+            $message = $ex->getMessage();
+
+            if (strpos($message, '55000') !== false) {
+                // we can safely ignore this PostgreSQL error:
+                // SQLSTATE[55000]: Object not in prerequisite state: 7
+                // ERROR:  lastval is not yet defined in this session
+                return null;
+            }
+
+            throw $ex;
+        }
     }
 
     /**
