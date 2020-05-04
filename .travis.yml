@@ -11,7 +11,7 @@ services:
 
 env:
   global:
-    - CC_TEST_REPORTER_ID=670d2b952203f7af4996bf105b0d5efd1d1a78ca5ddbc3977ee9bca66aac4687
+    - CC_TEST_REPORTER_ID=124a2eea947ebf489472697ed6889cc33201950876b202b50ef6a39862ff01b1
   matrix:
     - BOOTSTRAP=sqlite
     - BOOTSTRAP=mysql
