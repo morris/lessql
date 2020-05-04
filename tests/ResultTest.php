@@ -498,9 +498,9 @@ class ResultTest extends TestBase
     {
         $db = self::$db;
 
-        $db->setPrimary('TABLES', 'TABLE_NAME');
+        $db->setPrimary('TABLEZ', 'TABLE_NAME');
 
-        $data = $db->table('TABLES')
+        $data = $db->table('TABLEZ')
             ->select('TABLE_NAME')
             ->where('TABLE_SCHEMA', 'test')
             ->fetchAll();
