@@ -7,16 +7,31 @@ php:
   - "5.5"
   - "5.4"
 
+services:
+  - mysql
+  - postgresql
+
+env:
+  global:
+    - CC_TEST_REPORTER_ID=670d2b952203f7af4996bf105b0d5efd1d1a78ca5ddbc3977ee9bca66aac4687
+  matrix:
+    - BOOTSTRAP=sqlite
+    - BOOTSTRAP=mysql
+    - BOOTSTRAP=postgresql
+
+before_install:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+
 before_script:
   - composer self-update
   - composer install --prefer-dist
+  - mysql -e 'create database test;'
+  - psql -c 'create database test;' -U postgres
+  - ./cc-test-reporter before-build
 
 script:
-  - vendor/bin/phpunit --coverage-clover=build/logs/clover.xml tests
+  - vendor/bin/phpunit --bootstrap=tests/$BOOTSTRAP.php --coverage-clover=build/logs/clover.xml tests
 
 after_script:
   - vendor/bin/test-reporter
-
-addons:
-  code_climate:
-    repo_token: 670d2b952203f7af4996bf105b0d5efd1d1a78ca5ddbc3977ee9bca66aac4687
