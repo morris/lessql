@@ -276,7 +276,6 @@ class RowTest extends TestBase
             self::query("ALTER TABLE category AUTO_INCREMENT = 23");
         }
 
-
         $row = $db->createRow('post', array(
             'title' => 'News',
 
