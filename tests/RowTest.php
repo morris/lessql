@@ -270,6 +270,13 @@ class RowTest extends TestBase
         $this->assertNotNull($category);
         $this->assertEquals(21, $category->id);
 
+        // Reset AUTO_INCREMENT for mysql
+        if (self::driver() === 'mysql') {
+            self::query("ALTER TABLE post AUTO_INCREMENT = 13");
+            self::query("ALTER TABLE category AUTO_INCREMENT = 23");
+        }
+
+
         $row = $db->createRow('post', array(
             'title' => 'News',
 

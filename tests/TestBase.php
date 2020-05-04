@@ -112,13 +112,6 @@ class TestBase extends PHPUnit\Framework\TestCase
 			TABLE_SCHEMA varchar(30) NOT NULL
         )");
 
-        // Reset AUTO_INCREMENT for mysql
-        if (self::driver() === 'mysql') {
-            self::query("ALTER TABLE user AUTO_INCREMENT = 3");
-            self::query("ALTER TABLE post AUTO_INCREMENT = 13");
-            self::query("ALTER TABLE category AUTO_INCREMENT = 23");
-        }
-
         self::$pdo->commit();
     }
 
