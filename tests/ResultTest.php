@@ -507,7 +507,7 @@ class ResultTest extends TestBase
         $db->setPrimary('TABLES', 'TABLE_NAME');
 
         $data = $db->table('TABLES')
-            ->select('TABLE_NAME')
+            ->select($db->quoteIdentifier('TABLE_NAME'))
             ->where('TABLE_SCHEMA', 'test')
             ->fetchAll();
 
