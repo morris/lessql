@@ -410,6 +410,11 @@ class Result implements \IteratorAggregate, \JsonSerializable
 
         if (is_array($primary)) {
             $this->execute();
+
+            if (empty($this->rows)) {
+                return $result->where("0=1");
+            }
+
             $or = array();
 
             foreach ($this->rows as $row) {
