@@ -1,5 +1,11 @@
 # Changelog
 
+## master
+
+- PSR-4
+- Fix #54
+- Fix #45
+
 ## v0.4.1
 
 - Added PHP 7 to Travis CI

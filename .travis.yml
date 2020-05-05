@@ -32,4 +32,4 @@ script:
   - vendor/bin/phpunit --bootstrap=tests/$BOOTSTRAP.php --coverage-clover=build/logs/clover.xml tests
 
 after_script:
-  - vendor/bin/test-reporter
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
