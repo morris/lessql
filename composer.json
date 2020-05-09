@@ -1,6 +1,6 @@
 {
 	"name": "morris/lessql",
-	"description": "LessQL: The agile PHP ORM alternative",
+	"description": "LessQL: A lightweight and performant PHP ORM alternative",
 	"keywords": ["orm", "notorm", "sql", "pdo", "database"],
 	"license": "MIT",
 	"homepage": "https://github.com/morris/lessql",

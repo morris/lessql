@@ -7,7 +7,7 @@ LessQL is a lightweight and performant alternative to Object-Relational Mapping 
 
 **[Guide](doc/guide.md) | [Conventions](doc/conventions.md) | [API Reference](doc/api.md) | [About](doc/about.md)**
 
-*If you are looking for an SQL-based approach superior to raw PDO, check out [Dop](https://github.com/morris/dop) as an alternative.*
+*If you are looking for an SQL-based approach superior to raw PDO, check out [DOP](https://github.com/morris/dop) as an alternative.*
 
 ## Installation
 
