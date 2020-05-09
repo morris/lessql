@@ -1,9 +1,9 @@
 # Changelog
 
-## master
+## 1.0.0
 
-- PSR-4
 - BREAKING: Drop support for PHP 5.3, 5.4, 5.5
+- PSR-4
 - Fix #54 (bad where condition generation)
 - Fix #45 (bad delete generation)
 - Fix #46 (bad float/double escaping)
