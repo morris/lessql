@@ -5,7 +5,7 @@
 
 LessQL is a lightweight and performant alternative to Object-Relational Mapping for PHP.
 
-[Documentation and Examples](doc)
+**[Guide](doc/guide.md) | [Conventions](doc/conventions.md) | [API Reference](doc/api.md) | [About](doc/about.md)**
 
 ## Installation
 
@@ -29,8 +29,8 @@ $db = new LessQL\Database($pdo);
 // Eager loading of references happens automatically.
 // This example only needs FOUR queries, one for each table.
 $posts = $db->post()
-	        ->where('is_published', 1)
-	        ->orderBy('date_published', 'DESC');
+    ->where('is_published', 1)
+    ->orderBy('date_published', 'DESC');
 
 foreach ($posts as $post) {
 	$author = $post->user()->fetch();
@@ -41,16 +41,16 @@ foreach ($posts as $post) {
 }
 
 // Saving complex structures is easy
-$row = $db->createRow('post', array(
+$row = $db->createRow('post', [
 	'title' => 'News',
 	'body' => 'Yay!',
-	'categorizationList' => array(
-		array(
-			'category' => array('title' => 'New Category')
-		),
-		array('category' => $existingCategoryRow)
-	)
-));
+	'categorizationList' => [
+		[
+			'category' => ['title' => 'New Category']
+        ],
+		['category' => $existingCategoryRow]
+    ]
+]);
 
 // Creates a post, a new category, two new categorizations
 // and connects them all correctly.
@@ -69,11 +69,8 @@ $row->save();
 - Fully tested with SQLite3, MySQL and PostgreSQL
 - MIT license
 
-Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
-
-## Reference
-
-[Documentation and Examples](doc)
+Inspired mainly by [NotORM](https://www.notorm.com/),
+it was written from scratch to provide a clean API and simplified concepts.
 
 ## Contributors
 
