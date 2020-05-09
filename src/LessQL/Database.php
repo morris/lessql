@@ -898,7 +898,7 @@ class Database
         }
 
         if (is_float($value)) {
-            return "'" . sprintf("%F", $value) . "'";
+            return "'" . strval($value) . "'";
         }
 
         if ($value instanceof Literal) {

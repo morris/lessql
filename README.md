@@ -1,14 +1,16 @@
 # LessQL
 
 [![Build Status](https://travis-ci.org/morris/lessql.svg?branch=master)](https://travis-ci.org/morris/lessql)
-[ ![Test Coverage](https://codeclimate.com/github/morris/lessql/badges/coverage.svg) ](https://codeclimate.com/github/morris/lessql/coverage)
+[![Test Coverage](https://codeclimate.com/github/morris/lessql/badges/coverage.svg)](https://codeclimate.com/github/morris/lessql/coverage)
 
 LessQL is a lightweight and performant alternative to Object-Relational Mapping for PHP.
+
+[Documentation and Examples](doc)
 
 ## Installation
 
 Install LessQL via composer: `composer require morris/lessql`.
-LessQL requires PHP >= 5.3.4 and PDO.
+LessQL requires PHP >= 5.6 and PDO.
 
 ## Usage
 
@@ -69,4 +71,12 @@ $row->save();
 
 Inspired mainly by NotORM, it was written from scratch to provide a clean API and simplified concepts.
 
-## [Documentation and Examples](doc)
+## Reference
+
+[Documentation and Examples](doc)
+
+## Contributors
+
+- [jayaddison](https://github.com/jayaddison)
+
+Thanks!

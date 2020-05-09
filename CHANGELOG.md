@@ -3,8 +3,10 @@
 ## master
 
 - PSR-4
-- Fix #54
-- Fix #45
+- BREAKING: Drop support for PHP 5.3, 5.4, 5.5
+- Fix #54 (bad where condition generation)
+- Fix #45 (bad delete generation)
+- Fix #46 (bad float/double escaping)
 
 ## v0.4.1
 
