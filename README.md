@@ -7,6 +7,8 @@ LessQL is a lightweight and performant alternative to Object-Relational Mapping 
 
 **[Guide](doc/guide.md) | [Conventions](doc/conventions.md) | [API Reference](doc/api.md) | [About](doc/about.md)**
 
+*If you are looking for an SQL-based approach superior to raw PDO, check out [Dop](https://github.com/morris/dop) as an alternative.*
+
 ## Installation
 
 Install LessQL via composer: `composer require morris/lessql`.
@@ -75,5 +77,6 @@ it was written from scratch to provide a clean API and simplified concepts.
 ## Contributors
 
 - [jayaddison](https://github.com/jayaddison)
+- [f0ma](https://github.com/f0ma)
 
 Thanks!

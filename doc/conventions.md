@@ -1,4 +1,4 @@
-# Conventions (and Workarounds)
+# Conventions (and workarounds)
 
 LessQL relies entirely on two conventions:
 
@@ -20,7 +20,7 @@ When saving complex structures, LessQL needs a way to know which columns and esp
 Whenever you get "some column may not be null" exceptions, this should solve that.
 
 ```php
-$db->setRequired( 'post', 'user_id' );
+$db->setRequired('post', 'user_id');
 ```
 
 ## Alternate foreign keys
@@ -28,13 +28,13 @@ $db->setRequired( 'post', 'user_id' );
 You can use alternate foreign keys in associations using `via`:
 
 ```php
-foreach ( $db->post() as $post ) {
+foreach ($db->post() as $post) {
 
     // single: use post.author_id instead of post.user_id
-    $author = $post->user()->via( 'author_id' )->fetch();
+    $author = $post->user()->via('author_id')->fetch();
 
     // list: use category.featured_post_id instead of category.post_id
-    $featureCategories = $post->categoryList()->via( 'featured_post_id' );
+    $featureCategories = $post->categoryList()->via('featured_post_id');
 
 }
 ```
@@ -46,7 +46,7 @@ This is quick and easy, but repetitive. It is often better to define these thing
 Let `customer` have columns `address_id` and `billing_address_id`. Both columns point to the `address` table, but the association `billing_address` would try to query the `billing_address` table. For this situation, LessQL lets you define **table aliases**:
 
 ```php
-$db->setAlias( 'billing_address', 'address' );
+$db->setAlias('billing_address', 'address');
 $db->customer()->billing_address();
 ```
 
@@ -59,8 +59,8 @@ Consider again the use case from above. Let's try to access the data the other w
 ```php
 $db->address()->userList(); // works by convention
 
-$db->setAlias( 'user_billing', 'user' );
-$db->setBackReference( 'address', 'user_billing', 'billing_address_id' );
+$db->setAlias('user_billing', 'user');
+$db->setBackReference('address', 'user_billing', 'billing_address_id');
 $db->address()->user_billingList();
 ```
 
@@ -68,15 +68,15 @@ Setting a back reference key in this case states: `address` is referenced by `us
 
 ## Alternate Primary Keys
 
-Primary keys should be named `id`, but if a primary key goes by a different column name you can override it easily with `$db->setPrimary( 'user', 'uid' )`.
+Primary keys should be named `id`, but if a primary key goes by a different column name you can override it easily with `$db->setPrimary('user', 'uid')`.
 
-Compound primary keys are also possible and especially useful for join tables: `$db->setPrimary( 'categorization', array( 'post_id', 'category_id' ) )`.
+Compound primary keys are also possible and especially useful for join tables: `$db->setPrimary('categorization', ['post_id', 'category_id'])`.
 
 You should always define compound keys manually. Without these definitions, saving nested structures may fail because LessQL cannot know which columns are required for a complete primary key.
 
 ## Alternate Reference Keys
 
-Foreign keys should be named `<table>_id`, but if a foreign key goes by a different column name you can override it easily with `$db->setReference( 'post', 'user', 'uid' )`, which basically states the following: post references `user` using the column `uid`.
+Foreign keys should be named `<table>_id`, but if a foreign key goes by a different column name you can override it easily with `$db->setReference('post', 'user', 'uid')`, which basically states the following: post references `user` using the column `uid`.
 
 We're using the term reference to distinguish from back references, as both use foreign keys.
 
@@ -85,9 +85,9 @@ We're using the term reference to distinguish from back references, as both use 
 To add a prefix to your tables, you can define a table rewrite function:
 
 ```php
-$db->setRewrite( function( $table ) {
+$db->setRewrite(function($table) {
     return 'prefix_' . $table;
-} );
+});
 ```
 
 The function is completely arbitrary and will rewrite tables directly before executing any query.

@@ -34,11 +34,11 @@ category:       id, title
 Create a `PDO` instance and a `LessQL\Database` using it. We will also need a few hints about our database so we define them at setup.
 
 ```php
-$pdo = new \PDO( 'sqlite:blog.sqlite3' );
-$db = new \LessQL\Database( $pdo );
+$pdo = new \PDO('sqlite:blog.sqlite3');
+$db = new \LessQL\Database($pdo);
 
-$db->setAlias( 'author', 'user' );
-$db->setPrimary( 'categorization', array( 'category_id', 'post_id' ) );
+$db->setAlias('author', 'user');
+$db->setPrimary('categorization', array('category_id', 'post_id'));
 ```
 
 We define `author` to be a table alias for `user` and a compound primary key for the `categorization` table. See the [Conventions](conventions.md) section for more information about schema hints.
@@ -48,10 +48,10 @@ We define `author` to be a table alias for `user` and a compound primary key for
 The most interesting feature of LessQL is easy and performant traversal of associated tables. Here, we're iterating over four tables in an intuitive way, and the data is retrieved efficiently under the hood.
 
 ```php
-foreach ( $db->post()
-    ->orderBy( 'date_published', 'DESC' )
-    ->where( 'is_published', 1 )
-    ->paged( 10, 1 ) as $post ) {
+foreach ($db->post()
+    ->orderBy('date_published', 'DESC')
+    ->where('is_published', 1)
+    ->paged(10, 1) as $post) {
     // Get author of post
     // Uses the pre-defined alias, gets from user where id is post.author_id
     $author = $post->author()->fetch();
@@ -59,12 +59,12 @@ foreach ( $db->post()
     // Get category titles of post
     $categories = array();
 
-    foreach ( $post->categorizationList()->category() as $category ) {
-        $categories[] = $category[ 'title' ];
+    foreach ($post->categorizationList()->category() as $category) {
+        $categories[] = $category['title'];
     }
 
     // render post
-    $app->renderPost( $post, $author, $categories );
+    $app->renderPost($post, $author, $categories);
 }
 ```
 
@@ -72,9 +72,9 @@ LessQL creates only four queries to execute this example:
 
 ```sql
 SELECT * FROM `post` WHERE `is_published` = 1 ORDER BY `published` DESC LIMIT 10 OFFSET 0
-SELECT * FROM `user` WHERE `id` IN ( ... )
-SELECT * FROM `categorization` WHERE `post_id` IN ( ... )
-SELECT * FROM `category` WHERE `id` IN ( ... )
+SELECT * FROM `user` WHERE `id` IN (...)
+SELECT * FROM `categorization` WHERE `post_id` IN (...)
+SELECT * FROM `category` WHERE `id` IN (...)
 ```
 
 When traversing associations, LessQL always eagerly loads all references in one query. This way, the number of queries is always constant, no matter how "deep" you are traversing your database.
@@ -82,10 +82,10 @@ When traversing associations, LessQL always eagerly loads all references in one 
 Let's step through the example in some detail. The first part iterates over a subset of posts:
 
 ```php
-foreach ( $db->post()
-    ->orderBy( 'date_published', 'DESC' )
-    ->where( 'is_published', 1 )
-    ->paged( 10, 1 ) as $post ) { /* ... */ }
+foreach ($db->post()
+    ->orderBy('date_published', 'DESC')
+    ->where('is_published', 1)
+    ->paged(10, 1) as $post) { /* ... */ }
 ```
 
 The `orderBy` and `where` calls are basic SQL, `paged(10, 1)` limits to page 1 where pages have a size of 10 posts.
@@ -111,8 +111,8 @@ Note the explicit `fetch()` to get the row. This is required because you might w
 // Get category titles of post
 $categories = array();
 
-foreach ( $post->categorizationList()->category() as $category ) {
-    $categories[] = $category[ 'title' ];
+foreach ($post->categorizationList()->category() as $category) {
+    $categories[] = $category['title'];
 }
 ```
 
@@ -127,20 +127,20 @@ Note how we directly call `->category()` without intermediate rows.
 LessQL is capable of saving deeply nested structures with a single method call.
 
 ```php
-$row = $db->createRow('post',array(
+$row = $db->createRow('post', [
     'title' => 'Fantasy Movie Review',
-    'author' => array(
+    'author' => [
         'name' => 'Fantasy Guy'
-    ),
-    'categorizationList' => array(
-        array(
-            'category' => array( 'title' => 'Movies' )
-        ),
-        array(
+    ],
+    'categorizationList' => [
+        [
+            'category' => ['title' => 'Movies']
+        ],
+        [
             'category' => $existingFantasyCategory
-        )
-    )
-));
+        ]
+    ]
+]);
 
 // wrapping this in a transaction is a good practice and more performant
 $db->begin();
@@ -151,12 +151,12 @@ $db->commit();
 LessQL generates all queries needed to save the structure, including references:
 
 ```sql
-INSERT INTO `post` ( `title`, `author_id` ) VALUES ( 'Fantasy Movie Review', NULL )
-INSERT INTO `user` ( `name` ) VALUES ( 'Fantasy Guy' )
+INSERT INTO `post` (`title`, `author_id`) VALUES ('Fantasy Movie Review', NULL)
+INSERT INTO `user` (`name`) VALUES ('Fantasy Guy')
 UPDATE `post` SET `user_id` = ... WHERE `id` = ...
-INSERT INTO `category` ( `title` ) VALUES ( 'Movies' )
-INSERT INTO `categorization` ( `post_id`, `category_id` ) VALUES ( ... )
-INSERT INTO `categorization` ( `post_id`, `category_id` ) VALUES ( ... )
+INSERT INTO `category` (`title`) VALUES ('Movies')
+INSERT INTO `categorization` (`post_id`, `category_id`) VALUES (...)
+INSERT INTO `categorization` (`post_id`, `category_id`) VALUES (...)
 ```
 
 For this operation to work, two things are crucial: First, `author_id` must be nullable. Second, LessQL must know about the compound primary key of the `categorization` table.
