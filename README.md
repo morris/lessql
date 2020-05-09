@@ -35,22 +35,22 @@ $posts = $db->post()
     ->orderBy('date_published', 'DESC');
 
 foreach ($posts as $post) {
-	$author = $post->user()->fetch();
+    $author = $post->user()->fetch();
 
-	foreach ($post->categorizationList()->category() as $category) {
-		// ...
-	}
+    foreach ($post->categorizationList()->category() as $category) {
+        // ...
+    }
 }
 
 // Saving complex structures is easy
 $row = $db->createRow('post', [
-	'title' => 'News',
-	'body' => 'Yay!',
-	'categorizationList' => [
-		[
-			'category' => ['title' => 'New Category']
+    'title' => 'News',
+    'body' => 'Yay!',
+    'categorizationList' => [
+        [
+            'category' => ['title' => 'New Category']
         ],
-		['category' => $existingCategoryRow]
+        ['category' => $existingCategoryRow]
     ]
 ]);
 

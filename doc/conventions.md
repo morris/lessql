@@ -29,13 +29,11 @@ You can use alternate foreign keys in associations using `via`:
 
 ```php
 foreach ($db->post() as $post) {
-
     // single: use post.author_id instead of post.user_id
     $author = $post->user()->via('author_id')->fetch();
 
     // list: use category.featured_post_id instead of category.post_id
     $featureCategories = $post->categoryList()->via('featured_post_id');
-
 }
 ```
 
