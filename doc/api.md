@@ -81,13 +81,16 @@ $result2 = $result->where($array)    // for each key-value pair, call $result->w
 $result2 = $result->whereNot($array) // for each key-value pair, call $result->whereNot($key, $value)
 ```
 
-## Selected columns, Order and Limit
+## Selected columns, Group, Order and Limit
 
 Note that you can order association results, but you cannot use `LIMIT` on them.
 
 ```php
 $result2 = $result->select($expr)  // identfiers NOT escaped, so expressions are possible
     // multiple calls are joined with a comma
+
+// $column group by
+$result2 = $result->groupBy($column);
 
 // $column will be escaped
 $result2 = $result->orderBy($column);

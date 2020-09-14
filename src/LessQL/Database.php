@@ -453,6 +453,7 @@ class Database
      * @param string $table
      * @param mixed $exprs
      * @param array $where
+     * @param array $groupBy
      * @param array $orderBy
      * @param int|null $limitCount
      * @param int|null $limitOffset
@@ -464,6 +465,7 @@ class Database
         $options = array_merge(array(
             'expr' => null,
             'where' => array(),
+            'groupBy' => array(),
             'orderBy' => array(),
             'limitCount' => null,
             'limitOffset' => null,
@@ -484,7 +486,7 @@ class Database
         $table = $this->rewriteTable($table);
         $query .= " FROM " . $this->quoteIdentifier($table);
 
-        $query .= $this->getSuffix($options['where'], $options['orderBy'], $options['limitCount'], $options['limitOffset']);
+        $query .= $this->getSuffix($options['where'], $options['groupBy'], $options['orderBy'], $options['limitCount'], $options['limitOffset']);
 
         $this->onQuery($query, $options['params']);
 
@@ -762,17 +764,22 @@ class Database
      * Return WHERE/LIMIT/ORDER suffix for queries
      *
      * @param array $where
+     * @param array $groupBy
      * @param array $orderBy
      * @param int|null $limitCount
      * @param int|null $limitOffset
      * @return string
      */
-    public function getSuffix($where, $orderBy = array(), $limitCount = null, $limitOffset = null)
+    public function getSuffix($where,$groupBy = array(), $orderBy = array(), $limitCount = null, $limitOffset = null)
     {
         $suffix = "";
 
         if (!empty($where)) {
             $suffix .= " WHERE (" . implode(") AND (", $where) . ")";
+        }
+
+        if (!empty($groupBy)) {
+            $suffix .= " GROUP BY " . implode(", ", $groupBy);
         }
 
         if (!empty($orderBy)) {
