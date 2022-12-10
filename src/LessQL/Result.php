@@ -649,7 +649,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
      *
      * @return \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator() : \Traversable
     {
         $this->execute();
 
@@ -699,7 +699,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
      *
      * @return Row[]
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : mixed
     {
         return $this->fetchAll();
     }
